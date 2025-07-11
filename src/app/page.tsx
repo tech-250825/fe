@@ -1,8 +1,21 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from 'next/image';
-import { ArrowRight, Video, ImageIcon, Type, Search, Menu, Play, Upload, Sparkles, Download, UserPlus, Zap, Layers, Copy } from 'lucide-react';
+import Image from "next/image";
+import {
+  ArrowRight,
+  ImageIcon,
+  Search,
+  Menu,
+  Play,
+  Upload,
+  Sparkles,
+  Download,
+  UserPlus,
+  Zap,
+  Layers,
+  Copy,
+} from "lucide-react";
 
 const MinimalistLandingPage: React.FC = () => {
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
@@ -176,7 +189,7 @@ const MinimalistLandingPage: React.FC = () => {
               </div>
               <h3 className="text-3xl font-semibold mb-4">Receive The Video</h3>
               <p className="text-gray-600 leading-relaxed text-lg">
-                In just a few moments, you'll receive a high-quality,
+                In just a few moments, you&apos;ll receive a high-quality,
                 ready-to-use animation of your character.
               </p>
             </div>
@@ -218,7 +231,7 @@ const MinimalistLandingPage: React.FC = () => {
               <h3 className="text-3xl font-semibold mb-4">Multiple Styles</h3>
               <p className="text-gray-600 leading-relaxed text-lg">
                 Choose from a wide range of animation styles to perfectly match
-                your character's personality and your vision.
+                your character&apos;s personality and your vision.
               </p>
             </div>
           </div>
