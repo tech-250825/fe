@@ -50,20 +50,22 @@ const MinimalistLandingPage: React.FC = () => {
             >
               Log In
             </a>
-            <button className="bg-white text-black px-5 py-2 rounded-full hover:bg-gray-200 transition-colors flex items-center">
+            <a
+              href="/home"
+              className="bg-white text-black px-5 py-2 rounded-full hover:bg-gray-200 transition-colors flex items-center"
+            >
               Try for Free <ArrowRight className="w-4 h-4 ml-2" />
-            </button>
+            </a>
           </div>
           <div className="md:hidden">
             <Menu className="text-white" />
           </div>
         </div>
       </header>
-
       {/* Hero Section with Video Background */}
       <div className="relative h-screen overflow-hidden">
         <video
-          src="https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/naruto.mp4"
+          src="https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/UpscaleVideo_1_20250711.mp4"
           autoPlay
           muted
           loop
@@ -93,7 +95,6 @@ const MinimalistLandingPage: React.FC = () => {
           </div>
         </main>
       </div>
-
       {/* Animation Showcase Section */}
       <section className="py-20 px-6 bg-white text-black">
         <div className="container mx-auto text-center">
@@ -101,34 +102,59 @@ const MinimalistLandingPage: React.FC = () => {
             Animation Showcase
           </h2>
           <div className="grid md:grid-cols-4 gap-8">
-            {Array.from({ length: 4 }).map((_, index) => (
-              <div
-                key={index}
-                className="group cursor-pointer"
-                onClick={() =>
-                  setSelectedVideo(
-                    "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-                  )
-                }
-              >
-                <div className="relative rounded-lg overflow-hidden aspect-w-16 aspect-h-9 bg-gray-200">
-                  <Image
-                    src={`https://images.unsplash.com/photo-1611162617213-6d221bde6760?w=400&h=225&fit=crop&q=80&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format`}
-                    alt={`Animation Thumbnail ${index + 1}`}
-                    width={400}
-                    height={225}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                    <Play className="w-12 h-12 text-white opacity-80 group-hover:opacity-100 transform group-hover:scale-110 transition-all" />
+            {Array.from({ length: 4 }).map((_, index) => {
+              const videoUrls = [
+                "https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/ghibli_upscale.mp4",
+                "https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/violet_upscale.mp4",
+                "https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/pastel_upscale.mp4",
+                "https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/ship_upscale.mp4",
+              ];
+
+              const thumbnailPaths = [
+                "/thumbnails/ghibli_thumbnail.png",
+                "/thumbnails/violet_thumbnail.png",
+                "/thumbnails/pastel_thumbnail.png",
+                "/thumbnails/ship_thumbnail.png",
+              ];
+
+              const titles = [
+                "Ghibli Style Animation",
+                "Violet Character Animation",
+                "Pastel Art Animation",
+                "Vintage Style Animation",
+              ];
+
+              return (
+                <div
+                  key={index}
+                  className="group cursor-pointer"
+                  onClick={() => setSelectedVideo(videoUrls[index])}
+                >
+                  <div className="relative rounded-lg overflow-hidden aspect-w-16 aspect-h-9 bg-gray-200">
+                    <Image
+                      src={thumbnailPaths[index]}
+                      alt={titles[index]}
+                      width={400}
+                      height={225}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      priority={index < 2} // 첫 2개 이미지는 우선 로딩
+                    />
+                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                      <Play className="w-12 h-12 text-white opacity-80 group-hover:opacity-100 transform group-hover:scale-110 transition-all" />
+                    </div>
+                  </div>
+                  <div className="mt-4 text-left">
+                    <h3 className="font-semibold text-lg">{titles[index]}</h3>
+                    <p className="text-gray-600 text-sm mt-1">
+                      AI Generated Animation
+                    </p>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
-
       {selectedVideo && (
         <div
           className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center"
@@ -153,7 +179,6 @@ const MinimalistLandingPage: React.FC = () => {
           </div>
         </div>
       )}
-
       {/* How It Works Section */}
       <section className="py-28 px-6 bg-gray-50 text-black">
         <div className="container mx-auto text-center">
@@ -196,7 +221,6 @@ const MinimalistLandingPage: React.FC = () => {
           </div>
         </div>
       </section>
-
       {/* Why Choose Us Section */}
       <section className="py-28 px-6 bg-white text-black">
         <div className="container mx-auto text-center">
@@ -237,7 +261,6 @@ const MinimalistLandingPage: React.FC = () => {
           </div>
         </div>
       </section>
-
       {/* Ready to Animate Section */}
       <section className="py-28 px-6 bg-gray-50 text-black">
         <div className="container mx-auto text-center max-w-4xl">
@@ -301,7 +324,6 @@ const MinimalistLandingPage: React.FC = () => {
           </div>
         </div>
       </section>
-
       {/* CTA Section */}
       <section className="py-20 px-6 bg-black text-white">
         <div className="container mx-auto text-center">
@@ -317,7 +339,6 @@ const MinimalistLandingPage: React.FC = () => {
           </button>
         </div>
       </section>
-
       {/* Footer */}
       <footer className="border-t border-gray-200 py-12 px-6">
         <div className="container mx-auto flex flex-wrap justify-between items-center">
