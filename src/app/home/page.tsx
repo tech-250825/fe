@@ -29,9 +29,7 @@ const HomePage: React.FC = () => {
       {/* Sidebar */}
       <aside className="w-64 bg-white p-6 flex flex-col shadow-lg border-r border-gray-200">
         {/* Logo/Title */}
-        <div className="text-3xl font-extrabold text-black mb-10 tracking-tight">
-          Hoit
-        </div>
+        <div className="text-3xl font-extrabold text-black mb-10 tracking-tight">Hoit</div>
 
         {/* Top Navigation */}
         <nav className="mb-10">
