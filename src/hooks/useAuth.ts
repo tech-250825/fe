@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from "react";
 
 export const useAuth = () => {
@@ -77,6 +79,16 @@ export const useAuth = () => {
     }
   };
 
+  const getUserInitials = (name: string) => {
+    if (!name) return "U";
+    return name
+      .split(" ")
+      .map((word) => word[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
   // 컴포넌트 마운트 시 프로필 정보 확인
   useEffect(() => {
     fetchProfile();
@@ -91,5 +103,6 @@ export const useAuth = () => {
     getCookie,
     deleteCookie,
     decodeJWT,
+    getUserInitials,
   };
 };
