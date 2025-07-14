@@ -9,27 +9,123 @@ import {
   Video,
   User,
   Play,
+  LogOut,
+  Settings,
+  LogIn,
 } from "lucide-react";
 
 const HomePage: React.FC = () => {
   const bannerTexts = ["Create Animation", "Create Images"];
   const [currentBannerTextIndex, setCurrentBannerTextIndex] = useState(0);
 
+  // 인증 관련 상태
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(true);
+
+  // 쿠키에서 값을 읽는 함수
+  const getCookie = (name: string): string | null => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop()?.split(";").shift() || null;
+    return null;
+  };
+
+  // 쿠키를 삭제하는 함수 (로그아웃용)
+  const deleteCookie = (name: string) => {
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+  };
+
+  // 로그아웃 함수
+  const handleLogout = async () => {
+    try {
+      await fetch("http://localhost:8090/api/auth/logout", {
+        method: "POST",
+        credentials: "include", // 반드시 포함해야 쿠키 전송됨
+      });
+
+      // 상태 초기화 및 페이지 이동
+      setIsLoggedIn(false);
+      setUserName("");
+      window.location.href = "/home";
+    } catch (error) {
+      console.error("로그아웃 실패:", error);
+    }
+  };
+
+  // JWT 토큰에서 사용자 정보를 디코드하는 함수 (간단한 버전)
+  const decodeJWT = (token: string) => {
+    try {
+      const base64Url = token.split(".")[1];
+      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split("")
+          .map(function (c) {
+            return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+          })
+          .join("")
+      );
+      return JSON.parse(jsonPayload);
+    } catch (error) {
+      console.error("JWT decode error:", error);
+      return null;
+    }
+  };
+
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentBannerTextIndex(
-        (prevIndex) => (prevIndex + 1) % bannerTexts.length,
+        (prevIndex) => (prevIndex + 1) % bannerTexts.length
       );
     }, 3000); // Change text every 3 seconds
     return () => clearInterval(interval);
   }, [bannerTexts.length]);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        setIsLoading(true);
+        const res = await fetch("http://localhost:8090/api/user/profile", {
+          credentials: "include", // ✅ 쿠키 포함 필수!
+        });
+
+        if (!res.ok) throw new Error("Not logged in");
+
+        const data = await res.json();
+        setIsLoggedIn(true);
+        setUserName(data.nickname || "User");
+      } catch (err) {
+        console.warn("User not logged in:", err);
+        setIsLoggedIn(false);
+        setUserName("");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  // 사용자 이니셜 생성 함수
+  const getUserInitials = (name: string) => {
+    if (!name) return "U";
+    return name
+      .split(" ")
+      .map((word) => word[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
 
   return (
     <div className="flex min-h-screen bg-white text-black font-sans">
       {/* Sidebar */}
       <aside className="w-64 bg-white p-6 flex flex-col shadow-lg border-r border-gray-200">
         {/* Logo/Title */}
-        <div className="text-3xl font-extrabold text-black mb-10 tracking-tight">Hoit</div>
+        <div className="text-3xl font-extrabold text-black mb-10 tracking-tight">
+          Hoit
+        </div>
 
         {/* Top Navigation */}
         <nav className="mb-10">
@@ -91,17 +187,67 @@ const HomePage: React.FC = () => {
           </ul>
         </div>
 
-        {/* My Account */}
+        {/* Account Section */}
         <div className="mt-auto">
-          <div className="flex items-center space-x-4 p-4 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors duration-200 cursor-pointer">
-            <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center text-xl font-bold text-gray-700">
-              MA
+          {isLoading ? (
+            <div className="flex items-center space-x-4 p-4 rounded-lg bg-gray-100">
+              <div className="w-12 h-12 rounded-full bg-gray-300 animate-pulse"></div>
+              <div className="flex-1">
+                <div className="h-4 bg-gray-300 rounded animate-pulse mb-2"></div>
+                <div className="h-3 bg-gray-300 rounded animate-pulse w-2/3"></div>
+              </div>
             </div>
-            <div>
-              <p className="font-semibold text-lg text-black">My Account</p>
-              <p className="text-sm text-gray-600">Settings & Profile</p>
+          ) : isLoggedIn ? (
+            <div className="space-y-3">
+              {/* User Info */}
+              <div className="flex items-center space-x-4 p-4 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors duration-200 cursor-pointer">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-xl font-bold text-white">
+                  {getUserInitials(userName)}
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-lg text-black">{userName}</p>
+                  <p className="text-sm text-gray-600">Logged in</p>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="space-y-2">
+                <button className="w-full flex items-center space-x-3 p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200">
+                  <Settings className="w-5 h-5" />
+                  <span>Settings</span>
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center space-x-3 p-3 rounded-lg text-red-600 hover:bg-red-50 transition-colors duration-200"
+                >
+                  <LogOut className="w-5 h-5" />
+                  <span>Logout</span>
+                </button>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="space-y-3">
+              {/* Guest State */}
+              <div className="flex items-center space-x-4 p-4 rounded-lg bg-gray-100">
+                <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center">
+                  <User className="w-6 h-6 text-gray-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-lg text-black">Guest</p>
+                  <p className="text-sm text-gray-600">Not logged in</p>
+                </div>
+              </div>
+
+              {/* Login Button */}
+              <a
+                href="/login"
+                className="w-full flex items-center justify-center space-x-3 p-3 rounded-lg bg-black text-white hover:bg-gray-800 transition-colors duration-200"
+              >
+                <LogIn className="w-5 h-5" />
+                <span>Login</span>
+              </a>
+            </div>
+          )}
         </div>
       </aside>
 

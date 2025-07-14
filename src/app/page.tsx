@@ -23,87 +23,87 @@ const MinimalistLandingPage: React.FC = () => {
   console.log("🎯 MinimalistLandingPage component is rendering!");
 
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userName, setUserName] = useState<string>("");
+  // const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // const [userName, setUserName] = useState<string>("");
 
-  console.log(
-    "📊 Current state - isLoggedIn:",
-    isLoggedIn,
-    "userName:",
-    userName
-  );
+  // console.log(
+  //   "📊 Current state - isLoggedIn:",
+  //   isLoggedIn,
+  //   "userName:",
+  //   userName
+  // );
 
   // 쿠키에서 값을 읽는 함수
-  const getCookie = (name: string): string | null => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop()?.split(";").shift() || null;
-    return null;
-  };
+  // const getCookie = (name: string): string | null => {
+  //   const value = `; ${document.cookie}`;
+  //   const parts = value.split(`; ${name}=`);
+  //   if (parts.length === 2) return parts.pop()?.split(";").shift() || null;
+  //   return null;
+  // };
 
-  // 쿠키를 삭제하는 함수 (로그아웃용)
-  const deleteCookie = (name: string) => {
-    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-  };
+  // // 쿠키를 삭제하는 함수 (로그아웃용)
+  // const deleteCookie = (name: string) => {
+  //   document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+  // };
 
   // 로그아웃 함수
-  const handleLogout = async () => {
-    try {
-      await fetch("http://localhost:8090/api/auth/logout", {
-        method: "POST",
-        credentials: "include", // 반드시 포함해야 쿠키 전송됨
-      });
+  // const handleLogout = async () => {
+  //   try {
+  //     await fetch("http://localhost:8090/api/auth/logout", {
+  //       method: "POST",
+  //       credentials: "include", // 반드시 포함해야 쿠키 전송됨
+  //     });
 
-      // 상태 초기화 및 페이지 이동
-      setIsLoggedIn(false);
-      setUserName("");
-      window.location.href = "/";
-    } catch (error) {
-      console.error("로그아웃 실패:", error);
-    }
-  };
+  //     // 상태 초기화 및 페이지 이동
+  //     setIsLoggedIn(false);
+  //     setUserName("");
+  //     window.location.href = "/";
+  //   } catch (error) {
+  //     console.error("로그아웃 실패:", error);
+  //   }
+  // };
 
   // JWT 토큰에서 사용자 정보를 디코드하는 함수 (간단한 버전)
-  const decodeJWT = (token: string) => {
-    try {
-      const base64Url = token.split(".")[1];
-      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-      const jsonPayload = decodeURIComponent(
-        atob(base64)
-          .split("")
-          .map(function (c) {
-            return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-          })
-          .join("")
-      );
-      return JSON.parse(jsonPayload);
-    } catch (error) {
-      console.error("JWT decode error:", error);
-      return null;
-    }
-  };
+  // const decodeJWT = (token: string) => {
+  //   try {
+  //     const base64Url = token.split(".")[1];
+  //     const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  //     const jsonPayload = decodeURIComponent(
+  //       atob(base64)
+  //         .split("")
+  //         .map(function (c) {
+  //           return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+  //         })
+  //         .join("")
+  //     );
+  //     return JSON.parse(jsonPayload);
+  //   } catch (error) {
+  //     console.error("JWT decode error:", error);
+  //     return null;
+  //   }
+  // };
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const res = await fetch("http://localhost:8090/api/user/profile", {
-          credentials: "include", // ✅ 쿠키 포함 필수!
-        });
+  // useEffect(() => {
+  //   const fetchProfile = async () => {
+  //     try {
+  //       const res = await fetch("http://localhost:8090/api/user/profile", {
+  //         credentials: "include", // ✅ 쿠키 포함 필수!
+  //       });
 
-        if (!res.ok) throw new Error("Not logged in");
+  //       if (!res.ok) throw new Error("Not logged in");
 
-        const data = await res.json();
-        setIsLoggedIn(true);
-        setUserName(data.nickname || "User");
-      } catch (err) {
-        console.warn("User not logged in:", err);
-        setIsLoggedIn(false);
-        setUserName("");
-      }
-    };
+  //       const data = await res.json();
+  //       setIsLoggedIn(true);
+  //       setUserName(data.nickname || "User");
+  //     } catch (err) {
+  //       console.warn("User not logged in:", err);
+  //       setIsLoggedIn(false);
+  //       setUserName("");
+  //     }
+  //   };
 
-    fetchProfile();
-  }, []);
+  //   fetchProfile();
+  // }, []);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -129,7 +129,7 @@ const MinimalistLandingPage: React.FC = () => {
             </a>
           </nav>
           <div className="flex items-center space-x-4">
-            {isLoggedIn ? (
+            {/* {isLoggedIn ? (
               <div className="flex items-center space-x-3">
                 <div className="flex items-center space-x-2 text-gray-300">
                   <User className="w-4 h-4" />
@@ -150,7 +150,7 @@ const MinimalistLandingPage: React.FC = () => {
               >
                 Log In
               </a>
-            )}
+            )} */}
             <a
               href="/home"
               className="bg-white text-black px-5 py-2 rounded-full hover:bg-gray-200 transition-colors flex items-center"
