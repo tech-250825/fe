@@ -44,8 +44,8 @@ const navigationItems = [
     icon: Home,
   },
   {
-    title: "Explore",
-    url: "/explore/recommendations",
+    title: "Profile",
+    url: "/profile",
     icon: Compass,
   },
 ];
@@ -87,7 +87,7 @@ export function AppSidebar() {
   // 현재 경로인지 확인하는 함수
   const isActivePath = (url: string) => {
     if (url === "/home") return pathname === "/home";
-    if (url.includes("/explore")) return pathname.includes("/explore");
+    if (url.includes("/profile")) return pathname.includes("/profile");
     if (url.includes("/create")) return pathname.includes("/create");
     return pathname === url;
   };
