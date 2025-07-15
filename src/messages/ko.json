@@ -1,0 +1,458 @@
+{
+  "LandingPage": {
+    "nav": {
+      "features": "기능",
+      "pricing": "가격",
+      "api": "API",
+      "tryForFree": "무료 체험"
+    },
+    "hero": {
+      "title": "AI로 애니메이션 만들기",
+      "description": "상상하고, 설명하고, 만들어보세요. Hoit은 텍스트 프롬프트로 고품질 비디오를 생성하여 몇 초 만에 아이디어를 현실로 만듭니다.",
+      "placeholder": "작은 카우보이 모자를 쓴 아기 너구리의 영화 같은 장면...",
+      "noCreditCard": "신용카드 필요 없음. 즉시 비디오 만들기를 시작하세요."
+    },
+    "showcase": {
+      "title": "애니메이션 쇼케이스",
+      "ghibli": "지브리 스타일 애니메이션",
+      "violet": "바이올렛 캐릭터 애니메이션",
+      "pastel": "파스텔 아트 애니메이션",
+      "vintage": "빈티지 스타일 애니메이션",
+      "aiGenerated": "AI 생성 애니메이션"
+    },
+    "howItWorks": {
+      "title": "작동 방식",
+      "step1": {
+        "title": "캐릭터 전송",
+        "description": "이미지를 업로드하거나 캐릭터에 대한 자세한 설명을 제공하세요. 더 자세할수록 더 좋은 결과를 얻을 수 있습니다."
+      },
+      "step2": {
+        "title": "AI 마법이 일어남",
+        "description": "우리 AI가 작업을 시작하여 입력을 분석하고 원하는 스타일로 캐릭터를 애니메이션화합니다."
+      },
+      "step3": {
+        "title": "비디오 받기",
+        "description": "몇 분 안에 고품질의 즉시 사용 가능한 캐릭터 애니메이션을 받게 됩니다."
+      }
+    },
+    "whyChoose": {
+      "title": "왜 우리 AI 애니메이션을 선택해야 할까요?",
+      "feature1": {
+        "title": "맞춤형 캐릭터",
+        "description": "독특한 창작물에 생명을 불어넣으세요. 우리 AI는 상상하거나 그릴 수 있는 모든 캐릭터를 애니메이션화할 수 있습니다."
+      },
+      "feature2": {
+        "title": "쉬운 과정",
+        "description": "복잡한 소프트웨어나 애니메이션 기술이 필요하지 않습니다. 캐릭터를 업로드하기만 하면 AI가 모든 무거운 작업을 처리합니다."
+      },
+      "feature3": {
+        "title": "다양한 스타일",
+        "description": "캐릭터의 개성과 비전에 완벽하게 맞는 다양한 애니메이션 스타일 중에서 선택하세요."
+      }
+    },
+    "readyToAnimate": {
+      "title": "애니메이션을 만들 준비가 되셨나요?",
+      "description": "캐릭터와 스타일을 보내주시면 AI 애니메이션으로 만들어드리겠습니다.",
+      "getInTouch": "연락하기"
+    },
+    "contact": {
+      "email": "이메일",
+      "instagram": "인스타그램"
+    },
+    "cta": {
+      "title": "만들기를 시작할 준비가 되셨나요?",
+      "description": "비디오 제작의 미래를 탐험해보세요. 지금 가입하고 AI 기반 도구의 전체 모음에 액세스하세요.",
+      "signUp": "무료 가입"
+    },
+    "footer": {
+      "copyright": "모든 권리 보유.",
+      "twitter": "트위터",
+      "discord": "디스코드",
+      "contact": "연락처"
+    }
+  },
+  "Sidebar": {
+    "navigation": {
+      "home": "홈",
+      "profile": "프로필"
+    },
+    "tools": {
+      "createImages": "이미지 생성",
+      "createVideos": "비디오 생성",
+      "trainCharacters": "캐릭터 훈련"
+    },
+    "groups": {
+      "tools": "도구"
+    },
+    "user": {
+      "loggedIn": "로그인됨",
+      "guest": "게스트",
+      "notLoggedIn": "로그인되지 않음",
+      "login": "로그인",
+      "logout": "로그아웃",
+      "settings": "설정"
+    }
+  },
+  "Dashboard": {
+    "pageTitle": {
+      "home": "홈",
+      "profile": "프로필",
+      "create": "생성",
+      "dashboard": "대시보드"
+    }
+  },
+  "HomePage": {
+    "banner": {
+      "createAnimation": "애니메이션 만들기",
+      "createImages": "이미지 만들기"
+    },
+    "explore": {
+      "title": "애니메이션 탐색하기",
+      "videoThumbnail": "비디오 썸네일 {number}",
+      "animationTitle": "멋진 애니메이션 {number}",
+      "aiGenerated": "AI 생성"
+    }
+  },
+  "CreateImages": {
+    "title": "이미지 생성",
+    "tabs": {
+      "textToImage": "텍스트를 이미지로",
+      "imageToImage": "이미지를 이미지로"
+    }
+  },
+  "Text2Image": {
+    "prompt": {
+      "title": "생성할 이미지를 설명하세요",
+      "placeholder": "산 위의 아름다운 일몰, 디지털 아트 스타일..."
+    },
+    "negativePrompt": {
+      "title": "네거티브 프롬프트 (피할 요소)",
+      "placeholder": "흐릿한, 저품질, 왜곡된..."
+    },
+    "proMode": {
+      "title": "프로 모드",
+      "description": "고급 제어"
+    },
+    "model": {
+      "title": "모델",
+      "placeholder": "모델 선택",
+      "latest": "최신",
+      "premium": "프리미엄"
+    },
+    "settings": {
+      "size": "크기",
+      "style": "스타일",
+      "quality": "품질",
+      "portrait": "세로",
+      "landscape": "가로"
+    },
+    "style": {
+      "natural": "자연스러운",
+      "vivid": "선명한",
+      "artistic": "예술적",
+      "photographic": "사진적"
+    },
+    "quality": {
+      "standard": "표준",
+      "hd": "HD"
+    },
+    "buttons": {
+      "create": "생성하기",
+      "generating": "생성 중...",
+      "recreate": "다시 생성",
+      "publish": "게시",
+      "trySamples": "샘플 사용"
+    },
+    "status": {
+      "creating": "이미지 생성 중...",
+      "success": "이미지가 성공적으로 생성되었습니다! (데모)",
+      "processing": "처리 중",
+      "completed": "완료됨",
+      "ready": "준비됨"
+    },
+    "progress": {
+      "generating": "이미지 생성 중...",
+      "generatingImages": "이미지를 생성하고 있습니다...",
+      "takeFewMoments": "몇 분 정도 소요될 수 있습니다",
+      "complete": "완료"
+    },
+    "results": {
+      "generatedImage": "생성된 이미지 {number}",
+      "imagesWillAppear": "이미지가 여기에 표시됩니다",
+      "enterPromptToStart": "프롬프트를 입력하고 생성하기를 클릭하여 시작하세요"
+    },
+    "type": {
+      "textToImage": "텍스트를 이미지로"
+    },
+    "errors": {
+      "enterPrompt": "프롬프트를 입력해주세요",
+      "failedToGenerate": "이미지 생성에 실패했습니다"
+    },
+    "links": {
+      "userGuide": "사용자 가이드"
+    }
+  },
+  "Img2Image": {
+    "referenceImage": {
+      "title": "참조 이미지",
+      "upload": "참조 이미지 업로드",
+      "instruction": "클릭하여 탐색하거나 드래그 앤 드롭",
+      "alt": "참조 이미지"
+    },
+    "prompt": {
+      "title": "이미지를 어떻게 수정할지 설명하세요",
+      "placeholder": "이것을 마법적 요소가 있는 판타지 풍경으로 변환..."
+    },
+    "negativePrompt": {
+      "title": "네거티브 프롬프트 (피할 요소)",
+      "placeholder": "흐릿한, 저품질, 왜곡된..."
+    },
+    "strength": {
+      "title": "변환 강도",
+      "moreSimilar": "더 유사하게",
+      "moreCreative": "더 창의적으로"
+    },
+    "proMode": {
+      "title": "프로 모드",
+      "description": "고급 제어"
+    },
+    "model": {
+      "title": "모델",
+      "placeholder": "모델 선택",
+      "popular": "인기",
+      "premium": "프리미엄"
+    },
+    "settings": {
+      "size": "크기",
+      "style": "스타일",
+      "quality": "품질"
+    },
+    "style": {
+      "natural": "자연스러운",
+      "vivid": "선명한",
+      "cinematic": "영화적",
+      "anime": "애니메"
+    },
+    "quality": {
+      "standard": "표준",
+      "hd": "HD"
+    },
+    "buttons": {
+      "create": "생성하기",
+      "generating": "생성 중...",
+      "recreate": "다시 생성",
+      "publish": "게시",
+      "trySamples": "샘플 사용"
+    },
+    "status": {
+      "creating": "이미지 생성 중...",
+      "success": "이미지가 성공적으로 생성되었습니다! (데모)",
+      "processing": "처리 중",
+      "completed": "완료됨",
+      "ready": "준비됨"
+    },
+    "progress": {
+      "generating": "이미지 생성 중...",
+      "generatingImages": "이미지를 생성하고 있습니다...",
+      "takeFewMoments": "몇 분 정도 소요될 수 있습니다",
+      "complete": "완료"
+    },
+    "results": {
+      "generatedImage": "생성된 이미지 {number}",
+      "modifiedImagesWillAppear": "수정된 이미지가 여기에 표시됩니다",
+      "uploadImageAndPrompt": "이미지를 업로드하고 프롬프트를 입력하여 시작하세요"
+    },
+    "type": {
+      "imageToImage": "이미지를 이미지로"
+    },
+    "errors": {
+      "invalidFileType": "잘못된 파일 형식입니다. 이미지 파일을 업로드해주세요",
+      "fileTooLarge": "파일이 너무 큽니다. 10MB 미만의 이미지를 선택해주세요",
+      "uploadImageAndPrompt": "참조 이미지를 업로드하고 프롬프트를 입력해주세요",
+      "failedToGenerate": "이미지 생성에 실패했습니다"
+    },
+    "info": {
+      "largeFileDetected": "큰 파일이 감지되었습니다 ({size}MB). 자동으로 압축됩니다."
+    },
+    "links": {
+      "userGuide": "사용자 가이드"
+    }
+  },
+  "CreateVideos": {
+    "title": "비디오 생성",
+    "tabs": {
+      "textToVideo": "텍스트를 비디오로",
+      "imageToVideo": "이미지를 비디오로"
+    }
+  },
+  "Text2Video": {
+    "prompt": {
+      "title": "생성할 비디오를 설명하세요",
+      "placeholder": "텍스트를 기반으로 생성할 콘텐츠를 설명하세요..."
+    },
+    "proMode": {
+      "title": "프로 모드",
+      "trialsLeft": "3회 남음"
+    },
+    "model": {
+      "title": "모델",
+      "placeholder": "모델 선택",
+      "premium": "프리미엄",
+      "freeTrials": "5회 무료 체험 남음"
+    },
+    "settings": {
+      "duration": "재생 시간",
+      "resolution": "해상도"
+    },
+    "buttons": {
+      "create": "생성하기",
+      "generating": "생성 중...",
+      "recreate": "다시 생성",
+      "publish": "게시",
+      "trySamples": "샘플 사용"
+    },
+    "status": {
+      "processing": "처리 중",
+      "ready": "준비됨"
+    },
+    "progress": {
+      "generating": "비디오 생성 중...",
+      "generatingVideo": "비디오를 생성하고 있습니다...",
+      "takeFewMinutes": "몇 분 정도 소요될 수 있습니다"
+    },
+    "results": {
+      "videoGenerated": "비디오가 성공적으로 생성되었습니다!",
+      "clickToPlay": "클릭하여 재생",
+      "videoWillAppear": "비디오가 여기에 표시됩니다",
+      "enterPromptToStart": "프롬프트를 입력하고 생성하기를 클릭하여 시작하세요"
+    },
+    "type": {
+      "textToVideo": "텍스트를 비디오로"
+    },
+    "links": {
+      "userGuide": "사용자 가이드"
+    }
+  },
+  "Img2Video": {
+    "referenceImages": {
+      "title": "참조 이미지",
+      "first": "첫 번째 (필수)",
+      "last": "마지막 (선택사항)",
+      "firstAlt": "첫 번째 프레임",
+      "lastAlt": "마지막 프레임",
+      "uploadFirst": "첫 번째 이미지 업로드",
+      "optional": "마지막 (선택사항)"
+    },
+    "prompt": {
+      "title": "이미지를 기반으로 생성할 콘텐츠를 설명하세요",
+      "placeholder": "이미지 간의 움직임과 변환을 설명하세요..."
+    },
+    "proMode": {
+      "title": "프로 모드",
+      "description": "더 높은 품질, 더 많은 제어"
+    },
+    "model": {
+      "title": "모델",
+      "placeholder": "모델 선택",
+      "premium": "프리미엄"
+    },
+    "settings": {
+      "duration": "재생 시간",
+      "resolution": "해상도"
+    },
+    "buttons": {
+      "create": "생성하기",
+      "generating": "생성 중...",
+      "recreate": "다시 생성",
+      "publish": "게시",
+      "trySamples": "샘플 사용"
+    },
+    "status": {
+      "processingImages": "이미지 처리 중...",
+      "creating": "비디오 생성 중...",
+      "started": "비디오 생성이 시작되었습니다!",
+      "success": "비디오가 성공적으로 생성되었습니다!",
+      "successDemo": "비디오가 성공적으로 생성되었습니다! (데모)",
+      "stillProcessing": "비디오가 아직 처리 중입니다...",
+      "processing": "처리 중",
+      "completed": "완료됨",
+      "ready": "준비됨"
+    },
+    "progress": {
+      "generating": "비디오 생성 중...",
+      "generatingVideo": "비디오를 생성하고 있습니다...",
+      "takeFewMinutes": "몇 분 정도 소요될 수 있습니다",
+      "complete": "완료"
+    },
+    "results": {
+      "videoWillAppear": "비디오가 여기에 표시됩니다",
+      "uploadImagesAndPrompt": "이미지를 업로드하고 프롬프트를 입력하여 시작하세요"
+    },
+    "type": {
+      "imageToVideo": "이미지를 비디오로"
+    },
+    "video": {
+      "notSupported": "브라우저가 비디오 태그를 지원하지 않습니다."
+    },
+    "errors": {
+      "invalidFileType": "잘못된 파일 형식입니다. 이미지 파일을 업로드해주세요",
+      "fileTooLarge": "파일이 너무 큽니다. 10MB 미만의 이미지를 선택해주세요",
+      "uploadImageAndPrompt": "첫 번째 이미지를 업로드하고 프롬프트를 입력해주세요",
+      "failedToCreate": "비디오 생성에 실패했습니다",
+      "failedToGenerate": "비디오 생성에 실패했습니다",
+      "authRequired": "인증이 필요합니다. 로그인 후 다시 시도해주세요.",
+      "apiNotFound": "API 엔드포인트를 찾을 수 없습니다. 서버 설정을 확인해주세요.",
+      "networkError": "네트워크 오류입니다. 연결과 서버 상태를 확인해주세요."
+    },
+    "info": {
+      "largeFileDetected": "큰 파일이 감지되었습니다 ({size}MB). 자동으로 압축됩니다."
+    },
+    "links": {
+      "userGuide": "사용자 가이드"
+    }
+  },
+  "Profile": {
+    "title": "프로필",
+    "subtitle": "계정 및 설정 관리",
+    "sections": {
+      "profileInfo": "프로필 정보",
+      "quickActions": "빠른 작업",
+      "settings": "설정"
+    },
+    "info": {
+      "joined": "가입일",
+      "plan": "플랜"
+    },
+    "stats": {
+      "imagesGenerated": "생성된 이미지",
+      "creditsUsed": "사용한 크레딧",
+      "creditsRemaining": "남은 크레딧"
+    },
+    "actions": {
+      "downloadAll": "모든 이미지 다운로드",
+      "myGallery": "내 갤러리",
+      "buyCredits": "크레딧 구매",
+      "logout": "로그아웃"
+    },
+    "settings": {
+      "language": "언어 및 지역",
+      "selectLanguage": "언어 선택",
+      "appearance": "모양",
+      "darkMode": "다크 모드",
+      "notifications": "알림",
+      "pushNotifications": "푸시 알림",
+      "emailNotifications": "이메일 알림",
+      "privacy": "개인정보 보호 및 보안",
+      "privacyPolicy": "개인정보 처리방침",
+      "termsOfService": "서비스 약관"
+    },
+    "buttons": {
+      "edit": "프로필 편집"
+    },
+    "messages": {
+      "languageChanged": "언어가 성공적으로 변경되었습니다",
+      "loggedOut": "성공적으로 로그아웃되었습니다",
+      "editProfile": "프로필 편집 기능은 곧 출시됩니다"
+    }
+  }
+}

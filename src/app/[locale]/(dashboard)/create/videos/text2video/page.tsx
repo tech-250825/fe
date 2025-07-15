@@ -24,8 +24,11 @@ import {
   Settings,
   FileVideo,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const Text2VideoPage: React.FC = () => {
+  const t = useTranslations("Text2Video");
+
   const [prompt, setPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -59,13 +62,13 @@ const Text2VideoPage: React.FC = () => {
           {/* 프롬프트 입력 */}
           <div className="space-y-3">
             <Label htmlFor="prompt" className="text-base font-medium">
-              Describe the video you want to generate
+              {t("prompt.title")}
             </Label>
             <Textarea
               id="prompt"
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
-              placeholder="Based on the text, describe the content you want to generate..."
+              placeholder={t("prompt.placeholder")}
               className="min-h-[120px] resize-none"
             />
           </div>
@@ -75,8 +78,10 @@ const Text2VideoPage: React.FC = () => {
             <div className="flex items-center space-x-3">
               <Sparkles className="w-5 h-5 text-purple-600" />
               <div>
-                <p className="font-medium text-sm">Pro Mode</p>
-                <p className="text-xs text-gray-600">3 trials left</p>
+                <p className="font-medium text-sm">{t("proMode.title")}</p>
+                <p className="text-xs text-gray-600">
+                  {t("proMode.trialsLeft")}
+                </p>
               </div>
             </div>
             <Switch checked={proMode} onCheckedChange={setProMode} />
@@ -84,10 +89,10 @@ const Text2VideoPage: React.FC = () => {
 
           {/* 모델 선택 */}
           <div className="space-y-3">
-            <Label className="text-base font-medium">Model</Label>
+            <Label className="text-base font-medium">{t("model.title")}</Label>
             <Select value={selectedModel} onValueChange={setSelectedModel}>
               <SelectTrigger>
-                <SelectValue placeholder="Select model" />
+                <SelectValue placeholder={t("model.placeholder")} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="vidu-q1">
@@ -95,7 +100,7 @@ const Text2VideoPage: React.FC = () => {
                     <div className="w-4 h-4 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"></div>
                     <span>Vidu Q1</span>
                     <Badge variant="secondary" className="ml-2">
-                      Premium
+                      {t("model.premium")}
                     </Badge>
                   </div>
                 </SelectItem>
@@ -107,7 +112,7 @@ const Text2VideoPage: React.FC = () => {
                 </SelectItem>
               </SelectContent>
             </Select>
-            <p className="text-xs text-gray-500">5 Free Trials remaining</p>
+            <p className="text-xs text-gray-500">{t("model.freeTrials")}</p>
           </div>
 
           {/* Duration & Resolution */}
@@ -115,7 +120,7 @@ const Text2VideoPage: React.FC = () => {
             <div className="space-y-3">
               <Label className="text-sm font-medium flex items-center">
                 <Clock className="w-4 h-4 mr-2" />
-                Duration
+                {t("settings.duration")}
               </Label>
               <Select value={duration} onValueChange={setDuration}>
                 <SelectTrigger>
@@ -133,7 +138,7 @@ const Text2VideoPage: React.FC = () => {
             <div className="space-y-3">
               <Label className="text-sm font-medium flex items-center">
                 <Settings className="w-4 h-4 mr-2" />
-                Resolution
+                {t("settings.resolution")}
               </Label>
               <Select value={resolution} onValueChange={setResolution}>
                 <SelectTrigger>
@@ -155,14 +160,14 @@ const Text2VideoPage: React.FC = () => {
             className="w-full h-12 text-lg font-medium"
             size="lg"
           >
-            {isGenerating ? "Generating..." : "Create"}
+            {isGenerating ? t("buttons.generating") : t("buttons.create")}
           </Button>
 
           {/* Progress */}
           {isGenerating && (
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span>Generating video...</span>
+                <span>{t("progress.generating")}</span>
                 <span>{progress}%</span>
               </div>
               <Progress value={progress} className="h-2" />
@@ -174,11 +179,11 @@ const Text2VideoPage: React.FC = () => {
             <div className="flex items-center space-x-2">
               <FileVideo className="w-4 h-4 text-gray-500" />
               <Button variant="link" className="p-0 h-auto text-sm">
-                User Guide
+                {t("links.userGuide")}
               </Button>
             </div>
             <Button variant="outline" className="w-full">
-              Try Samples →
+              {t("buttons.trySamples")} →
             </Button>
           </div>
         </div>
@@ -192,13 +197,15 @@ const Text2VideoPage: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-sm text-gray-600">Processing</span>
+                <span className="text-sm text-gray-600">
+                  {isGenerating ? t("status.processing") : t("status.ready")}
+                </span>
               </div>
               <div className="flex items-center space-x-2 text-sm text-gray-500">
                 <FileVideo className="w-4 h-4" />
-                <span>Text to Video</span>
+                <span>{t("type.textToVideo")}</span>
                 <span>•</span>
-                <span>May 1, 2025, 3:29 PM</span>
+                <span>{new Date().toLocaleDateString()}</span>
               </div>
             </div>
           </div>
@@ -210,9 +217,9 @@ const Text2VideoPage: React.FC = () => {
                 {isGenerating ? (
                   <div className="text-center text-white space-y-4">
                     <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto"></div>
-                    <p className="text-lg">Generating your video...</p>
+                    <p className="text-lg">{t("progress.generatingVideo")}</p>
                     <p className="text-sm text-gray-300">
-                      This may take a few minutes
+                      {t("progress.takeFewMinutes")}
                     </p>
                   </div>
                 ) : progress === 100 ? (
@@ -221,17 +228,17 @@ const Text2VideoPage: React.FC = () => {
                       <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto">
                         <Play className="w-10 h-10 text-white" />
                       </div>
-                      <p className="text-lg">Video generated successfully!</p>
-                      <p className="text-sm text-gray-300">Click to play</p>
+                      <p className="text-lg">{t("results.videoGenerated")}</p>
+                      <p className="text-sm text-gray-300">
+                        {t("results.clickToPlay")}
+                      </p>
                     </div>
                   </div>
                 ) : (
                   <div className="text-center text-gray-400 space-y-4">
                     <FileVideo className="w-16 h-16 mx-auto opacity-50" />
-                    <p className="text-lg">Your video will appear here</p>
-                    <p className="text-sm">
-                      Enter a prompt and click Create to get started
-                    </p>
+                    <p className="text-lg">{t("results.videoWillAppear")}</p>
+                    <p className="text-sm">{t("results.enterPromptToStart")}</p>
                   </div>
                 )}
               </div>
@@ -242,11 +249,11 @@ const Text2VideoPage: React.FC = () => {
           <div className="mt-6 flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <Button variant="outline" disabled={progress !== 100}>
-                Recreate
+                {t("buttons.recreate")}
               </Button>
               <Button variant="outline" disabled={progress !== 100}>
                 <Share2 className="w-4 h-4 mr-2" />
-                Publish
+                {t("buttons.publish")}
               </Button>
             </div>
             <div className="flex items-center space-x-2">

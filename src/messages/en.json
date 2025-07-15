@@ -1,0 +1,458 @@
+{
+  "LandingPage": {
+    "nav": {
+      "features": "Features",
+      "pricing": "Pricing",
+      "api": "API",
+      "tryForFree": "Try for Free"
+    },
+    "hero": {
+      "title": "Create Animation with AI",
+      "description": "Imagine it, describe it, create it. Hoit generates high-quality video from text prompts, bringing your ideas to life in seconds.",
+      "placeholder": "A cinematic shot of a baby raccoon wearing a tiny cowboy hat...",
+      "noCreditCard": "No credit card required. Start creating videos instantly."
+    },
+    "showcase": {
+      "title": "Animation Showcase",
+      "ghibli": "Ghibli Style Animation",
+      "violet": "Violet Character Animation",
+      "pastel": "Pastel Art Animation",
+      "vintage": "Vintage Style Animation",
+      "aiGenerated": "AI Generated Animation"
+    },
+    "howItWorks": {
+      "title": "How It Works",
+      "step1": {
+        "title": "Send Your Character",
+        "description": "Upload an image or provide a detailed description of your character. The more detail, the better the result."
+      },
+      "step2": {
+        "title": "AI Magic Happens",
+        "description": "Our AI gets to work, analyzing your input and animating your character in your desired style."
+      },
+      "step3": {
+        "title": "Receive The Video",
+        "description": "In just a few moments, you'll receive a high-quality, ready-to-use animation of your character."
+      }
+    },
+    "whyChoose": {
+      "title": "Why Choose Our AI Animation?",
+      "feature1": {
+        "title": "Custom Characters",
+        "description": "Bring your unique creations to life. Our AI can animate any character you can imagine or draw."
+      },
+      "feature2": {
+        "title": "Easy Process",
+        "description": "No complex software or animation skills required. Just upload your character and let our AI do the heavy lifting."
+      },
+      "feature3": {
+        "title": "Multiple Styles",
+        "description": "Choose from a wide range of animation styles to perfectly match your character's personality and your vision."
+      }
+    },
+    "readyToAnimate": {
+      "title": "Ready to Animate?",
+      "description": "Send us your character and style and let's bring it into AI animation.",
+      "getInTouch": "Get In Touch"
+    },
+    "contact": {
+      "email": "Email",
+      "instagram": "Instagram"
+    },
+    "cta": {
+      "title": "Ready to Start Creating?",
+      "description": "Explore the future of video creation. Sign up now and get access to our full suite of AI-powered tools.",
+      "signUp": "Sign Up for Free"
+    },
+    "footer": {
+      "copyright": "All rights reserved.",
+      "twitter": "Twitter",
+      "discord": "Discord",
+      "contact": "Contact"
+    }
+  },
+  "HomePage": {
+    "banner": {
+      "createAnimation": "Create Animation",
+      "createImages": "Create Images"
+    },
+    "explore": {
+      "title": "Explore Animations",
+      "videoThumbnail": "Video Thumbnail {number}",
+      "animationTitle": "Awesome Animation {number}",
+      "aiGenerated": "AI Generated"
+    }
+  },
+  "Sidebar": {
+    "navigation": {
+      "home": "Home",
+      "profile": "Profile"
+    },
+    "tools": {
+      "createImages": "Create Images",
+      "createVideos": "Create Videos",
+      "trainCharacters": "Train Characters"
+    },
+    "groups": {
+      "tools": "TOOLS"
+    },
+    "user": {
+      "loggedIn": "Logged in",
+      "guest": "Guest",
+      "notLoggedIn": "Not logged in",
+      "login": "Login",
+      "logout": "Logout",
+      "settings": "Settings"
+    }
+  },
+  "Dashboard": {
+    "pageTitle": {
+      "home": "Home",
+      "profile": "Profile",
+      "create": "Create",
+      "dashboard": "Dashboard"
+    }
+  },
+  "CreateImages": {
+    "title": "Create Images",
+    "tabs": {
+      "textToImage": "Text to Image",
+      "imageToImage": "Image to Image"
+    }
+  },
+  "Text2Image": {
+    "prompt": {
+      "title": "Describe the image you want to generate",
+      "placeholder": "A beautiful sunset over mountains, digital art style..."
+    },
+    "negativePrompt": {
+      "title": "Negative Prompt (What to avoid)",
+      "placeholder": "blurry, low quality, distorted..."
+    },
+    "proMode": {
+      "title": "Pro Mode",
+      "description": "Advanced controls"
+    },
+    "model": {
+      "title": "Model",
+      "placeholder": "Select model",
+      "latest": "Latest",
+      "premium": "Premium"
+    },
+    "settings": {
+      "size": "Size",
+      "style": "Style",
+      "quality": "Quality",
+      "portrait": "Portrait",
+      "landscape": "Landscape"
+    },
+    "style": {
+      "natural": "Natural",
+      "vivid": "Vivid",
+      "artistic": "Artistic",
+      "photographic": "Photographic"
+    },
+    "quality": {
+      "standard": "Standard",
+      "hd": "HD"
+    },
+    "buttons": {
+      "create": "Create",
+      "generating": "Generating...",
+      "recreate": "Recreate",
+      "publish": "Publish",
+      "trySamples": "Try Samples"
+    },
+    "status": {
+      "creating": "Creating images...",
+      "success": "Images generated successfully! (Demo)",
+      "processing": "Processing",
+      "completed": "Completed",
+      "ready": "Ready"
+    },
+    "progress": {
+      "generating": "Generating images...",
+      "generatingImages": "Generating your images...",
+      "takeFewMoments": "This may take a few moments",
+      "complete": "complete"
+    },
+    "results": {
+      "generatedImage": "Generated image {number}",
+      "imagesWillAppear": "Your images will appear here",
+      "enterPromptToStart": "Enter a prompt and click Create to get started"
+    },
+    "type": {
+      "textToImage": "Text to Image"
+    },
+    "errors": {
+      "enterPrompt": "Please enter a prompt",
+      "failedToGenerate": "Failed to generate images"
+    },
+    "links": {
+      "userGuide": "User Guide"
+    }
+  },
+  "Img2Image": {
+    "referenceImage": {
+      "title": "Reference Image",
+      "upload": "Upload Reference Image",
+      "instruction": "Click to browse or drag and drop",
+      "alt": "Reference image"
+    },
+    "prompt": {
+      "title": "Describe how you want to modify the image",
+      "placeholder": "Transform this into a fantasy landscape with magical elements..."
+    },
+    "negativePrompt": {
+      "title": "Negative Prompt (What to avoid)",
+      "placeholder": "blurry, low quality, distorted..."
+    },
+    "strength": {
+      "title": "Transformation Strength",
+      "moreSimilar": "More similar",
+      "moreCreative": "More creative"
+    },
+    "proMode": {
+      "title": "Pro Mode",
+      "description": "Advanced controls"
+    },
+    "model": {
+      "title": "Model",
+      "placeholder": "Select model",
+      "popular": "Popular",
+      "premium": "Premium"
+    },
+    "settings": {
+      "size": "Size",
+      "style": "Style",
+      "quality": "Quality"
+    },
+    "style": {
+      "natural": "Natural",
+      "vivid": "Vivid",
+      "cinematic": "Cinematic",
+      "anime": "Anime"
+    },
+    "quality": {
+      "standard": "Standard",
+      "hd": "HD"
+    },
+    "buttons": {
+      "create": "Create",
+      "generating": "Generating...",
+      "recreate": "Recreate",
+      "publish": "Publish",
+      "trySamples": "Try Samples"
+    },
+    "status": {
+      "creating": "Creating images...",
+      "success": "Images generated successfully! (Demo)",
+      "processing": "Processing",
+      "completed": "Completed",
+      "ready": "Ready"
+    },
+    "progress": {
+      "generating": "Generating images...",
+      "generatingImages": "Generating your images...",
+      "takeFewMoments": "This may take a few moments",
+      "complete": "complete"
+    },
+    "results": {
+      "generatedImage": "Generated image {number}",
+      "modifiedImagesWillAppear": "Your modified images will appear here",
+      "uploadImageAndPrompt": "Upload an image and enter a prompt to get started"
+    },
+    "type": {
+      "imageToImage": "Image to Image"
+    },
+    "errors": {
+      "invalidFileType": "Invalid file type. Please upload an image file",
+      "fileTooLarge": "File too large. Please select an image smaller than 10MB",
+      "uploadImageAndPrompt": "Please upload a reference image and enter a prompt",
+      "failedToGenerate": "Failed to generate images"
+    },
+    "info": {
+      "largeFileDetected": "Large file detected ({size}MB). Will be compressed automatically."
+    },
+    "links": {
+      "userGuide": "User Guide"
+    }
+  },
+  "CreateVideos": {
+    "title": "Create Videos",
+    "tabs": {
+      "textToVideo": "Text to Video",
+      "imageToVideo": "Image to Video"
+    }
+  },
+  "Text2Video": {
+    "prompt": {
+      "title": "Describe the video you want to generate",
+      "placeholder": "Based on the text, describe the content you want to generate..."
+    },
+    "proMode": {
+      "title": "Pro Mode",
+      "trialsLeft": "3 trials left"
+    },
+    "model": {
+      "title": "Model",
+      "placeholder": "Select model",
+      "premium": "Premium",
+      "freeTrials": "5 Free Trials remaining"
+    },
+    "settings": {
+      "duration": "Duration",
+      "resolution": "Resolution"
+    },
+    "buttons": {
+      "create": "Create",
+      "generating": "Generating...",
+      "recreate": "Recreate",
+      "publish": "Publish",
+      "trySamples": "Try Samples"
+    },
+    "status": {
+      "processing": "Processing",
+      "ready": "Ready"
+    },
+    "progress": {
+      "generating": "Generating video...",
+      "generatingVideo": "Generating your video...",
+      "takeFewMinutes": "This may take a few minutes"
+    },
+    "results": {
+      "videoGenerated": "Video generated successfully!",
+      "clickToPlay": "Click to play",
+      "videoWillAppear": "Your video will appear here",
+      "enterPromptToStart": "Enter a prompt and click Create to get started"
+    },
+    "type": {
+      "textToVideo": "Text to Video"
+    },
+    "links": {
+      "userGuide": "User Guide"
+    }
+  },
+  "Img2Video": {
+    "referenceImages": {
+      "title": "Reference Images",
+      "first": "First (Required)",
+      "last": "Last (Optional)",
+      "firstAlt": "First frame",
+      "lastAlt": "Last frame",
+      "uploadFirst": "Upload First Image",
+      "optional": "Last (Optional)"
+    },
+    "prompt": {
+      "title": "Based on the images, describe the content you want to generate",
+      "placeholder": "Describe the motion and transformation you want to see between the images..."
+    },
+    "proMode": {
+      "title": "Pro Mode",
+      "description": "Higher quality, more control"
+    },
+    "model": {
+      "title": "Model",
+      "placeholder": "Select model",
+      "premium": "Premium"
+    },
+    "settings": {
+      "duration": "Duration",
+      "resolution": "Resolution"
+    },
+    "buttons": {
+      "create": "Create",
+      "generating": "Generating...",
+      "recreate": "Recreate",
+      "publish": "Publish",
+      "trySamples": "Try Samples"
+    },
+    "status": {
+      "processingImages": "Processing images...",
+      "creating": "Creating video...",
+      "started": "Video generation started!",
+      "success": "Video generated successfully!",
+      "successDemo": "Video generated successfully! (Demo)",
+      "stillProcessing": "Video is still processing...",
+      "processing": "Processing",
+      "completed": "Completed",
+      "ready": "Ready"
+    },
+    "progress": {
+      "generating": "Generating video...",
+      "generatingVideo": "Generating your video...",
+      "takeFewMinutes": "This may take a few minutes",
+      "complete": "complete"
+    },
+    "results": {
+      "videoWillAppear": "Your video will appear here",
+      "uploadImagesAndPrompt": "Upload images and enter a prompt to get started"
+    },
+    "type": {
+      "imageToVideo": "Image to Video"
+    },
+    "video": {
+      "notSupported": "Your browser does not support the video tag."
+    },
+    "errors": {
+      "invalidFileType": "Invalid file type. Please upload an image file",
+      "fileTooLarge": "File too large. Please select an image smaller than 10MB",
+      "uploadImageAndPrompt": "Please upload a first image and enter a prompt",
+      "failedToCreate": "Failed to create video",
+      "failedToGenerate": "Failed to generate video",
+      "authRequired": "Authentication required. Please log in and try again.",
+      "apiNotFound": "API endpoint not found. Please check your server configuration.",
+      "networkError": "Network error. Please check your connection and server status."
+    },
+    "info": {
+      "largeFileDetected": "Large file detected ({size}MB). Will be compressed automatically."
+    },
+    "links": {
+      "userGuide": "User Guide"
+    }
+  },
+  "Profile": {
+    "title": "Profile",
+    "subtitle": "Manage your account and preferences",
+    "sections": {
+      "profileInfo": "Profile Information",
+      "quickActions": "Quick Actions",
+      "settings": "Settings"
+    },
+    "info": {
+      "joined": "Joined",
+      "plan": "Plan"
+    },
+    "stats": {
+      "imagesGenerated": "Images Generated",
+      "creditsUsed": "Credits Used",
+      "creditsRemaining": "Credits Remaining"
+    },
+    "actions": {
+      "downloadAll": "Download All Images",
+      "myGallery": "My Gallery",
+      "buyCredits": "Buy Credits",
+      "logout": "Logout"
+    },
+    "settings": {
+      "language": "Language & Region",
+      "selectLanguage": "Select Language",
+      "appearance": "Appearance",
+      "darkMode": "Dark Mode",
+      "notifications": "Notifications",
+      "pushNotifications": "Push Notifications",
+      "emailNotifications": "Email Notifications",
+      "privacy": "Privacy & Security",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service"
+    },
+    "buttons": {
+      "edit": "Edit Profile"
+    },
+    "messages": {
+      "languageChanged": "Language changed successfully",
+      "loggedOut": "Logged out successfully",
+      "editProfile": "Edit profile feature coming soon"
+    }
+  }
+}

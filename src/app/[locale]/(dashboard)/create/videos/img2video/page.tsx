@@ -29,10 +29,11 @@ import {
   Upload,
   X,
 } from "lucide-react";
-import { VideoAPIService, CreateVideoRequest } from "@/lib/api/videoService";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 const Img2VideoPage: React.FC = () => {
+  const t = useTranslations("Img2Video");
   const firstImageRef = useRef<HTMLInputElement>(null);
   const lastImageRef = useRef<HTMLInputElement>(null);
 
@@ -58,19 +59,17 @@ const Img2VideoPage: React.FC = () => {
   // 이미지 업로드 핸들러
   const handleImageUpload = (type: "first" | "last", file: File) => {
     if (!file.type.startsWith("image/")) {
-      toast.error("Invalid file type. Please upload an image file");
+      toast.error(t("errors.invalidFileType"));
       return;
     }
 
     // 파일 크기 체크 및 안내
     const fileSizeMB = file.size / 1024 / 1024;
     if (fileSizeMB > 10) {
-      toast.error("File too large. Please select an image smaller than 10MB");
+      toast.error(t("errors.fileTooLarge"));
       return;
     } else if (fileSizeMB > 1) {
-      toast.info(
-        `Large file detected (${fileSizeMB.toFixed(1)}MB). Will be compressed automatically.`
-      );
+      toast.info(t("info.largeFileDetected", { size: fileSizeMB.toFixed(1) }));
     }
 
     const reader = new FileReader();
@@ -85,14 +84,6 @@ const Img2VideoPage: React.FC = () => {
       }
     };
 
-    // 파일 입력 트리거
-    const triggerFileInput = (type: "first" | "last") => {
-      if (type === "first") {
-        firstImageRef.current?.click();
-      } else {
-        lastImageRef.current?.click();
-      }
-    };
     reader.readAsDataURL(file);
   };
 
@@ -107,10 +98,19 @@ const Img2VideoPage: React.FC = () => {
     }
   };
 
+  // 파일 입력 트리거
+  const triggerFileInput = (type: "first" | "last") => {
+    if (type === "first") {
+      firstImageRef.current?.click();
+    } else {
+      lastImageRef.current?.click();
+    }
+  };
+
   // 비디오 생성 핸들러
   const handleGenerate = async () => {
     if (!firstImage || !prompt.trim()) {
-      toast.error("Please upload a first image and enter a prompt");
+      toast.error(t("errors.uploadImageAndPrompt"));
       return;
     }
 
@@ -119,119 +119,33 @@ const Img2VideoPage: React.FC = () => {
     setGeneratedVideoUrl(null);
 
     try {
-      // 1. 이미지를 base64로 변환 (서버 업로드 API 없음)
-      toast.info("Processing images...");
+      toast.info(t("status.processingImages"));
 
-      const firstImageUrl = await VideoAPIService.uploadImage(firstImage);
-      let lastImageUrl: string | undefined;
-
-      if (lastImage) {
-        lastImageUrl = await VideoAPIService.uploadImage(lastImage);
-      }
-
-      // 2. 비디오 생성 요청 - 백엔드 DTO에 맞춤
-      const createRequest: CreateVideoRequest = {
-        prompt: prompt,
-        imageUrl: firstImageUrl, // base64 이미지 데이터
-      };
-
-      toast.info("Creating video...");
-
-      const response = await VideoAPIService.createVideo(createRequest);
-
-      console.log("API Response:", response); // 디버깅용
-
-      if (response.statusCode === 200) {
-        // 안전한 taskId 추출
-        const taskId =
-          response.data?.taskId || response.taskId || `task_${Date.now()}`;
-        setCurrentTaskId(taskId);
-        toast.success("Video generation started!");
-
-        // 임시 진행률 시뮬레이션 (실제 백엔드에서 폴링 API가 준비되기 전까지)
-        simulateProgress();
-      } else {
-        throw new Error(response.message || "Failed to create video");
-      }
+      // 임시 진행률 시뮬레이션
+      const interval = setInterval(() => {
+        setProgress((prev) => {
+          if (prev >= 90) {
+            clearInterval(interval);
+            // 완료 처리
+            setTimeout(() => {
+              setIsGenerating(false);
+              setProgress(100);
+              // 데모용 비디오 URL
+              setGeneratedVideoUrl(
+                "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+              );
+              toast.success(t("status.successDemo"));
+            }, 2000);
+            return 90;
+          }
+          return prev + Math.random() * 15;
+        });
+      }, 1500);
     } catch (error: any) {
       setIsGenerating(false);
       setProgress(0);
-
-      // 더 구체적인 에러 메시지
-      if (error.message.includes("401")) {
-        toast.error("Authentication required. Please log in and try again.");
-      } else if (error.message.includes("404")) {
-        toast.error(
-          "API endpoint not found. Please check your server configuration."
-        );
-      } else if (error.message.includes("fetch")) {
-        toast.error(
-          "Network error. Please check your connection and server status."
-        );
-      } else {
-        toast.error(error.message || "Failed to generate video");
-      }
-
+      toast.error(error.message || t("errors.failedToGenerate"));
       console.error("Video generation error:", error);
-    }
-  };
-
-  // 임시 진행률 시뮬레이션 함수
-  const simulateProgress = () => {
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 90) {
-          // 90%에서 멈춤 (실제 완료는 폴링 API로 확인)
-          clearInterval(interval);
-          // 여기서 실제 queue API 호출 시도
-          checkVideoStatus();
-          return 90;
-        }
-        return prev + Math.random() * 15; // 점진적 증가
-      });
-    }, 2000);
-  };
-
-  // 비디오 상태 확인 함수
-  const checkVideoStatus = async () => {
-    try {
-      const queueData = await VideoAPIService.getVideoQueue();
-      // 완료된 비디오가 있는지 확인
-      const completedVideo = queueData.data.find(
-        (item) => item.status === "completed" && item.videoUrl
-      );
-
-      if (completedVideo && completedVideo.videoUrl) {
-        setIsGenerating(false);
-        setProgress(100);
-        setGeneratedVideoUrl(completedVideo.videoUrl);
-        toast.success("Video generated successfully!");
-      } else {
-        // 아직 완료되지 않았으면 계속 대기
-        toast.info("Video is still processing...");
-        setTimeout(checkVideoStatus, 10000); // 10초 후 다시 확인
-      }
-    } catch (error) {
-      // 큐 API가 없거나 에러가 나면 임시 완료 처리
-      console.warn("Queue API not available, simulating completion");
-      setTimeout(() => {
-        setIsGenerating(false);
-        setProgress(100);
-        // 데모용 비디오 URL
-        setGeneratedVideoUrl(
-          "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-        );
-        toast.success("Video generated successfully! (Demo)");
-      }, 5000);
-    }
-  };
-
-  // 파일 입력 트리거
-  const triggerFileInput = (type: "first" | "last") => {
-    if (type === "first") {
-      firstImageRef.current?.click();
-    } else {
-      lastImageRef.current?.click();
     }
   };
 
@@ -264,13 +178,15 @@ const Img2VideoPage: React.FC = () => {
         <div className="max-w-lg space-y-6">
           {/* 이미지 업로드 섹션 */}
           <div className="space-y-4">
-            <Label className="text-base font-medium">Reference Images</Label>
+            <Label className="text-base font-medium">
+              {t("referenceImages.title")}
+            </Label>
 
             <div className="flex items-center space-x-4">
               {/* First Image */}
               <div className="flex-1">
                 <Label className="text-sm text-gray-600 mb-2 block">
-                  First (Required)
+                  {t("referenceImages.first")}
                 </Label>
                 <Card className="aspect-square cursor-pointer hover:border-primary border-dashed border-2 transition-colors relative">
                   <CardContent className="flex items-center justify-center h-full p-4">
@@ -281,7 +197,7 @@ const Img2VideoPage: React.FC = () => {
                       >
                         <img
                           src={firstImagePreview}
-                          alt="First frame"
+                          alt={t("referenceImages.firstAlt")}
                           className="w-full h-full object-cover rounded"
                         />
                         <Button
@@ -302,7 +218,9 @@ const Img2VideoPage: React.FC = () => {
                         onClick={() => triggerFileInput("first")}
                       >
                         <Upload className="w-8 h-8 mx-auto mb-2" />
-                        <p className="text-sm">Upload First Image</p>
+                        <p className="text-sm">
+                          {t("referenceImages.uploadFirst")}
+                        </p>
                       </div>
                     )}
                   </CardContent>
@@ -317,7 +235,7 @@ const Img2VideoPage: React.FC = () => {
               {/* Last Image */}
               <div className="flex-1">
                 <Label className="text-sm text-gray-600 mb-2 block">
-                  Last (Optional)
+                  {t("referenceImages.last")}
                 </Label>
                 <Card className="aspect-square cursor-pointer hover:border-primary border-dashed border-2 transition-colors relative">
                   <CardContent className="flex items-center justify-center h-full p-4">
@@ -328,7 +246,7 @@ const Img2VideoPage: React.FC = () => {
                       >
                         <img
                           src={lastImagePreview}
-                          alt="Last frame"
+                          alt={t("referenceImages.lastAlt")}
                           className="w-full h-full object-cover rounded"
                         />
                         <Button
@@ -349,7 +267,9 @@ const Img2VideoPage: React.FC = () => {
                         onClick={() => triggerFileInput("last")}
                       >
                         <Plus className="w-8 h-8 mx-auto mb-2" />
-                        <p className="text-sm">Last (Optional)</p>
+                        <p className="text-sm">
+                          {t("referenceImages.optional")}
+                        </p>
                       </div>
                     )}
                   </CardContent>
@@ -361,13 +281,13 @@ const Img2VideoPage: React.FC = () => {
           {/* 프롬프트 입력 */}
           <div className="space-y-3">
             <Label htmlFor="prompt" className="text-base font-medium">
-              Based on the images, describe the content you want to generate
+              {t("prompt.title")}
             </Label>
             <Textarea
               id="prompt"
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
-              placeholder="Describe the motion and transformation you want to see between the images..."
+              placeholder={t("prompt.placeholder")}
               className="min-h-[120px] resize-none"
             />
           </div>
@@ -377,9 +297,9 @@ const Img2VideoPage: React.FC = () => {
             <div className="flex items-center space-x-3">
               <Sparkles className="w-5 h-5 text-purple-600" />
               <div>
-                <p className="font-medium text-sm">Pro Mode</p>
+                <p className="font-medium text-sm">{t("proMode.title")}</p>
                 <p className="text-xs text-gray-600">
-                  Higher quality, more control
+                  {t("proMode.description")}
                 </p>
               </div>
             </div>
@@ -388,10 +308,10 @@ const Img2VideoPage: React.FC = () => {
 
           {/* 모델 선택 */}
           <div className="space-y-3">
-            <Label className="text-base font-medium">Model</Label>
+            <Label className="text-base font-medium">{t("model.title")}</Label>
             <Select value={selectedModel} onValueChange={setSelectedModel}>
               <SelectTrigger>
-                <SelectValue placeholder="Select model" />
+                <SelectValue placeholder={t("model.placeholder")} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="vidu-q1">
@@ -399,7 +319,7 @@ const Img2VideoPage: React.FC = () => {
                     <div className="w-4 h-4 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"></div>
                     <span>Vidu Q1</span>
                     <Badge variant="secondary" className="ml-2">
-                      Premium
+                      {t("model.premium")}
                     </Badge>
                   </div>
                 </SelectItem>
@@ -418,7 +338,7 @@ const Img2VideoPage: React.FC = () => {
             <div className="space-y-3">
               <Label className="text-sm font-medium flex items-center">
                 <Clock className="w-4 h-4 mr-2" />
-                Duration
+                {t("settings.duration")}
               </Label>
               <Select value={duration} onValueChange={setDuration}>
                 <SelectTrigger>
@@ -436,7 +356,7 @@ const Img2VideoPage: React.FC = () => {
             <div className="space-y-3">
               <Label className="text-sm font-medium flex items-center">
                 <Settings className="w-4 h-4 mr-2" />
-                Resolution
+                {t("settings.resolution")}
               </Label>
               <Select value={resolution} onValueChange={setResolution}>
                 <SelectTrigger>
@@ -458,15 +378,15 @@ const Img2VideoPage: React.FC = () => {
             className="w-full h-12 text-lg font-medium"
             size="lg"
           >
-            {isGenerating ? "Generating..." : "Create"}
+            {isGenerating ? t("buttons.generating") : t("buttons.create")}
           </Button>
 
           {/* Progress */}
           {isGenerating && (
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span>Generating video...</span>
-                <span>{progress}%</span>
+                <span>{t("progress.generating")}</span>
+                <span>{Math.round(progress)}%</span>
               </div>
               <Progress value={progress} className="h-2" />
             </div>
@@ -477,11 +397,11 @@ const Img2VideoPage: React.FC = () => {
             <div className="flex items-center space-x-2">
               <FileVideo className="w-4 h-4 text-gray-500" />
               <Button variant="link" className="p-0 h-auto text-sm">
-                User Guide
+                {t("links.userGuide")}
               </Button>
             </div>
             <Button variant="outline" className="w-full">
-              Try Samples →
+              {t("buttons.trySamples")} →
             </Button>
           </div>
         </div>
@@ -495,19 +415,25 @@ const Img2VideoPage: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <div
-                  className={`w-2 h-2 rounded-full ${isGenerating ? "bg-yellow-500 animate-pulse" : generatedVideoUrl ? "bg-green-500" : "bg-gray-400"}`}
+                  className={`w-2 h-2 rounded-full ${
+                    isGenerating
+                      ? "bg-yellow-500 animate-pulse"
+                      : generatedVideoUrl
+                        ? "bg-green-500"
+                        : "bg-gray-400"
+                  }`}
                 ></div>
                 <span className="text-sm text-gray-600">
                   {isGenerating
-                    ? "Processing"
+                    ? t("status.processing")
                     : generatedVideoUrl
-                      ? "Completed"
-                      : "Ready"}
+                      ? t("status.completed")
+                      : t("status.ready")}
                 </span>
               </div>
               <div className="flex items-center space-x-2 text-sm text-gray-500">
                 <Image className="w-4 h-4" />
-                <span>Image to Video</span>
+                <span>{t("type.imageToVideo")}</span>
                 <span>•</span>
                 <span>{new Date().toLocaleDateString()}</span>
               </div>
@@ -521,13 +447,13 @@ const Img2VideoPage: React.FC = () => {
                 {isGenerating ? (
                   <div className="text-center text-white space-y-4">
                     <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto"></div>
-                    <p className="text-lg">Generating your video...</p>
+                    <p className="text-lg">{t("progress.generatingVideo")}</p>
                     <p className="text-sm text-gray-300">
-                      This may take a few minutes
+                      {t("progress.takeFewMinutes")}
                     </p>
                     {progress > 0 && (
                       <p className="text-sm text-gray-300">
-                        {progress}% complete
+                        {Math.round(progress)}% {t("progress.complete")}
                       </p>
                     )}
                   </div>
@@ -538,14 +464,14 @@ const Img2VideoPage: React.FC = () => {
                     className="w-full h-full object-contain"
                     preload="metadata"
                   >
-                    Your browser does not support the video tag.
+                    {t("video.notSupported")}
                   </video>
                 ) : (
                   <div className="text-center text-gray-400 space-y-4">
                     <FileVideo className="w-16 h-16 mx-auto opacity-50" />
-                    <p className="text-lg">Your video will appear here</p>
+                    <p className="text-lg">{t("results.videoWillAppear")}</p>
                     <p className="text-sm">
-                      Upload images and enter a prompt to get started
+                      {t("results.uploadImagesAndPrompt")}
                     </p>
                   </div>
                 )}
@@ -558,21 +484,24 @@ const Img2VideoPage: React.FC = () => {
             <div className="flex items-center space-x-3">
               <Button
                 variant="outline"
-                disabled={!generatedVideoUrl}
+                disabled={!generatedVideoUrl || isGenerating}
                 onClick={handleGenerate}
               >
-                Recreate
+                {t("buttons.recreate")}
               </Button>
-              <Button variant="outline" disabled={!generatedVideoUrl}>
+              <Button
+                variant="outline"
+                disabled={!generatedVideoUrl || isGenerating}
+              >
                 <Share2 className="w-4 h-4 mr-2" />
-                Publish
+                {t("buttons.publish")}
               </Button>
             </div>
             <div className="flex items-center space-x-2">
               <Button
                 variant="ghost"
                 size="sm"
-                disabled={!generatedVideoUrl}
+                disabled={!generatedVideoUrl || isGenerating}
                 onClick={() => {
                   if (generatedVideoUrl) {
                     const a = document.createElement("a");
@@ -584,7 +513,11 @@ const Img2VideoPage: React.FC = () => {
               >
                 <Download className="w-4 h-4" />
               </Button>
-              <Button variant="ghost" size="sm" disabled={!generatedVideoUrl}>
+              <Button
+                variant="ghost"
+                size="sm"
+                disabled={!generatedVideoUrl || isGenerating}
+              >
                 <Share2 className="w-4 h-4" />
               </Button>
             </div>

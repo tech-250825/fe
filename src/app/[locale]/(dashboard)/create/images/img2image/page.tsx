@@ -29,8 +29,10 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 const Img2ImagePage: React.FC = () => {
+  const t = useTranslations("Img2Image");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // State
@@ -52,18 +54,16 @@ const Img2ImagePage: React.FC = () => {
   // 이미지 업로드 핸들러
   const handleImageUpload = (file: File) => {
     if (!file.type.startsWith("image/")) {
-      toast.error("Invalid file type. Please upload an image file");
+      toast.error(t("errors.invalidFileType"));
       return;
     }
 
     const fileSizeMB = file.size / 1024 / 1024;
     if (fileSizeMB > 10) {
-      toast.error("File too large. Please select an image smaller than 10MB");
+      toast.error(t("errors.fileTooLarge"));
       return;
     } else if (fileSizeMB > 1) {
-      toast.info(
-        `Large file detected (${fileSizeMB.toFixed(1)}MB). Will be compressed automatically.`
-      );
+      toast.info(t("info.largeFileDetected", { size: fileSizeMB.toFixed(1) }));
     }
 
     const reader = new FileReader();
@@ -89,7 +89,7 @@ const Img2ImagePage: React.FC = () => {
   // 이미지 생성 핸들러
   const handleGenerate = async () => {
     if (!referenceImage || !prompt.trim()) {
-      toast.error("Please upload a reference image and enter a prompt");
+      toast.error(t("errors.uploadImageAndPrompt"));
       return;
     }
 
@@ -98,7 +98,7 @@ const Img2ImagePage: React.FC = () => {
     setGeneratedImages([]);
 
     try {
-      toast.info("Creating images...");
+      toast.info(t("status.creating"));
 
       // 임시 진행률 시뮬레이션
       const interval = setInterval(() => {
@@ -117,7 +117,7 @@ const Img2ImagePage: React.FC = () => {
                 "https://images.unsplash.com/photo-1516339901601-2e1b62dc0c45?w=512&h=512&fit=crop",
               ];
               setGeneratedImages(demoImages);
-              toast.success("Images generated successfully! (Demo)");
+              toast.success(t("status.success"));
             }, 2000);
             return 90;
           }
@@ -127,7 +127,7 @@ const Img2ImagePage: React.FC = () => {
     } catch (error: any) {
       setIsGenerating(false);
       setProgress(0);
-      toast.error(error.message || "Failed to generate images");
+      toast.error(error.message || t("errors.failedToGenerate"));
     }
   };
 
@@ -150,7 +150,9 @@ const Img2ImagePage: React.FC = () => {
         <div className="max-w-lg space-y-6">
           {/* 참조 이미지 업로드 */}
           <div className="space-y-3">
-            <Label className="text-base font-medium">Reference Image</Label>
+            <Label className="text-base font-medium">
+              {t("referenceImage.title")}
+            </Label>
             <Card className="aspect-square cursor-pointer hover:border-primary border-dashed border-2 transition-colors relative">
               <CardContent className="flex items-center justify-center h-full p-4">
                 {referenceImagePreview ? (
@@ -160,7 +162,7 @@ const Img2ImagePage: React.FC = () => {
                   >
                     <img
                       src={referenceImagePreview}
-                      alt="Reference image"
+                      alt={t("referenceImage.alt")}
                       className="w-full h-full object-cover rounded"
                     />
                     <Button
@@ -182,9 +184,9 @@ const Img2ImagePage: React.FC = () => {
                   >
                     <Upload className="w-12 h-12 mx-auto mb-4" />
                     <p className="text-lg font-medium mb-2">
-                      Upload Reference Image
+                      {t("referenceImage.upload")}
                     </p>
-                    <p className="text-sm">Click to browse or drag and drop</p>
+                    <p className="text-sm">{t("referenceImage.instruction")}</p>
                   </div>
                 )}
               </CardContent>
@@ -194,13 +196,13 @@ const Img2ImagePage: React.FC = () => {
           {/* 프롬프트 입력 */}
           <div className="space-y-3">
             <Label htmlFor="prompt" className="text-base font-medium">
-              Describe how you want to modify the image
+              {t("prompt.title")}
             </Label>
             <Textarea
               id="prompt"
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
-              placeholder="Transform this into a fantasy landscape with magical elements..."
+              placeholder={t("prompt.placeholder")}
               className="min-h-[120px] resize-none"
             />
           </div>
@@ -212,13 +214,13 @@ const Img2ImagePage: React.FC = () => {
                 htmlFor="negative-prompt"
                 className="text-base font-medium"
               >
-                Negative Prompt (What to avoid)
+                {t("negativePrompt.title")}
               </Label>
               <Textarea
                 id="negative-prompt"
                 value={negativePrompt}
                 onChange={(e) => setNegativePrompt(e.target.value)}
-                placeholder="blurry, low quality, distorted..."
+                placeholder={t("negativePrompt.placeholder")}
                 className="min-h-[80px] resize-none"
               />
             </div>
@@ -228,7 +230,7 @@ const Img2ImagePage: React.FC = () => {
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <Label className="text-base font-medium">
-                Transformation Strength
+                {t("strength.title")}
               </Label>
               <span className="text-sm text-gray-500">
                 {(strength[0] * 100).toFixed(0)}%
@@ -243,8 +245,8 @@ const Img2ImagePage: React.FC = () => {
               className="w-full"
             />
             <div className="flex justify-between text-xs text-gray-500">
-              <span>More similar</span>
-              <span>More creative</span>
+              <span>{t("strength.moreSimilar")}</span>
+              <span>{t("strength.moreCreative")}</span>
             </div>
           </div>
 
@@ -253,8 +255,10 @@ const Img2ImagePage: React.FC = () => {
             <div className="flex items-center space-x-3">
               <Sparkles className="w-5 h-5 text-purple-600" />
               <div>
-                <p className="font-medium text-sm">Pro Mode</p>
-                <p className="text-xs text-gray-600">Advanced controls</p>
+                <p className="font-medium text-sm">{t("proMode.title")}</p>
+                <p className="text-xs text-gray-600">
+                  {t("proMode.description")}
+                </p>
               </div>
             </div>
             <Switch checked={proMode} onCheckedChange={setProMode} />
@@ -262,10 +266,10 @@ const Img2ImagePage: React.FC = () => {
 
           {/* 모델 선택 */}
           <div className="space-y-3">
-            <Label className="text-base font-medium">Model</Label>
+            <Label className="text-base font-medium">{t("model.title")}</Label>
             <Select value={selectedModel} onValueChange={setSelectedModel}>
               <SelectTrigger>
-                <SelectValue placeholder="Select model" />
+                <SelectValue placeholder={t("model.placeholder")} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="stable-diffusion">
@@ -273,7 +277,7 @@ const Img2ImagePage: React.FC = () => {
                     <div className="w-4 h-4 bg-gradient-to-r from-orange-500 to-red-500 rounded-full"></div>
                     <span>Stable Diffusion</span>
                     <Badge variant="secondary" className="ml-2">
-                      Popular
+                      {t("model.popular")}
                     </Badge>
                   </div>
                 </SelectItem>
@@ -282,7 +286,7 @@ const Img2ImagePage: React.FC = () => {
                     <div className="w-4 h-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"></div>
                     <span>Midjourney</span>
                     <Badge variant="secondary" className="ml-2">
-                      Premium
+                      {t("model.premium")}
                     </Badge>
                   </div>
                 </SelectItem>
@@ -301,7 +305,7 @@ const Img2ImagePage: React.FC = () => {
             <div className="space-y-3">
               <Label className="text-sm font-medium flex items-center">
                 <Grid3X3 className="w-4 h-4 mr-2" />
-                Size
+                {t("settings.size")}
               </Label>
               <Select value={imageSize} onValueChange={setImageSize}>
                 <SelectTrigger>
@@ -318,17 +322,19 @@ const Img2ImagePage: React.FC = () => {
             <div className="space-y-3">
               <Label className="text-sm font-medium flex items-center">
                 <Palette className="w-4 h-4 mr-2" />
-                Style
+                {t("settings.style")}
               </Label>
               <Select value={style} onValueChange={setStyle}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="natural">Natural</SelectItem>
-                  <SelectItem value="vivid">Vivid</SelectItem>
-                  <SelectItem value="cinematic">Cinematic</SelectItem>
-                  <SelectItem value="anime">Anime</SelectItem>
+                  <SelectItem value="natural">{t("style.natural")}</SelectItem>
+                  <SelectItem value="vivid">{t("style.vivid")}</SelectItem>
+                  <SelectItem value="cinematic">
+                    {t("style.cinematic")}
+                  </SelectItem>
+                  <SelectItem value="anime">{t("style.anime")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -339,15 +345,17 @@ const Img2ImagePage: React.FC = () => {
             <div className="space-y-3">
               <Label className="text-sm font-medium flex items-center">
                 <Settings className="w-4 h-4 mr-2" />
-                Quality
+                {t("settings.quality")}
               </Label>
               <Select value="standard" onValueChange={() => {}}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="standard">Standard</SelectItem>
-                  <SelectItem value="hd">HD</SelectItem>
+                  <SelectItem value="standard">
+                    {t("quality.standard")}
+                  </SelectItem>
+                  <SelectItem value="hd">{t("quality.hd")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -360,14 +368,14 @@ const Img2ImagePage: React.FC = () => {
             className="w-full h-12 text-lg font-medium"
             size="lg"
           >
-            {isGenerating ? "Generating..." : "Create"}
+            {isGenerating ? t("buttons.generating") : t("buttons.create")}
           </Button>
 
           {/* Progress */}
           {isGenerating && (
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span>Generating images...</span>
+                <span>{t("progress.generating")}</span>
                 <span>{Math.round(progress)}%</span>
               </div>
               <Progress value={progress} className="h-2" />
@@ -379,11 +387,11 @@ const Img2ImagePage: React.FC = () => {
             <div className="flex items-center space-x-2">
               <FileImage className="w-4 h-4 text-gray-500" />
               <Button variant="link" className="p-0 h-auto text-sm">
-                User Guide
+                {t("links.userGuide")}
               </Button>
             </div>
             <Button variant="outline" className="w-full">
-              Try Samples →
+              {t("buttons.trySamples")} →
             </Button>
           </div>
         </div>
@@ -401,15 +409,15 @@ const Img2ImagePage: React.FC = () => {
                 ></div>
                 <span className="text-sm text-gray-600">
                   {isGenerating
-                    ? "Processing"
+                    ? t("status.processing")
                     : generatedImages.length > 0
-                      ? "Completed"
-                      : "Ready"}
+                      ? t("status.completed")
+                      : t("status.ready")}
                 </span>
               </div>
               <div className="flex items-center space-x-2 text-sm text-gray-500">
                 <ImageIcon className="w-4 h-4" />
-                <span>Image to Image</span>
+                <span>{t("type.imageToImage")}</span>
                 <span>•</span>
                 <span>{new Date().toLocaleDateString()}</span>
               </div>
@@ -424,14 +432,14 @@ const Img2ImagePage: React.FC = () => {
                   <div className="text-center space-y-4">
                     <div className="w-16 h-16 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin mx-auto"></div>
                     <p className="text-lg text-gray-700">
-                      Generating your images...
+                      {t("progress.generatingImages")}
                     </p>
                     <p className="text-sm text-gray-500">
-                      This may take a few moments
+                      {t("progress.takeFewMoments")}
                     </p>
                     {progress > 0 && (
                       <p className="text-sm text-gray-500">
-                        {Math.round(progress)}% complete
+                        {Math.round(progress)}% {t("progress.complete")}
                       </p>
                     )}
                   </div>
@@ -443,7 +451,9 @@ const Img2ImagePage: React.FC = () => {
                       <div key={index} className="relative group">
                         <img
                           src={imageUrl}
-                          alt={`Generated image ${index + 1}`}
+                          alt={t("results.generatedImage", {
+                            number: index + 1,
+                          })}
                           className="w-full h-full object-cover rounded-lg hover:scale-105 transition-transform duration-300"
                         />
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100">
@@ -474,10 +484,10 @@ const Img2ImagePage: React.FC = () => {
                   <div className="text-center text-gray-400 space-y-4">
                     <FileImage className="w-16 h-16 mx-auto opacity-50" />
                     <p className="text-lg">
-                      Your modified images will appear here
+                      {t("results.modifiedImagesWillAppear")}
                     </p>
                     <p className="text-sm">
-                      Upload an image and enter a prompt to get started
+                      {t("results.uploadImageAndPrompt")}
                     </p>
                   </div>
                 </div>
@@ -493,14 +503,14 @@ const Img2ImagePage: React.FC = () => {
                 disabled={generatedImages.length === 0 || isGenerating}
                 onClick={handleGenerate}
               >
-                Recreate
+                {t("buttons.recreate")}
               </Button>
               <Button
                 variant="outline"
                 disabled={generatedImages.length === 0 || isGenerating}
               >
                 <Share2 className="w-4 h-4 mr-2" />
-                Publish
+                {t("buttons.publish")}
               </Button>
             </div>
             <div className="flex items-center space-x-2">
