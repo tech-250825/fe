@@ -26,8 +26,11 @@ import {
   Palette,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 const Text2ImagePage: React.FC = () => {
+  const t = useTranslations("Text2Image");
+
   // State
   const [prompt, setPrompt] = useState("");
   const [negativePrompt, setNegativePrompt] = useState("");
@@ -43,7 +46,7 @@ const Text2ImagePage: React.FC = () => {
   // 이미지 생성 핸들러
   const handleGenerate = async () => {
     if (!prompt.trim()) {
-      toast.error("Please enter a prompt");
+      toast.error(t("errors.enterPrompt"));
       return;
     }
 
@@ -52,7 +55,7 @@ const Text2ImagePage: React.FC = () => {
     setGeneratedImages([]);
 
     try {
-      toast.info("Creating images...");
+      toast.info(t("status.creating"));
 
       // 임시 진행률 시뮬레이션
       const interval = setInterval(() => {
@@ -71,7 +74,7 @@ const Text2ImagePage: React.FC = () => {
                 "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=512&h=512&fit=crop",
               ];
               setGeneratedImages(demoImages);
-              toast.success("Images generated successfully! (Demo)");
+              toast.success(t("status.success"));
             }, 2000);
             return 90;
           }
@@ -81,7 +84,7 @@ const Text2ImagePage: React.FC = () => {
     } catch (error: any) {
       setIsGenerating(false);
       setProgress(0);
-      toast.error(error.message || "Failed to generate images");
+      toast.error(error.message || t("errors.failedToGenerate"));
     }
   };
 
@@ -93,13 +96,13 @@ const Text2ImagePage: React.FC = () => {
           {/* 프롬프트 입력 */}
           <div className="space-y-3">
             <Label htmlFor="prompt" className="text-base font-medium">
-              Describe the image you want to generate
+              {t("prompt.title")}
             </Label>
             <Textarea
               id="prompt"
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
-              placeholder="A beautiful sunset over mountains, digital art style..."
+              placeholder={t("prompt.placeholder")}
               className="min-h-[120px] resize-none"
             />
           </div>
@@ -111,13 +114,13 @@ const Text2ImagePage: React.FC = () => {
                 htmlFor="negative-prompt"
                 className="text-base font-medium"
               >
-                Negative Prompt (What to avoid)
+                {t("negativePrompt.title")}
               </Label>
               <Textarea
                 id="negative-prompt"
                 value={negativePrompt}
                 onChange={(e) => setNegativePrompt(e.target.value)}
-                placeholder="blurry, low quality, distorted..."
+                placeholder={t("negativePrompt.placeholder")}
                 className="min-h-[80px] resize-none"
               />
             </div>
@@ -128,8 +131,10 @@ const Text2ImagePage: React.FC = () => {
             <div className="flex items-center space-x-3">
               <Sparkles className="w-5 h-5 text-purple-600" />
               <div>
-                <p className="font-medium text-sm">Pro Mode</p>
-                <p className="text-xs text-gray-600">Advanced controls</p>
+                <p className="font-medium text-sm">{t("proMode.title")}</p>
+                <p className="text-xs text-gray-600">
+                  {t("proMode.description")}
+                </p>
               </div>
             </div>
             <Switch checked={proMode} onCheckedChange={setProMode} />
@@ -137,10 +142,10 @@ const Text2ImagePage: React.FC = () => {
 
           {/* 모델 선택 */}
           <div className="space-y-3">
-            <Label className="text-base font-medium">Model</Label>
+            <Label className="text-base font-medium">{t("model.title")}</Label>
             <Select value={selectedModel} onValueChange={setSelectedModel}>
               <SelectTrigger>
-                <SelectValue placeholder="Select model" />
+                <SelectValue placeholder={t("model.placeholder")} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="dalle-3">
@@ -148,7 +153,7 @@ const Text2ImagePage: React.FC = () => {
                     <div className="w-4 h-4 bg-gradient-to-r from-green-500 to-blue-500 rounded-full"></div>
                     <span>DALL-E 3</span>
                     <Badge variant="secondary" className="ml-2">
-                      Latest
+                      {t("model.latest")}
                     </Badge>
                   </div>
                 </SelectItem>
@@ -163,7 +168,7 @@ const Text2ImagePage: React.FC = () => {
                     <div className="w-4 h-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"></div>
                     <span>Midjourney</span>
                     <Badge variant="secondary" className="ml-2">
-                      Premium
+                      {t("model.premium")}
                     </Badge>
                   </div>
                 </SelectItem>
@@ -176,7 +181,7 @@ const Text2ImagePage: React.FC = () => {
             <div className="space-y-3">
               <Label className="text-sm font-medium flex items-center">
                 <Grid3X3 className="w-4 h-4 mr-2" />
-                Size
+                {t("settings.size")}
               </Label>
               <Select value={imageSize} onValueChange={setImageSize}>
                 <SelectTrigger>
@@ -186,10 +191,10 @@ const Text2ImagePage: React.FC = () => {
                   <SelectItem value="512x512">512×512</SelectItem>
                   <SelectItem value="1024x1024">1024×1024</SelectItem>
                   <SelectItem value="1024x1792">
-                    1024×1792 (Portrait)
+                    1024×1792 ({t("settings.portrait")})
                   </SelectItem>
                   <SelectItem value="1792x1024">
-                    1792×1024 (Landscape)
+                    1792×1024 ({t("settings.landscape")})
                   </SelectItem>
                 </SelectContent>
               </Select>
@@ -198,17 +203,21 @@ const Text2ImagePage: React.FC = () => {
             <div className="space-y-3">
               <Label className="text-sm font-medium flex items-center">
                 <Palette className="w-4 h-4 mr-2" />
-                Style
+                {t("settings.style")}
               </Label>
               <Select value={style} onValueChange={setStyle}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="natural">Natural</SelectItem>
-                  <SelectItem value="vivid">Vivid</SelectItem>
-                  <SelectItem value="artistic">Artistic</SelectItem>
-                  <SelectItem value="photographic">Photographic</SelectItem>
+                  <SelectItem value="natural">{t("style.natural")}</SelectItem>
+                  <SelectItem value="vivid">{t("style.vivid")}</SelectItem>
+                  <SelectItem value="artistic">
+                    {t("style.artistic")}
+                  </SelectItem>
+                  <SelectItem value="photographic">
+                    {t("style.photographic")}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -219,15 +228,17 @@ const Text2ImagePage: React.FC = () => {
             <div className="space-y-3">
               <Label className="text-sm font-medium flex items-center">
                 <Settings className="w-4 h-4 mr-2" />
-                Quality
+                {t("settings.quality")}
               </Label>
               <Select value={quality} onValueChange={setQuality}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="standard">Standard</SelectItem>
-                  <SelectItem value="hd">HD</SelectItem>
+                  <SelectItem value="standard">
+                    {t("quality.standard")}
+                  </SelectItem>
+                  <SelectItem value="hd">{t("quality.hd")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -240,14 +251,14 @@ const Text2ImagePage: React.FC = () => {
             className="w-full h-12 text-lg font-medium"
             size="lg"
           >
-            {isGenerating ? "Generating..." : "Create"}
+            {isGenerating ? t("buttons.generating") : t("buttons.create")}
           </Button>
 
           {/* Progress */}
           {isGenerating && (
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span>Generating images...</span>
+                <span>{t("progress.generating")}</span>
                 <span>{Math.round(progress)}%</span>
               </div>
               <Progress value={progress} className="h-2" />
@@ -259,11 +270,11 @@ const Text2ImagePage: React.FC = () => {
             <div className="flex items-center space-x-2">
               <FileImage className="w-4 h-4 text-gray-500" />
               <Button variant="link" className="p-0 h-auto text-sm">
-                User Guide
+                {t("links.userGuide")}
               </Button>
             </div>
             <Button variant="outline" className="w-full">
-              Try Samples →
+              {t("buttons.trySamples")} →
             </Button>
           </div>
         </div>
@@ -281,15 +292,15 @@ const Text2ImagePage: React.FC = () => {
                 ></div>
                 <span className="text-sm text-gray-600">
                   {isGenerating
-                    ? "Processing"
+                    ? t("status.processing")
                     : generatedImages.length > 0
-                      ? "Completed"
-                      : "Ready"}
+                      ? t("status.completed")
+                      : t("status.ready")}
                 </span>
               </div>
               <div className="flex items-center space-x-2 text-sm text-gray-500">
                 <ImageIcon className="w-4 h-4" />
-                <span>Text to Image</span>
+                <span>{t("type.textToImage")}</span>
                 <span>•</span>
                 <span>{new Date().toLocaleDateString()}</span>
               </div>
@@ -304,14 +315,14 @@ const Text2ImagePage: React.FC = () => {
                   <div className="text-center space-y-4">
                     <div className="w-16 h-16 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin mx-auto"></div>
                     <p className="text-lg text-gray-700">
-                      Generating your images...
+                      {t("progress.generatingImages")}
                     </p>
                     <p className="text-sm text-gray-500">
-                      This may take a few moments
+                      {t("progress.takeFewMoments")}
                     </p>
                     {progress > 0 && (
                       <p className="text-sm text-gray-500">
-                        {Math.round(progress)}% complete
+                        {Math.round(progress)}% {t("progress.complete")}
                       </p>
                     )}
                   </div>
@@ -323,7 +334,9 @@ const Text2ImagePage: React.FC = () => {
                       <div key={index} className="relative group">
                         <img
                           src={imageUrl}
-                          alt={`Generated image ${index + 1}`}
+                          alt={t("results.generatedImage", {
+                            number: index + 1,
+                          })}
                           className="w-full h-full object-cover rounded-lg hover:scale-105 transition-transform duration-300"
                         />
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100">
@@ -353,10 +366,8 @@ const Text2ImagePage: React.FC = () => {
                 <div className="flex items-center justify-center h-full">
                   <div className="text-center text-gray-400 space-y-4">
                     <FileImage className="w-16 h-16 mx-auto opacity-50" />
-                    <p className="text-lg">Your images will appear here</p>
-                    <p className="text-sm">
-                      Enter a prompt and click Create to get started
-                    </p>
+                    <p className="text-lg">{t("results.imagesWillAppear")}</p>
+                    <p className="text-sm">{t("results.enterPromptToStart")}</p>
                   </div>
                 </div>
               )}
@@ -371,11 +382,11 @@ const Text2ImagePage: React.FC = () => {
                 disabled={generatedImages.length === 0}
                 onClick={handleGenerate}
               >
-                Recreate
+                {t("buttons.recreate")}
               </Button>
               <Button variant="outline" disabled={generatedImages.length === 0}>
                 <Share2 className="w-4 h-4 mr-2" />
-                Publish
+                {t("buttons.publish")}
               </Button>
             </div>
             <div className="flex items-center space-x-2">

@@ -3,9 +3,14 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Play } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const HomePage: React.FC = () => {
-  const bannerTexts = ["Create Animation", "Create Images"];
+  const t = useTranslations("HomePage");
+
+  // 번역된 배너 텍스트
+  const bannerTexts = [t("banner.createAnimation"), t("banner.createImages")];
+
   const [currentBannerTextIndex, setCurrentBannerTextIndex] = useState(0);
 
   useEffect(() => {
@@ -39,7 +44,7 @@ const HomePage: React.FC = () => {
       {/* Video Grid */}
       <section>
         <h3 className="text-3xl font-bold mb-8 text-black">
-          Explore Animations
+          {t("explore.title")}
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {Array.from({ length: 8 }).map((_, index) => (
@@ -50,7 +55,7 @@ const HomePage: React.FC = () => {
               <div className="relative w-full h-48">
                 <Image
                   src={`https://images.unsplash.com/photo-1611162617213-6d221bde6760?w=400&h=225&fit=crop&q=80&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format`}
-                  alt={`Video Thumbnail ${index + 1}`}
+                  alt={t("explore.videoThumbnail", { number: index + 1 })}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
                 />
@@ -60,9 +65,11 @@ const HomePage: React.FC = () => {
               </div>
               <div className="p-5">
                 <h4 className="font-semibold text-xl mb-2 text-black">
-                  Awesome Animation {index + 1}
+                  {t("explore.animationTitle", { number: index + 1 })}
                 </h4>
-                <p className="text-sm text-gray-600">AI Generated • 2:30</p>
+                <p className="text-sm text-gray-600">
+                  {t("explore.aiGenerated")} • 2:30
+                </p>
               </div>
             </div>
           ))}

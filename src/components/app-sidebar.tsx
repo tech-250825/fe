@@ -34,44 +34,46 @@ import {
 } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/useAuth";
-import { usePathname } from "next/navigation";
-
-// 네비게이션 메뉴 아이템들
-const navigationItems = [
-  {
-    title: "Home",
-    url: "/home",
-    icon: Home,
-  },
-  {
-    title: "Profile",
-    url: "/profile",
-    icon: Compass,
-  },
-];
-
-// 도구 메뉴 아이템들
-const toolItems = [
-  {
-    title: "Create Images",
-    url: "/create/images/text2image",
-    icon: ImageIcon,
-  },
-  {
-    title: "Create Videos",
-    url: "/create/videos/text2video",
-    icon: Video,
-  },
-  {
-    title: "Train Characters",
-    url: "/create/characters",
-    icon: User,
-  },
-];
+import { usePathname } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 
 export function AppSidebar() {
+  const t = useTranslations("Sidebar");
   const { isLoggedIn, userName, isLoading, handleLogout } = useAuth();
   const pathname = usePathname();
+
+  // 네비게이션 메뉴 아이템들
+  const navigationItems = [
+    {
+      title: "Home",
+      url: "/home",
+      icon: Home,
+    },
+    {
+      title: "Explore",
+      url: "/explore/recommendations",
+      icon: Compass,
+    },
+  ];
+
+  // 도구 메뉴 아이템들 (번역 적용)
+  const toolItems = [
+    {
+      title: t("tools.createImages"),
+      url: "/create/images/text2image",
+      icon: ImageIcon,
+    },
+    {
+      title: t("tools.createVideos"),
+      url: "/create/videos/text2video",
+      icon: Video,
+    },
+    {
+      title: t("tools.trainCharacters"),
+      url: "/create/characters",
+      icon: User,
+    },
+  ];
 
   // 사용자 이니셜 생성 함수
   const getUserInitials = (name: string) => {
@@ -127,7 +129,7 @@ export function AppSidebar() {
 
         {/* 도구 그룹 */}
         <SidebarGroup>
-          <SidebarGroupLabel>TOOLS</SidebarGroupLabel>
+          <SidebarGroupLabel>{t("groups.tools")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {toolItems.map((item) => (
@@ -169,7 +171,7 @@ export function AppSidebar() {
                     <div className="flex flex-col items-start text-left">
                       <span className="font-semibold text-sm">{userName}</span>
                       <span className="text-xs text-sidebar-foreground/70">
-                        Logged in
+                        {t("user.loggedIn")}
                       </span>
                     </div>
                     <ChevronUp className="ml-auto" />
@@ -181,14 +183,14 @@ export function AppSidebar() {
                 >
                   <DropdownMenuItem>
                     <Settings className="w-4 h-4 mr-2" />
-                    <span>Settings</span>
+                    <span>{t("user.settings")}</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={handleLogout}
                     className="text-red-600"
                   >
                     <LogOut className="w-4 h-4 mr-2" />
-                    <span>Logout</span>
+                    <span>{t("user.logout")}</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -204,9 +206,11 @@ export function AppSidebar() {
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col items-start text-left">
-                  <span className="font-semibold text-sm">Guest</span>
+                  <span className="font-semibold text-sm">
+                    {t("user.guest")}
+                  </span>
                   <span className="text-xs text-sidebar-foreground/70">
-                    Not logged in
+                    {t("user.notLoggedIn")}
                   </span>
                 </div>
               </div>
@@ -216,7 +220,7 @@ export function AppSidebar() {
                   className="flex items-center justify-center bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90"
                 >
                   <LogIn className="w-4 h-4 mr-2" />
-                  <span>Login</span>
+                  <span>{t("user.login")}</span>
                 </a>
               </SidebarMenuButton>
             </SidebarMenuItem>
