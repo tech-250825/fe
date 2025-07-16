@@ -50,8 +50,8 @@ export function AppSidebar() {
       icon: Home,
     },
     {
-      title: "Explore",
-      url: "/explore/recommendations",
+      title: "Profile",
+      url: "/profile",
       icon: Compass,
     },
   ];
@@ -66,6 +66,11 @@ export function AppSidebar() {
     {
       title: t("tools.createVideos"),
       url: "/create/videos/text2video",
+      icon: Video,
+    },
+    {
+      title: t("tools.create"),
+      url: "/create",
       icon: Video,
     },
     {
