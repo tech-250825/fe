@@ -60,17 +60,12 @@ export function AppSidebar() {
   const toolItems = [
     {
       title: t("tools.createImages"),
-      url: "/create/images/text2image",
+      url: "/create/images",
       icon: ImageIcon,
     },
     {
       title: t("tools.createVideos"),
-      url: "/create/videos/text2video",
-      icon: Video,
-    },
-    {
-      title: t("tools.create"),
-      url: "/create",
+      url: "/create/videos",
       icon: Video,
     },
     {

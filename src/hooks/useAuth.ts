@@ -2,9 +2,19 @@
 
 import { useState, useEffect } from "react";
 
+interface UserProfile {
+  id: number;
+  nickname: string;
+  profileImage: string;
+  credit: number;
+  sharedImageCount: number;
+}
+
 export const useAuth = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState<string>("");
+  const [memberId, setMemberId] = useState<string | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // 쿠키에서 값을 읽는 함수
@@ -51,6 +61,9 @@ export const useAuth = () => {
       // 상태 초기화 및 페이지 이동
       setIsLoggedIn(false);
       setUserName("");
+      setMemberId(null);
+      setUserProfile(null);
+      setUserProfile(null);
       window.location.href = "/home";
     } catch (error) {
       console.error("로그아웃 실패:", error);
@@ -67,13 +80,16 @@ export const useAuth = () => {
 
       if (!res.ok) throw new Error("Not logged in");
 
-      const data = await res.json();
+      const data: UserProfile = await res.json();
       setIsLoggedIn(true);
       setUserName(data.nickname || "User");
+      setMemberId(data.id.toString());
+      setUserProfile(data);
     } catch (err) {
       console.warn("User not logged in:", err);
       setIsLoggedIn(false);
       setUserName("");
+      setMemberId(null);
     } finally {
       setIsLoading(false);
     }
@@ -97,6 +113,8 @@ export const useAuth = () => {
   return {
     isLoggedIn,
     userName,
+    memberId,
+    userProfile,
     isLoading,
     handleLogout,
     fetchProfile,
