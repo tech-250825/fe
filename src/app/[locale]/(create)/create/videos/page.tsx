@@ -7,12 +7,14 @@ import {
   Plus,
   Camera,
   ChevronDown,
+  ArrowUpRight,
   ArrowUp,
   Loader2,
   Sparkles,
   Check,
   Wifi,
   WifiOff,
+  Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,6 +27,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/hooks/useAuth";
 import { useSSE } from "@/components/SSEProvider";
+import { ModernVideoCard } from "@/components/ModernVideoCard";
 
 export default function CreatePage() {
   const { isLoggedIn, userName, memberId } = useAuth();
@@ -35,14 +38,59 @@ export default function CreatePage() {
   const [taskList, setTaskList] = useState([]);
   const [lastFetchTime, setLastFetchTime] = useState("");
 
-  const [selectedType, setSelectedType] = useState("image");
-  const [selectedModel, setSelectedModel] = useState("photon");
-  const [selectedRatio, setSelectedRatio] = useState("16:9");
+  // 모델 관련 상태
+  const [availableModels, setAvailableModels] = useState([]);
+  const [selectedModel, setSelectedModel] = useState("");
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [tempModel, setTempModel] = useState("");
 
-  const [tempType, setTempType] = useState(selectedType);
-  const [tempModel, setTempModel] = useState(selectedModel);
-  const [tempRatio, setTempRatio] = useState(selectedRatio);
+  // 현재 RadioGroup 대신 선택된 모델 객체 전체를 저장
+  const [selectedModelData, setSelectedModelData] = useState(null);
+  const [tempSelectedModel, setTempSelectedModel] = useState(null);
+
+  const [selectedTab, setSelectedTab] = useState("STYLE"); // 또는 "CHARACTER"
+  const [styleModels, setStyleModels] = useState([]);
+  const [characterModels, setCharacterModels] = useState([]);
+
+  //   const [selectedType, setSelectedType] = useState("image");
+  //   const [selectedModel, setSelectedModel] = useState("photon");
+  //   const [selectedRatio, setSelectedRatio] = useState("16:9");
+  //   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+
+  //   const [tempType, setTempType] = useState(selectedType);
+  //   const [tempModel, setTempModel] = useState(selectedModel);
+  //   const [tempRatio, setTempRatio] = useState(selectedRatio);
+
+  // 모델 목록 불러오기
+  // 두 개의 API를 모두 호출하도록 변경
+  const fetchAvailableModels = async () => {
+    try {
+      // STYLE 모델 조회
+      const styleResponse = await fetch(
+        "http://localhost:8090/api/lora?mediaType=VIDEO&styleType=STYLE",
+        { credentials: "include" }
+      );
+      const styleModels = await styleResponse.json();
+      setStyleModels(styleModels);
+
+      // CHARACTER 모델 조회
+      const characterResponse = await fetch(
+        "http://localhost:8090/api/lora?mediaType=VIDEO&styleType=CHARACTER",
+        { credentials: "include" }
+      );
+      const characterModels = await characterResponse.json();
+      setCharacterModels(characterModels);
+
+      // 전체 모델 목록 설정 (현재 탭에 따라)
+      const currentModels =
+        selectedTab === "STYLE" ? styleModels : characterModels;
+      setAvailableModels(currentModels);
+
+      // 기본값 설정 로직도 수정 필요
+    } catch (error) {
+      console.error("❌ 모델 목록 로드 실패:", error);
+    }
+  };
 
   const fetchTaskList = async () => {
     try {
@@ -62,8 +110,12 @@ export default function CreatePage() {
 
   const handlePromptSubmit = async () => {
     if (!prompt.trim()) return;
+    if (!selectedModel) {
+      alert("모델을 선택해주세요.");
+      return;
+    }
 
-    console.log("🚀 비디오 생성 요청:", prompt);
+    console.log("🚀 비디오 생성 요청:", prompt, "모델:", selectedModel);
 
     const tempId = Date.now();
     const optimisticTask = {
@@ -83,7 +135,7 @@ export default function CreatePage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ prompt, lora: "adapter_model.safetensors" }),
+        body: JSON.stringify({ prompt, lora: selectedModel }),
       });
 
       console.log("📤 API 요청 완료, 응답 상태:", response.status);
@@ -107,7 +159,14 @@ export default function CreatePage() {
 
   useEffect(() => {
     fetchTaskList();
+    fetchAvailableModels(); // 모델 목록 불러오기 추가
   }, []);
+
+  useEffect(() => {
+    const currentModels =
+      selectedTab === "STYLE" ? styleModels : characterModels;
+    setAvailableModels(currentModels);
+  }, [selectedTab, styleModels, characterModels]);
 
   // SSE 알림 처리
   useEffect(() => {
@@ -147,22 +206,19 @@ export default function CreatePage() {
   }, [lastNotification]);
 
   const handleConfirm = () => {
-    setSelectedType(tempType);
-    setSelectedModel(tempModel);
-    setSelectedRatio(tempRatio);
+    setSelectedModelData(tempSelectedModel);
+    setSelectedModel(tempSelectedModel?.modelName || "");
     setIsPopoverOpen(false);
   };
 
   const handleCancel = () => {
-    setTempType(selectedType);
-    setTempModel(selectedModel);
-    setTempRatio(selectedRatio);
+    setTempSelectedModel(selectedModelData);
     setIsPopoverOpen(false);
   };
 
-  const getDisplayText = () => {
-    return `${selectedType.toUpperCase()} • ${selectedModel.toUpperCase()} • ${selectedRatio}`;
-  };
+  //   const getDisplayText = () => {
+  //     return `${selectedType.toUpperCase()} • ${selectedModel.toUpperCase()} • ${selectedRatio}`;
+  //   };
 
   if (!isLoggedIn) {
     return (
@@ -207,7 +263,10 @@ export default function CreatePage() {
           </div>
         ) : (
           taskList.map((item) => (
-            <div key={item.task.id} className="rounded-lg overflow-hidden mt-4">
+            <div
+              key={item.task.id}
+              className="rounded-lg overflow-hidden mt-4 max-w-2xl mx-auto"
+            >
               <div className="flex justify-between items-center mb-2">
                 <h3 className="text-gray-800 font-semibold text-sm">
                   {item.task.prompt}
@@ -218,7 +277,7 @@ export default function CreatePage() {
               </div>
 
               {item.task.status === "IN_PROGRESS" ? (
-                <div className="w-full max-w-2xl aspect-[4/3] bg-gradient-to-br from-blue-50 to-purple-50 flex flex-col items-center justify-center border-2 border-dashed border-blue-200 rounded-lg">
+                <div className="w-full max-w-2xl mx-auto aspect-video bg-gradient-to-br from-blue-50 to-purple-50 flex flex-col items-center justify-center border-2 border-dashed border-blue-200 rounded-xl">
                   <div className="flex items-center space-x-3 mb-4">
                     <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
                     <Sparkles className="w-5 h-5 text-purple-500 animate-pulse" />
@@ -229,17 +288,30 @@ export default function CreatePage() {
                   </p>
                 </div>
               ) : item.task.status === "COMPLETED" && item.image?.url ? (
-                <div>
-                  <video
-                    src={item.image.url}
-                    controls
-                    className="w-full max-w-2xl rounded-lg"
-                    preload="metadata"
+                <div className="max-w-2xl mx-auto">
+                  <ModernVideoCard
+                    videoUrl={item.image.url}
+                    prompt={item.task.prompt}
+                    taskId={item.task.id}
+                    createdAt={item.task.createdAt}
+                    isNew={true}
+                    variant="default" // 또는 "compact", "cinematic", "instagram"
                   />
-                  <p className="text-xs text-green-600 mt-2">✅ 생성 완료</p>
+                </div>
+              ) : item.task.status === "FAILED" ? (
+                <div className="w-full max-w-2xl mx-auto aspect-video bg-gradient-to-br from-red-50 to-orange-50 flex flex-col items-center justify-center border-2 border-dashed border-red-200 rounded-xl">
+                  <div className="flex items-center space-x-3 mb-4">
+                    <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-sm font-bold">✕</span>
+                    </div>
+                  </div>
+                  <p className="text-sm text-red-600 font-medium">
+                    영상 생성 실패
+                  </p>
+                  <p className="text-xs text-red-400 mt-2">다시 시도해주세요</p>
                 </div>
               ) : (
-                <div className="text-red-500 p-4 bg-red-50 rounded-lg">
+                <div className="text-red-500 p-4 bg-red-50 rounded-lg max-w-2xl mx-auto">
                   <p>❌ 상태: {item.task.status}</p>
                   <p className="text-xs mt-1">예상하지 못한 상태입니다.</p>
                 </div>
@@ -257,10 +329,132 @@ export default function CreatePage() {
               onChange={(e) => setPrompt(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handlePromptSubmit()}
               placeholder="What do you want to see..."
-              className="w-full bg-white/90 backdrop-blur-sm border border-gray-200 rounded-2xl px-6 py-4 text-gray-700 placeholder-gray-500 pr-20 sm:pr-80 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-lg transition-all"
+              className="w-full bg-white/90 backdrop-blur-sm border border-gray-200 rounded-2xl px-6 py-4 text-gray-700 placeholder-gray-500 pr-32 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-lg transition-all"
               disabled={isGenerating}
             />
             <div className="absolute right-4 top-1/2 transform -translate-y-1/2 flex items-center space-x-2">
+              {/* 모델 선택 버튼 */}
+              <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="bg-white/90 backdrop-blur-sm border-gray-200 text-gray-700 hover:bg-gray-50"
+                  >
+                    <Settings className="w-4 h-4 mr-2" />
+                    모델
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent
+                  className="w-[800px] max-h-[600px] p-0"
+                  align="end"
+                >
+                  <div className="p-6">
+                    <div className="flex items-center justify-between mb-6">
+                      <h4 className="text-xl font-semibold">Choose a Model</h4>
+                      <Button variant="ghost" size="sm">
+                        <ArrowUpRight className="w-4 h-4" />
+                      </Button>
+                    </div>
+
+                    {/* 탭바 */}
+                    <div className="flex space-x-1 mb-6 bg-gray-100 rounded-lg p-1">
+                      <button
+                        className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                          selectedTab === "STYLE"
+                            ? "bg-white text-black shadow-sm"
+                            : "text-gray-600 hover:text-black"
+                        }`}
+                        onClick={() => setSelectedTab("STYLE")}
+                      >
+                        All
+                      </button>
+                      <button
+                        className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                          selectedTab === "CHARACTER"
+                            ? "bg-white text-black shadow-sm"
+                            : "text-gray-600 hover:text-black"
+                        }`}
+                        onClick={() => setSelectedTab("CHARACTER")}
+                      >
+                        Flux
+                      </button>
+                      {/* 추가 탭들... */}
+                    </div>
+
+                    {/* 모델 그리드 */}
+                    <div className="grid grid-cols-5 gap-4 max-h-80 overflow-y-auto">
+                      {availableModels.map((model) => (
+                        <div
+                          key={model.modelName}
+                          className={`relative group cursor-pointer rounded-xl overflow-hidden border-2 transition-all ${
+                            tempSelectedModel?.modelName === model.modelName
+                              ? "border-blue-500 ring-2 ring-blue-200"
+                              : "border-transparent hover:border-gray-300"
+                          }`}
+                          onClick={() => setTempSelectedModel(model)}
+                        >
+                          <div className="aspect-[3/4] relative">
+                            <img
+                              src={model.image}
+                              alt={model.name}
+                              className="w-full h-full object-cover"
+                            />
+                            {/* 모델 타입 뱃지 */}
+                            <div className="absolute top-2 left-2">
+                              <span className="bg-black/70 text-white text-xs px-2 py-1 rounded">
+                                {selectedTab}
+                              </span>
+                            </div>
+                            {/* New 뱃지 (필요시) */}
+                            {model.isNew && (
+                              <div className="absolute top-2 right-2">
+                                <span className="bg-green-500 text-white text-xs px-2 py-1 rounded">
+                                  New
+                                </span>
+                              </div>
+                            )}
+                            {/* 선택 체크마크 */}
+                            {tempSelectedModel?.modelName ===
+                              model.modelName && (
+                              <div className="absolute inset-0 bg-blue-500/20 flex items-center justify-center">
+                                <div className="bg-blue-500 text-white rounded-full p-1">
+                                  <Check className="w-4 h-4" />
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          <div className="p-3 bg-white">
+                            <h3 className="font-medium text-sm truncate">
+                              {model.name}
+                            </h3>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 하단 버튼들 */}
+                  <div className="border-t p-4 flex justify-between items-center">
+                    <div className="text-sm text-gray-600">
+                      {tempSelectedModel?.name || "No model selected"}
+                    </div>
+                    <div className="flex space-x-2">
+                      <Button variant="outline" onClick={handleCancel}>
+                        Cancel
+                      </Button>
+                      <Button
+                        onClick={handleConfirm}
+                        disabled={!tempSelectedModel}
+                      >
+                        Use Model
+                      </Button>
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
+
+              {/* 전송 버튼 */}
               <button
                 onClick={handlePromptSubmit}
                 disabled={isGenerating || !prompt.trim()}
