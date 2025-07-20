@@ -305,47 +305,47 @@ export default function CreatePage() {
   }, []);
 
   // 5. 디버깅용 테스트 함수들 (window에 노출)
-  useEffect(() => {
-    window.testScrollToBottom = () => {
-      const scrollHeight = document.documentElement.scrollHeight;
-      const clientHeight = document.documentElement.clientHeight;
+  //   useEffect(() => {
+  //     window.testScrollToBottom = () => {
+  //       const scrollHeight = document.documentElement.scrollHeight;
+  //       const clientHeight = document.documentElement.clientHeight;
 
-      console.log("🔽 강제 스크롤 전 상태:", {
-        scrollHeight,
-        clientHeight,
-        canScroll: scrollHeight > clientHeight,
-        currentTaskCount: taskListRef.current.length,
-        hasMore: hasMoreRef.current,
-      });
+  //       console.log("🔽 강제 스크롤 전 상태:", {
+  //         scrollHeight,
+  //         clientHeight,
+  //         canScroll: scrollHeight > clientHeight,
+  //         currentTaskCount: taskListRef.current.length,
+  //         hasMore: hasMoreRef.current,
+  //       });
 
-      // 스크롤 가능한지 확인
-      if (scrollHeight <= clientHeight) {
-        console.warn("⚠️ 스크롤할 수 없음 - 콘텐츠가 화면보다 작음");
-        return;
-      }
+  //       // 스크롤 가능한지 확인
+  //       if (scrollHeight <= clientHeight) {
+  //         console.warn("⚠️ 스크롤할 수 없음 - 콘텐츠가 화면보다 작음");
+  //         return;
+  //       }
 
-      window.scrollTo({
-        top: scrollHeight - clientHeight - 50,
-        behavior: "smooth",
-      });
-    };
+  //       window.scrollTo({
+  //         top: scrollHeight - clientHeight - 50,
+  //         behavior: "smooth",
+  //       });
+  //     };
 
-    window.testManualLoad = () => {
-      console.log("🔧 수동 로드 트리거");
-      console.log("현재 상태:", {
-        taskListLength: taskListRef.current.length,
-        loading: loadingRef.current,
-        hasMore: hasMoreRef.current,
-        nextCursor: nextCursorRef.current ? "있음" : "없음",
-      });
-      fetchTaskList(false);
-    };
+  //     window.testManualLoad = () => {
+  //       console.log("🔧 수동 로드 트리거");
+  //       console.log("현재 상태:", {
+  //         taskListLength: taskListRef.current.length,
+  //         loading: loadingRef.current,
+  //         hasMore: hasMoreRef.current,
+  //         nextCursor: nextCursorRef.current ? "있음" : "없음",
+  //       });
+  //       fetchTaskList(false);
+  //     };
 
-    return () => {
-      delete window.testScrollToBottom;
-      delete window.testManualLoad;
-    };
-  }, []);
+  //     return () => {
+  //       delete window.testScrollToBottom;
+  //       delete window.testManualLoad;
+  //     };
+  //   }, []);
 
   // 🔥 taskList 변경 시 ref 동기화
   useEffect(() => {
