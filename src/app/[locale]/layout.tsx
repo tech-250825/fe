@@ -5,14 +5,14 @@ import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import { routing } from "../../i18n/routing";
 
-export default function LocaleLayout({
+export default async function LocaleLayout({
   children,
   params,
 }: {
   children: React.ReactNode;
-  params: { locale: string };
+  params: Promise<{ locale: string }>; // Promise 추가
 }) {
-  const { locale } = params;
+  const { locale } = await params; // await 추가
   if (!hasLocale(routing.locales, locale)) {
     notFound();
   }

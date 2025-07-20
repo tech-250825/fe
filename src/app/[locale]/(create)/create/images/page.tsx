@@ -29,6 +29,7 @@ import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/hooks/useAuth";
 import { useSSE } from "@/components/SSEProvider";
 import { ModernVideoCard } from "@/components/ModernVideoCard";
+import { config } from "@/config";
 
 export default function CreatePage() {
   const { isLoggedIn, userName, memberId } = useAuth();
@@ -73,7 +74,7 @@ export default function CreatePage() {
     try {
       // STYLE 모델 조회
       const styleResponse = await fetch(
-        "http://localhost:8090/api/lora?mediaType=VIDEO&styleType=STYLE",
+        `${config.apiUrl}/api/lora?mediaType=VIDEO&styleType=STYLE`,
         { credentials: "include" }
       );
       const styleModels = await styleResponse.json();
@@ -81,7 +82,7 @@ export default function CreatePage() {
 
       // CHARACTER 모델 조회
       const characterResponse = await fetch(
-        "http://localhost:8090/api/lora?mediaType=VIDEO&styleType=CHARACTER",
+        `${config.apiUrl}/api/lora?mediaType=VIDEO&styleType=CHARACTER`,
         { credentials: "include" }
       );
       const characterModels = await characterResponse.json();
@@ -101,7 +102,7 @@ export default function CreatePage() {
   const fetchTaskList = async () => {
     try {
       console.log("🔄 Task list 새로고침 중...");
-      const res = await fetch("http://localhost:8090/api/images/task?size=10", {
+      const res = await fetch(`${config.apiUrl}/api/images/task?size=10`, {
         credentials: "include",
       });
       const json = await res.json();
@@ -144,7 +145,7 @@ export default function CreatePage() {
     setIsGenerating(true);
 
     try {
-      const response = await fetch("http://localhost:8090/api/images/create", {
+      const response = await fetch(`${config.apiUrl}/api/images/create`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
