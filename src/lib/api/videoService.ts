@@ -1,3 +1,5 @@
+import { config } from "@/config";
+
 // API 서비스 타입 정의 - 실제 백엔드 DTO에 맞춤
 export interface CreateVideoRequest {
   prompt: string;
@@ -30,15 +32,13 @@ export interface QueueResponse {
   data: VideoQueueItem[];
 }
 
-const API_BASE_URL = "http://localhost:8090";
-
 export class VideoAPIService {
   // 비디오 생성 요청
   static async createVideo(
     request: CreateVideoRequest
   ): Promise<CreateVideoResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/videos/create`, {
+      const response = await fetch(`${config.apiUrl}/api/videos/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -64,7 +64,7 @@ export class VideoAPIService {
     secret: string;
   }): Promise<any> {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/videos/webhook`, {
+      const response = await fetch(`${config.apiUrl}/api/videos/webhook`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -115,7 +115,7 @@ export class VideoAPIService {
   // 비디오 큐 상태 확인
   static async getVideoQueue(): Promise<QueueResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/videos/queue`, {
+      const response = await fetch(`${config.apiUrl}/api/videos/queue`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

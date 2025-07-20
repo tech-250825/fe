@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { config } from "@/config";
 
 export function LoginForm({
   className,
@@ -30,7 +31,7 @@ export function LoginForm({
                 variant="outline"
                 onClick={() => {
                   window.location.assign(
-                    "http://localhost:8090/oauth2/authorization/google"
+                    `${config.apiUrl}/oauth2/authorization/google`
                   );
                 }}
               >

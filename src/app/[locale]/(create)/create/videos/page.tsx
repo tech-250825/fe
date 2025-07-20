@@ -24,6 +24,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { useSSE } from "@/components/SSEProvider";
 import { ModernVideoCard } from "@/components/ModernVideoCard";
+import { config } from "@/config";
 
 export default function CreatePage() {
   const { isLoggedIn, userName, memberId } = useAuth();
@@ -66,7 +67,7 @@ export default function CreatePage() {
     try {
       // STYLE 모델 조회
       const styleResponse = await fetch(
-        "http://localhost:8090/api/lora?mediaType=VIDEO&styleType=STYLE",
+        `${config.apiUrl}/api/lora?mediaType=VIDEO&styleType=STYLE`,
         { credentials: "include" }
       );
       const styleModels = await styleResponse.json();
@@ -74,7 +75,7 @@ export default function CreatePage() {
 
       // CHARACTER 모델 조회
       const characterResponse = await fetch(
-        "http://localhost:8090/api/lora?mediaType=VIDEO&styleType=CHARACTER",
+        `${config.apiUrl}/api/lora?mediaType=VIDEO&styleType=CHARACTER`,
         { credentials: "include" }
       );
       const characterModels = await characterResponse.json();
@@ -220,7 +221,7 @@ export default function CreatePage() {
         );
       }
 
-      const url = `http://localhost:8090/api/videos/task?${params}`;
+      const url = `${config.apiUrl}/api/videos/task?${params}`;
       console.log("📡 API 요청 URL:", url);
 
       const res = await fetch(url, { credentials: "include" });
@@ -394,7 +395,7 @@ export default function CreatePage() {
     setIsGenerating(true);
 
     try {
-      const response = await fetch("http://localhost:8090/api/videos/create", {
+      const response = await fetch(`${config.apiUrl}/api/videos/create`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

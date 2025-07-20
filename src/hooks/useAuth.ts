@@ -1,5 +1,6 @@
 "use client";
 
+import { config } from "@/config";
 import { useState, useEffect } from "react";
 
 interface UserProfile {
@@ -53,7 +54,7 @@ export const useAuth = () => {
   // 로그아웃 함수
   const handleLogout = async () => {
     try {
-      await fetch("http://localhost:8090/api/auth/logout", {
+      await fetch(`${config.apiUrl}/api/auth/logout`, {
         method: "POST",
         credentials: "include",
       });
@@ -74,7 +75,7 @@ export const useAuth = () => {
   const fetchProfile = async () => {
     try {
       setIsLoading(true);
-      const res = await fetch("http://localhost:8090/api/user/profile", {
+      const res = await fetch(`${config.apiUrl}/api/user/profile`, {
         credentials: "include",
       });
 

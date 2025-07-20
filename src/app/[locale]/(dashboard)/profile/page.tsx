@@ -26,6 +26,7 @@ import {
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
+import { config } from "@/config";
 
 interface UserProfile {
   id: number;
@@ -45,7 +46,7 @@ const ProfilePage: React.FC = () => {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:8090/api/user/profile", {
+      const response = await fetch(`${config.apiUrl}/api/user/profile`, {
         credentials: "include",
       });
 

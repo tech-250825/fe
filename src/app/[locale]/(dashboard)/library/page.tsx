@@ -27,6 +27,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { ModernVideoCard } from "@/components/ModernVideoCard";
+import { config } from "@/config";
 
 interface MediaItem {
   member: {
@@ -77,7 +78,7 @@ export default function LibraryPage() {
         });
 
         const response = await fetch(
-          `http://localhost:8090/api/images/mypage?${params}`,
+          `${config.apiUrl}/api/images/mypage?${params}`,
           {
             credentials: "include",
           }

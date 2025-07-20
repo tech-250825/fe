@@ -1,5 +1,6 @@
 "use client";
 
+import { config } from "@/config";
 import { useEffect, useRef, useCallback } from "react";
 
 interface SSEManagerOptions {
@@ -52,12 +53,9 @@ export const useSSEManager = ({
     isConnectingRef.current = true;
 
     try {
-      const eventSource = new EventSource(
-        `http://localhost:8090/sse/${memberId}`,
-        {
-          withCredentials: true, // 쿠키 포함
-        }
-      );
+      const eventSource = new EventSource(`${config.apiUrl}/sse/${memberId}`, {
+        withCredentials: true, // 쿠키 포함
+      });
 
       eventSource.onopen = (event) => {
         console.log("SSE Connected:", {
