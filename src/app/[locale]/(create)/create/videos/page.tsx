@@ -1,12 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import {
   RotateCcw,
   MoreHorizontal,
-  Plus,
-  Camera,
-  ChevronDown,
   ArrowUpRight,
   ArrowUp,
   Loader2,
@@ -16,15 +13,14 @@ import {
   WifiOff,
   Settings,
 } from "lucide-react";
+import { Heart, Share2, Download } from "lucide-react";
+// import React, { useEffect, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/hooks/useAuth";
 import { useSSE } from "@/components/SSEProvider";
 import { ModernVideoCard } from "@/components/ModernVideoCard";
@@ -32,6 +28,8 @@ import { ModernVideoCard } from "@/components/ModernVideoCard";
 export default function CreatePage() {
   const { isLoggedIn, userName, memberId } = useAuth();
   const { lastNotification, isConnected, notifications } = useSSE();
+
+  const listRef = useRef(null);
 
   const [prompt, setPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -52,14 +50,15 @@ export default function CreatePage() {
   const [styleModels, setStyleModels] = useState([]);
   const [characterModels, setCharacterModels] = useState([]);
 
-  //   const [selectedType, setSelectedType] = useState("image");
-  //   const [selectedModel, setSelectedModel] = useState("photon");
-  //   const [selectedRatio, setSelectedRatio] = useState("16:9");
-  //   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  // 모달 관련 상태 추가
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedMediaIndex, setSelectedMediaIndex] = useState(0);
+  const [allMediaItems, setAllMediaItems] = useState([]);
 
-  //   const [tempType, setTempType] = useState(selectedType);
-  //   const [tempModel, setTempModel] = useState(selectedModel);
-  //   const [tempRatio, setTempRatio] = useState(selectedRatio);
+  // 무한 스크롤 관련 상태 추가
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [nextCursor, setNextCursor] = useState(null);
 
   // 모델 목록 불러오기
   // 두 개의 API를 모두 호출하도록 변경
@@ -92,20 +91,284 @@ export default function CreatePage() {
     }
   };
 
-  const fetchTaskList = async () => {
+  // 🔥 커서 디코딩 및 백엔드 문제 확인 도구
+  const debugCursor = (cursor) => {
+    if (!cursor) return "커서 없음";
+
+    try {
+      const decoded = atob(cursor);
+      const parts = decoded.split(" - ");
+
+      if (parts.length === 2) {
+        const baseTime = parts[0].replace(/###/g, "");
+        const requestTime = parts[1];
+
+        return {
+          raw: decoded,
+          baseTime: new Date(baseTime).toISOString(),
+          requestTime: new Date(requestTime).toISOString(),
+          baseTimeKST: new Date(baseTime).toLocaleString("ko-KR"),
+          requestTimeKST: new Date(requestTime).toLocaleString("ko-KR"),
+        };
+      }
+    } catch (e) {
+      return "디코딩 실패: " + e.message;
+    }
+  };
+
+  // 🔥 수정된 fetchTaskList - useRef로 최신 상태 참조
+  const taskListRef = useRef([]);
+  const loadingRef = useRef(false);
+
+  // 🔥 문제 해결: nextCursor를 ref로 관리
+  const nextCursorRef = useRef(null);
+
+  const hasMoreRef = useRef(true);
+
+  // 2. hasMore 상태 변경 시 ref 동기화
+  useEffect(() => {
+    hasMoreRef.current = hasMore;
+    console.log("🔄 hasMore ref 업데이트:", hasMore);
+  }, [hasMore]);
+
+  // 3. 스크롤 이벤트 리스너 단순화 (의존성 배열 비우기)
+  useEffect(() => {
+    const handleScroll = () => {
+      // ref로 최신 상태 확인
+      if (loadingRef.current || !hasMoreRef.current) {
+        console.log("❌ 스크롤 무시:", {
+          loading: loadingRef.current,
+          hasMore: hasMoreRef.current,
+          taskListLength: taskListRef.current.length,
+        });
+        return;
+      }
+
+      const scrollTop = document.documentElement.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight;
+      const clientHeight = document.documentElement.clientHeight;
+
+      // 더 민감하게 - 하단 150px 지점에서 트리거
+      const threshold = 150;
+      const isNearBottom = scrollTop + clientHeight >= scrollHeight - threshold;
+
+      console.log("📏 스크롤 상태:", {
+        scrollTop: Math.round(scrollTop),
+        scrollHeight: Math.round(scrollHeight),
+        clientHeight: Math.round(clientHeight),
+        remainingDistance: Math.round(scrollHeight - scrollTop - clientHeight),
+        threshold,
+        isNearBottom,
+        loading: loadingRef.current,
+        hasMore: hasMoreRef.current,
+        taskListLength: taskListRef.current.length,
+      });
+
+      if (isNearBottom) {
+        console.log(
+          "🚀 무한 스크롤 트리거! 현재:",
+          taskListRef.current.length,
+          "개"
+        );
+        fetchTaskList(false);
+      }
+    };
+
+    // 디바운싱 추가하여 성능 최적화
+    let timeoutId;
+    const debouncedHandleScroll = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(handleScroll, 100);
+    };
+
+    window.addEventListener("scroll", debouncedHandleScroll, { passive: true });
+
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener("scroll", debouncedHandleScroll);
+    };
+  }, []); // 🔥 의존성 배열 완전히 비우기
+
+  // 4. fetchTaskList에서 의존성 배열 비우기
+  const fetchTaskList = useCallback(async (reset = false) => {
+    if (loadingRef.current) {
+      console.log("❌ 이미 로딩 중이므로 요청 무시");
+      return;
+    }
+
+    loadingRef.current = true;
+    setLoading(true);
+
     try {
       console.log("🔄 Task list 새로고침 중...");
-      const res = await fetch("http://localhost:8090/api/videos/task?size=10", {
-        credentials: "include",
-      });
+
+      // 🔥 초기 로딩 시 더 많은 데이터 요청 (스크롤 가능하도록)
+      const size = reset ? "3" : "2"; // 첫 로딩은 5개, 이후는 3개씩
+      const params = new URLSearchParams({ size });
+
+      const currentCursor = nextCursorRef.current;
+
+      if (!reset && currentCursor) {
+        params.append("nextPageCursor", currentCursor);
+        console.log(
+          "📝 현재 커서 전달:",
+          currentCursor.substring(0, 30) + "..."
+        );
+      } else {
+        console.log(
+          "📝 첫 번째 요청 - 6개 데이터 로드하여 스크롤 가능하게 만들기"
+        );
+      }
+
+      const url = `http://localhost:8090/api/videos/task?${params}`;
+      console.log("📡 API 요청 URL:", url);
+
+      const res = await fetch(url, { credentials: "include" });
+
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+
       const json = await res.json();
+      console.log("📦 전체 응답:", json);
       const content = json?.data?.content || [];
-      setTaskList(content);
-      setLastFetchTime(new Date().toLocaleTimeString());
-      console.log("✅ Task list 업데이트 완료:", content.length, "개 항목");
+
+      console.log(
+        "📋 받은 데이터 ID들:",
+        content.map((item) => item.task.id)
+      );
+
+      if (reset) {
+        console.log("🔄 Reset: 전체 교체");
+        taskListRef.current = content;
+        setTaskList(content);
+      } else {
+        console.log("➕ Append: 기존 데이터에 추가");
+        const existingIds = new Set(taskListRef.current.map((t) => t.task.id));
+        const newItems = content.filter(
+          (item) => !existingIds.has(item.task.id)
+        );
+
+        console.log("🔍 실제 추가될 새 항목:", newItems.length, "개");
+
+        if (newItems.length === 0 && content.length > 0) {
+          console.warn("⚠️ 중복 데이터 - hasMore를 false로 설정");
+          setHasMore(false);
+          hasMoreRef.current = false;
+          loadingRef.current = false;
+          setLoading(false);
+          return;
+        }
+
+        const updatedList = [...taskListRef.current, ...newItems];
+        taskListRef.current = updatedList;
+        setTaskList(updatedList);
+      }
+
+      // 새 커서 처리
+      const newNextCursor =
+        json?.data?.nextPageCursor || json?.data?.nextCursor;
+      console.log("🔍 새 커서:", newNextCursor ? "있음" : "없음");
+
+      setNextCursor(newNextCursor);
+      nextCursorRef.current = newNextCursor;
+      setHasMore(!!newNextCursor);
+      hasMoreRef.current = !!newNextCursor;
+
+      console.log(
+        "✅ Task list 업데이트 완료:",
+        content.length,
+        "개 항목 받음"
+      );
+      console.log("📊 현재 전체 taskList 길이:", taskListRef.current.length);
+
+      // 🔥 로딩 후 스크롤 가능 여부 체크
+      setTimeout(() => {
+        const scrollHeight = document.documentElement.scrollHeight;
+        const clientHeight = document.documentElement.clientHeight;
+        console.log("📺 로딩 후 스크롤 상태:", {
+          scrollHeight,
+          clientHeight,
+          canScroll: scrollHeight > clientHeight,
+          itemCount: taskListRef.current.length,
+        });
+      }, 100);
     } catch (error) {
       console.error("❌ Task list fetch failed:", error);
+      setHasMore(false);
+      hasMoreRef.current = false;
+    } finally {
+      loadingRef.current = false;
+      setLoading(false);
     }
+  }, []);
+
+  // 5. 디버깅용 테스트 함수들 (window에 노출)
+  useEffect(() => {
+    window.testScrollToBottom = () => {
+      const scrollHeight = document.documentElement.scrollHeight;
+      const clientHeight = document.documentElement.clientHeight;
+
+      console.log("🔽 강제 스크롤 전 상태:", {
+        scrollHeight,
+        clientHeight,
+        canScroll: scrollHeight > clientHeight,
+        currentTaskCount: taskListRef.current.length,
+        hasMore: hasMoreRef.current,
+      });
+
+      // 스크롤 가능한지 확인
+      if (scrollHeight <= clientHeight) {
+        console.warn("⚠️ 스크롤할 수 없음 - 콘텐츠가 화면보다 작음");
+        return;
+      }
+
+      window.scrollTo({
+        top: scrollHeight - clientHeight - 50,
+        behavior: "smooth",
+      });
+    };
+
+    window.testManualLoad = () => {
+      console.log("🔧 수동 로드 트리거");
+      console.log("현재 상태:", {
+        taskListLength: taskListRef.current.length,
+        loading: loadingRef.current,
+        hasMore: hasMoreRef.current,
+        nextCursor: nextCursorRef.current ? "있음" : "없음",
+      });
+      fetchTaskList(false);
+    };
+
+    return () => {
+      delete window.testScrollToBottom;
+      delete window.testManualLoad;
+    };
+  }, []);
+
+  // 🔥 taskList 변경 시 ref 동기화
+  useEffect(() => {
+    taskListRef.current = taskList;
+  }, [taskList]);
+
+  // 🔥 백엔드 개발자에게 제공할 디버깅 정보
+  const generateBackendDebugInfo = () => {
+    console.log("🔧 백엔드 개발자용 디버깅 정보:");
+    console.log("1. 현재 커서:", nextCursor);
+    console.log("2. 커서 분석:", debugCursor(nextCursor));
+    console.log("3. 현재 taskList 길이:", taskList.length);
+    console.log(
+      "4. 마지막 항목 생성시간:",
+      taskList.length > 0
+        ? taskList[taskList.length - 1].task.createdAt
+        : "없음"
+    );
+    console.log(
+      "5. 문제: 커서의 baseTime이 항상 고정되어 있어 같은 데이터만 반환됨"
+    );
+    console.log(
+      "6. 해결방안: 커서 생성 시 마지막 조회된 데이터의 createdAt을 baseTime으로 사용해야 함"
+    );
   };
 
   const handlePromptSubmit = async () => {
@@ -157,16 +420,176 @@ export default function CreatePage() {
     }
   };
 
+  // 🔥 자동 로딩 제거 - 초기에 3개만 로드하고 끝
   useEffect(() => {
-    fetchTaskList();
-    fetchAvailableModels(); // 모델 목록 불러오기 추가
+    const initializeData = async () => {
+      console.log("🚀 초기 데이터 로드 시작");
+      await fetchTaskList(true); // 첫 번째 배치 (3개만)
+      console.log("✅ 초기 로딩 완료 - 이제 사용자가 스크롤해야 함");
+    };
+
+    initializeData();
+    fetchAvailableModels();
   }, []);
+
+  // 🔥 수정된 스크롤 이벤트 - useCallback 없이 직접 정의
+  //   useEffect(() => {
+  //     const handleScroll = () => {
+  //       // ref로 최신 상태 확인
+  //       if (loadingRef.current || !hasMore) {
+  //         console.log("❌ 스크롤 무시:", {
+  //           loading: loadingRef.current,
+  //           hasMore,
+  //           taskListLength: taskListRef.current.length,
+  //         });
+  //         return;
+  //       }
+
+  //       const scrollTop = document.documentElement.scrollTop;
+  //       const scrollHeight = document.documentElement.scrollHeight;
+  //       const clientHeight = document.documentElement.clientHeight;
+
+  //       // 🔥 테스트용: 더 민감하게 - 하단 100px 지점에서 트리거
+  //       const threshold = 100;
+  //       const isNearBottom = scrollTop + clientHeight >= scrollHeight - threshold;
+
+  //       console.log("📏 스크롤 상태:", {
+  //         scrollTop: Math.round(scrollTop),
+  //         scrollHeight: Math.round(scrollHeight),
+  //         clientHeight: Math.round(clientHeight),
+  //         remainingDistance: Math.round(scrollHeight - scrollTop - clientHeight),
+  //         threshold,
+  //         isNearBottom,
+  //         loading: loadingRef.current,
+  //         hasMore,
+  //         taskListLength: taskListRef.current.length,
+  //       });
+
+  //       if (isNearBottom) {
+  //         console.log(
+  //           "🚀 무한 스크롤 트리거! 현재:",
+  //           taskListRef.current.length,
+  //           "개"
+  //         );
+  //         fetchTaskList(false);
+  //       }
+  //     };
+
+  //     // 디바운스 제거하고 직접 호출 (테스트용)
+  //     window.addEventListener("scroll", handleScroll);
+
+  //     return () => {
+  //       window.removeEventListener("scroll", handleScroll);
+  //     };
+  //   }, [hasMore, fetchTaskList]); // loading 의존성 제거
+
+  // 🔥 디버깅용 상태 로그 강화
+  useEffect(() => {
+    console.log("📊 상태 업데이트:", {
+      loading,
+      hasMore,
+      nextCursor: nextCursor
+        ? `있음 (${nextCursor.substring(0, 20)}...)`
+        : "없음",
+      taskListLength: taskList.length,
+      taskIds: taskList.map((t) => t.task.id).slice(0, 5), // 처음 5개 ID만 표시
+    });
+  }, [loading, hasMore, nextCursor, taskList.length]);
+
+  // 스크롤 이벤트 하나로 통일 (전역 스크롤 사용)
+  // 🔥 디버깅을 위한 상태 로그 강화
+  //   useEffect(() => {
+  //     console.log("📊 무한스크롤 상태:", {
+  //       loading,
+  //       hasMore,
+  //       nextCursor: nextCursor
+  //         ? `있음 (${nextCursor.substring(0, 20)}...)`
+  //         : "없음",
+  //       taskListLength: taskList.length,
+  //     });
+  //   }, [loading, hasMore, nextCursor, taskList.length]);
+
+  // 🔥 초기 데이터 로드 개선 - 강제로 스크롤 가능하게 만들기
+  //   useEffect(() => {
+  //     const initializeData = async () => {
+  //       console.log("🚀 초기 데이터 로드 시작");
+  //       await fetchTaskList(true); // 첫 번째 배치 (3개)
+  //     };
+
+  //     initializeData();
+  //     fetchAvailableModels();
+  //   }, []); // 의존성 배열 비우기
+
+  // 🔥 테스트용 디버깅 함수들 개선
+  //   const testScrollToBottom = () => {
+  //     const scrollHeight = document.documentElement.scrollHeight;
+  //     const clientHeight = document.documentElement.clientHeight;
+
+  //     console.log("🔽 강제 스크롤 전 상태:", {
+  //       scrollHeight,
+  //       clientHeight,
+  //       canScroll: scrollHeight > clientHeight,
+  //       currentTaskCount: taskListRef.current.length,
+  //     });
+
+  //     window.scrollTo({
+  //       top: scrollHeight - clientHeight - 50, // 바닥에서 50px 위로
+  //       behavior: "smooth",
+  //     });
+
+  //     // 스크롤 후 상태 체크
+  //     setTimeout(() => {
+  //       const newScrollTop = document.documentElement.scrollTop;
+  //       console.log("🔽 스크롤 후 위치:", newScrollTop);
+  //     }, 1000);
+  //   };
+
+  //   const testManualLoad = () => {
+  //     console.log("🔧 수동 로드 트리거");
+  //     console.log("🔧 현재 상태:", {
+  //       taskListLength: taskListRef.current.length,
+  //       loading: loadingRef.current,
+  //       hasMore,
+  //       nextCursor: nextCursor ? "있음" : "없음",
+  //     });
+  //     fetchTaskList(false);
+  //   };
+
+  //   const testCheckStatus = () => {
+  //     const scrollHeight = document.documentElement.scrollHeight;
+  //     const clientHeight = document.documentElement.clientHeight;
+  //     const scrollTop = document.documentElement.scrollTop;
+
+  //     console.log("📊 현재 전체 상태:", {
+  //       taskListLength: taskListRef.current.length,
+  //       loading: loadingRef.current,
+  //       hasMore,
+  //       nextCursor: nextCursor ? "있음" : "없음",
+  //       scrollHeight,
+  //       clientHeight,
+  //       scrollTop,
+  //       canScroll: scrollHeight > clientHeight,
+  //       scrollPercentage:
+  //         scrollHeight > clientHeight
+  //           ? Math.round((scrollTop / (scrollHeight - clientHeight)) * 100) + "%"
+  //           : "스크롤 불가",
+  //       remainingDistance: scrollHeight - scrollTop - clientHeight,
+  //     });
+  //   };
 
   useEffect(() => {
     const currentModels =
       selectedTab === "STYLE" ? styleModels : characterModels;
     setAvailableModels(currentModels);
   }, [selectedTab, styleModels, characterModels]);
+
+  useEffect(() => {
+    // 완료된 항목들만 필터링해서 저장
+    const completedItems = taskList.filter(
+      (item) => item.task.status === "COMPLETED" && item.image?.url
+    );
+    setAllMediaItems(completedItems);
+  }, [taskList]);
 
   // SSE 알림 처리
   useEffect(() => {
@@ -216,6 +639,18 @@ export default function CreatePage() {
     setIsPopoverOpen(false);
   };
 
+  const handleMediaClick = (clickedItem) => {
+    const completedItems = taskList.filter(
+      (item) => item.task.status === "COMPLETED" && item.image?.url
+    );
+    const index = completedItems.findIndex(
+      (item) => item.task.id === clickedItem.task.id
+    );
+    setSelectedMediaIndex(index);
+    setAllMediaItems(completedItems);
+    setIsModalOpen(true);
+  };
+
   //   const getDisplayText = () => {
   //     return `${selectedType.toUpperCase()} • ${selectedModel.toUpperCase()} • ${selectedRatio}`;
   //   };
@@ -253,7 +688,15 @@ export default function CreatePage() {
         <div className="text-gray-400">총 알림: {notifications.length}개</div>
       </div>
 
-      <div className="flex-1 p-6 space-y-6 overflow-y-auto pb-32">
+      <div
+        ref={listRef}
+        className="w-full p-6 space-y-6 pb-32"
+        style={{
+          minHeight: "auto",
+          height: "auto",
+          overflow: "visible",
+        }}
+      >
         {taskList.length === 0 ? (
           <div className="text-center py-12 text-gray-500">
             <p>아직 생성된 영상이 없습니다.</p>
@@ -263,21 +706,47 @@ export default function CreatePage() {
           </div>
         ) : (
           taskList.map((item) => (
-            <div
-              key={item.task.id}
-              className="rounded-lg overflow-hidden mt-4 max-w-2xl mx-auto"
-            >
-              <div className="flex justify-between items-center mb-2">
-                <h3 className="text-gray-800 font-semibold text-sm">
+            <div key={item.task.id} className="max-w-2xl mx-auto mb-8">
+              {/* 프롬프트 텍스트 */}
+              <div className="mb-4">
+                <p className="text-gray-700 text-base leading-relaxed">
                   {item.task.prompt}
-                </h3>
-                <span className="text-xs text-gray-500">
-                  Task ID: {item.task.id}
-                </span>
+                </p>
               </div>
 
+              {/* 액션 버튼들 */}
+              <div className="flex items-center gap-3 mb-4">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700"
+                >
+                  <RotateCcw className="w-4 h-4 mr-2" />
+                  Show More
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700"
+                >
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Brainstorm
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700"
+                >
+                  💬 Reply
+                </Button>
+                <Button variant="ghost" size="sm" className="rounded-full">
+                  <MoreHorizontal className="w-4 h-4" />
+                </Button>
+              </div>
+
+              {/* 비디오/상태 표시 */}
               {item.task.status === "IN_PROGRESS" ? (
-                <div className="w-full max-w-2xl mx-auto aspect-video bg-gradient-to-br from-blue-50 to-purple-50 flex flex-col items-center justify-center border-2 border-dashed border-blue-200 rounded-xl">
+                <div className="w-full aspect-video bg-gradient-to-br from-blue-50 to-purple-50 flex flex-col items-center justify-center border-2 border-dashed border-blue-200 rounded-2xl">
                   <div className="flex items-center space-x-3 mb-4">
                     <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
                     <Sparkles className="w-5 h-5 text-purple-500 animate-pulse" />
@@ -288,18 +757,24 @@ export default function CreatePage() {
                   </p>
                 </div>
               ) : item.task.status === "COMPLETED" && item.image?.url ? (
-                <div className="max-w-2xl mx-auto">
+                // 기존 ModernVideoCard 부분을 이렇게 교체
+                <div
+                  className="relative rounded-2xl overflow-hidden shadow-lg cursor-pointer group"
+                  onClick={() => handleMediaClick(item)}
+                >
                   <ModernVideoCard
                     videoUrl={item.image.url}
                     prompt={item.task.prompt}
                     taskId={item.task.id}
                     createdAt={item.task.createdAt}
                     isNew={true}
-                    variant="default" // 또는 "compact", "cinematic", "instagram"
+                    variant="cinematic"
                   />
+                  {/* 호버 효과 */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none" />
                 </div>
               ) : item.task.status === "FAILED" ? (
-                <div className="w-full max-w-2xl mx-auto aspect-video bg-gradient-to-br from-red-50 to-orange-50 flex flex-col items-center justify-center border-2 border-dashed border-red-200 rounded-xl">
+                <div className="w-full aspect-video bg-gradient-to-br from-red-50 to-orange-50 flex flex-col items-center justify-center border-2 border-dashed border-red-200 rounded-2xl">
                   <div className="flex items-center space-x-3 mb-4">
                     <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
                       <span className="text-white text-sm font-bold">✕</span>
@@ -311,7 +786,7 @@ export default function CreatePage() {
                   <p className="text-xs text-red-400 mt-2">다시 시도해주세요</p>
                 </div>
               ) : (
-                <div className="text-red-500 p-4 bg-red-50 rounded-lg max-w-2xl mx-auto">
+                <div className="text-red-500 p-4 bg-red-50 rounded-2xl">
                   <p>❌ 상태: {item.task.status}</p>
                   <p className="text-xs mt-1">예상하지 못한 상태입니다.</p>
                 </div>
@@ -320,6 +795,23 @@ export default function CreatePage() {
           ))
         )}
       </div>
+
+      {/* 로딩 표시 추가 */}
+      {loading && (
+        <div className="flex justify-center py-8">
+          <div className="flex items-center gap-2 text-gray-500">
+            <Loader2 className="w-5 h-5 animate-spin" />
+            <span>더 불러오는 중...</span>
+          </div>
+        </div>
+      )}
+
+      {/* 더 이상 데이터가 없을 때 */}
+      {!hasMore && taskList.length > 0 && (
+        <div className="text-center py-8 text-gray-500">
+          <p>모든 콘텐츠를 불러왔습니다.</p>
+        </div>
+      )}
 
       <div className="fixed bottom-0 left-0 right-0 z-50 p-6 bg-transparent sm:left-64">
         <div className="max-w-4xl mx-auto">
@@ -470,6 +962,116 @@ export default function CreatePage() {
           </div>
         </div>
       </div>
+      {/* 전체화면 모달 */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/90 z-[100] flex items-center justify-center">
+          {/* 상단 헤더 */}
+          <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-10">
+            {/* 썸네일 네비게이션 */}
+            <div className="flex gap-2">
+              {allMediaItems.map((item, index) => (
+                <button
+                  key={item.task.id}
+                  onClick={() => setSelectedMediaIndex(index)}
+                  className={`w-12 h-8 rounded overflow-hidden border-2 transition-colors ${
+                    selectedMediaIndex === index
+                      ? "border-white"
+                      : "border-gray-500 hover:border-gray-300"
+                  }`}
+                >
+                  <video
+                    src={item.image.url}
+                    className="w-full h-full object-cover"
+                    muted
+                  />
+                </button>
+              ))}
+            </div>
+
+            {/* 액션 버튼들 */}
+            <div className="flex gap-3 text-white">
+              <button className="hover:bg-white/20 p-2 rounded-full transition-colors">
+                <Heart className="w-5 h-5" />
+              </button>
+              <button className="hover:bg-white/20 p-2 rounded-full transition-colors">
+                <Share2 className="w-5 h-5" />
+              </button>
+              <button className="hover:bg-white/20 p-2 rounded-full transition-colors">
+                <Download className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="hover:bg-white/20 p-2 rounded-full transition-colors"
+              >
+                <MoreHorizontal className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+
+          {/* 메인 미디어 */}
+          <div className="w-full h-full flex items-center justify-center p-16">
+            {allMediaItems[selectedMediaIndex] && (
+              <div className="max-w-5xl w-full">
+                <video
+                  src={allMediaItems[selectedMediaIndex].image.url}
+                  controls
+                  autoPlay
+                  className="w-full rounded-xl shadow-2xl"
+                  style={{ maxHeight: "70vh" }}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* 하단 액션 버튼들 */}
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+            <div className="flex gap-4">
+              <Button
+                variant="secondary"
+                className="rounded-full bg-white/10 backdrop-blur-sm text-white border-white/20 hover:bg-white/20"
+              >
+                💬 Modify...
+              </Button>
+              <Button
+                variant="secondary"
+                className="rounded-full bg-white/10 backdrop-blur-sm text-white border-white/20 hover:bg-white/20"
+              >
+                📽️ Extend Video...
+              </Button>
+              <Button
+                variant="secondary"
+                className="rounded-full bg-white/10 backdrop-blur-sm text-white border-white/20 hover:bg-white/20"
+              >
+                ⭐ More Like This
+              </Button>
+              <Button
+                variant="secondary"
+                className="rounded-full bg-white/10 backdrop-blur-sm text-white border-white/20 hover:bg-white/20"
+              >
+                🖼️ Reframe
+              </Button>
+              <Button
+                variant="secondary"
+                className="rounded-full bg-white/10 backdrop-blur-sm text-white border-white/20 hover:bg-white/20"
+              >
+                📈 Upscale...
+              </Button>
+              <Button
+                variant="secondary"
+                className="rounded-full bg-white/10 backdrop-blur-sm text-white border-white/20 hover:bg-white/20"
+              >
+                🎵 Audio...
+              </Button>
+            </div>
+          </div>
+
+          {/* ESC 키로 닫기 */}
+          <div
+            className="absolute inset-0"
+            onClick={() => setIsModalOpen(false)}
+          />
+        </div>
+      )}
     </>
   );
 }

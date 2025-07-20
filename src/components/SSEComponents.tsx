@@ -3,6 +3,7 @@
 import { useSSE } from "./SSEProvider"; // 경로에 맞게 수정
 import { useAuth } from "../hooks/useAuth"; // 경로에 맞게 수정
 import { useState } from "react";
+import React from "react";
 
 export const SSEStatusIndicator = () => {
   const { isConnected, reconnect, unreadCount } = useSSE();

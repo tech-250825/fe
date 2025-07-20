@@ -331,26 +331,35 @@ const CinematicVideoCard: React.FC<VideoCardProps> = ({
   taskId,
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const handlePlayPause = () => {
+  const handleMouseEnter = () => {
+    setIsHovered(true);
     if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
+      videoRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    if (videoRef.current) {
+      videoRef.current.pause();
+      setIsPlaying(false);
     }
   };
 
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-black shadow-2xl">
-      {/* 시네마틱 비율 21:9 */}
-      <div
-        className="relative aspect-[21/9] cursor-pointer"
-        onClick={handlePlayPause}
-      >
+    <div
+      className={`relative overflow-hidden rounded-xl bg-black shadow-lg transition-all duration-300 cursor-pointer ${
+        isHovered ? "scale-105 shadow-2xl" : "scale-100"
+      }`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      {/* 16:9 비율 */}
+      <div className="relative aspect-video">
         <video
           ref={videoRef}
           src={videoUrl}
@@ -362,30 +371,12 @@ const CinematicVideoCard: React.FC<VideoCardProps> = ({
           onPause={() => setIsPlaying(false)}
         />
 
-        {/* 시네마틱 오버레이 */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-black/30" />
-
-        {/* 중앙 플레이 버튼 */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <Button
-            size="lg"
-            className="w-20 h-20 rounded-full bg-white/10 hover:bg-white/20 text-white border-2 border-white/30 backdrop-blur-sm"
-          >
-            {isPlaying ? (
-              <Pause className="w-8 h-8" />
-            ) : (
-              <Play className="w-8 h-8 ml-1" />
-            )}
-          </Button>
-        </div>
-
-        {/* 하단 제목 오버레이 */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent">
-          <h3 className="text-white font-bold text-xl mb-1">{prompt}</h3>
-          <p className="text-white/70 text-sm">
-            Generated Video • Task #{taskId}
-          </p>
-        </div>
+        {/* 호버 시에만 살짝 어두운 오버레이 */}
+        <div
+          className={`absolute inset-0 transition-all duration-300 ${
+            isHovered ? "bg-black/10" : "bg-transparent"
+          }`}
+        />
       </div>
     </div>
   );

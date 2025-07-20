@@ -257,7 +257,7 @@ export default function LibraryPage() {
       </div>
 
       {/* 콘텐츠 */}
-      <div className="max-w-7xl mx-auto px-6 py-6">
+      <div className="max-w-7xl mx-auto px-1 py-1">
         {sortedItems.length === 0 && !loading ? (
           <div className="text-center py-12">
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -276,46 +276,32 @@ export default function LibraryPage() {
           <>
             {/* 그리드 뷰 */}
             {viewMode === "grid" && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-1">
                 {sortedItems.map((item) => (
                   <div key={item.id} className="group">
                     {isVideo(item.url) ? (
-                      <ModernVideoCard
-                        videoUrl={item.url}
-                        prompt={item.prompt}
-                        taskId={item.taskId}
-                        createdAt={item.createdAt}
-                        isNew={false}
-                        variant="compact"
-                      />
+                      <div className="aspect-video relative overflow-hidden bg-black cursor-pointer group hover:scale-[1.02] transition-all duration-300">
+                        <video
+                          src={item.url}
+                          className="w-full h-full object-cover"
+                          muted
+                          loop
+                          playsInline
+                          onMouseEnter={(e) => e.currentTarget.play()}
+                          onMouseLeave={(e) => e.currentTarget.pause()}
+                        />
+                        {/* 비디오 시간 표시 */}
+                        <div className="absolute top-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                          00:06
+                        </div>
+                      </div>
                     ) : (
-                      <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                        <div className="aspect-square relative">
-                          <img
-                            src={item.url}
-                            alt={item.prompt}
-                            className="w-full h-full object-cover"
-                          />
-                          <div className="absolute top-2 left-2">
-                            <Badge variant="secondary" className="text-xs">
-                              <ImageIcon className="w-3 h-3 mr-1" />
-                              이미지
-                            </Badge>
-                          </div>
-                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
-                        </div>
-                        <div className="p-4">
-                          <p className="text-sm text-gray-600 line-clamp-2 mb-2">
-                            {item.prompt}
-                          </p>
-                          <div className="flex items-center justify-between text-xs text-gray-400">
-                            <span>{formatDate(item.createdAt)}</span>
-                            <div className="flex items-center gap-2">
-                              <Heart className="w-3 h-3" />
-                              <span>{item.likeCount}</span>
-                            </div>
-                          </div>
-                        </div>
+                      <div className="aspect-video relative overflow-hidden bg-gray-100 cursor-pointer group hover:scale-[1.02] transition-all duration-300">
+                        <img
+                          src={item.url}
+                          alt={item.prompt}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
                     )}
                   </div>

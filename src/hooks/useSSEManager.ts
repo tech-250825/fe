@@ -83,6 +83,8 @@ export const useSSEManager = ({
         if (eventSource.readyState === EventSource.CLOSED) {
           eventSourceRef.current = null;
 
+          onClose?.(event);
+
           if (reconnectAttemptsRef.current < maxReconnectAttempts) {
             reconnectAttemptsRef.current++;
             console.log(
@@ -98,11 +100,11 @@ export const useSSEManager = ({
         }
       };
 
-      eventSource.onclose = (event) => {
-        console.log("SSE Closed:", event);
-        isConnectingRef.current = false;
-        onClose?.(event);
-      };
+      //   eventSource.onclose = (event) => {
+      //     console.log("SSE Closed:", event);
+      //     isConnectingRef.current = false;
+      //     onClose?.(event);
+      //   };
 
       eventSourceRef.current = eventSource;
     } catch (error) {

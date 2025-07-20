@@ -10,6 +10,7 @@ import {
   LogOut,
   LogIn,
   ChevronUp,
+  Library,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -52,7 +53,12 @@ export function AppSidebar() {
     {
       title: "Profile",
       url: "/profile",
-      icon: Compass,
+      icon: User,
+    },
+    {
+      title: "Library",
+      url: "/library",
+      icon: Library,
     },
   ];
 
