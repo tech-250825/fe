@@ -609,7 +609,8 @@ export default function CreatePage() {
         lastNotification.type === "video"
       ) {
         console.log("🎬 비디오 생성 완료! 화면 새로고침...");
-        fetchTaskList();
+        fetchTaskList(true);
+        setIsGenerating(false);
 
         // 브라우저 알림 (권한이 있다면)
         if ("Notification" in window && Notification.permission === "granted") {

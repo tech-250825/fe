@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 파일 크기 제한 (50MB)
-    if (file.size > 50 * 1024 * 1024) {
+    if (file.size > 70 * 1024 * 1024) {
       return NextResponse.json(
         { error: "파일 크기는 50MB를 초과할 수 없습니다" },
         { status: 400 }

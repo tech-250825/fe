@@ -91,7 +91,7 @@ const HomePage: React.FC = () => {
       {/* Hero Section */}
       <section className="relative h-[500px] rounded-xl overflow-hidden mb-12 shadow-2xl">
         <video
-          src="https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/naruto.mp4"
+          src="https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/tomato_00467.mp4"
           autoPlay
           muted
           loop
@@ -124,8 +124,8 @@ const HomePage: React.FC = () => {
           <div className="columns-2 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-4 gap-4 space-y-4">
             {works.map((work, index) => {
               // 랜덤 높이 생성
-              const heights = ["h-48", "h-64", "h-80", "h-56", "h-72", "h-44"];
-              const randomHeight = heights[index % heights.length];
+              // const heights = ["h-48", "h-64", "h-80", "h-56", "h-72", "h-44"];
+              // const randomHeight = heights[index % heights.length];
 
               // 이미지 또는 비디오가 있는지 확인
               const hasImage = work.image_url;
@@ -141,7 +141,7 @@ const HomePage: React.FC = () => {
               return (
                 <div
                   key={work.id}
-                  className={`bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 group border border-gray-200 break-inside-avoid mb-4 ${randomHeight} cursor-pointer`}
+                  className={`bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 group border border-gray-200 break-inside-avoid mb-4 cursor-pointer`}
                   onClick={() => hasVideo && openVideoModal(work)}
                   onMouseEnter={() => {
                     if (hasVideo && !hasImage) {
