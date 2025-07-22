@@ -3,12 +3,20 @@
 import { config } from "@/config";
 import { useState, useEffect } from "react";
 
+// 백엔드 응답 구조에 맞게 수정
+interface BackendResponse<T> {
+  timestamp: string;
+  statusCode: number;
+  message: string;
+  data: T;
+}
+
+// 실제 백엔드에서 오는 사용자 데이터 구조에 맞게 수정
 interface UserProfile {
   id: number;
-  nickname: string;
+  email: string;
   profileImage: string;
   credit: number;
-  sharedImageCount: number;
 }
 
 export const useAuth = () => {
@@ -64,14 +72,13 @@ export const useAuth = () => {
       setUserName("");
       setMemberId(null);
       setUserProfile(null);
-      setUserProfile(null);
       window.location.href = "/home";
     } catch (error) {
       console.error("로그아웃 실패:", error);
     }
   };
 
-  // 프로필 정보 가져오기
+  // 프로필 정보 가져오기 - 백엔드 응답 구조에 맞게 수정
   const fetchProfile = async () => {
     try {
       setIsLoading(true);
@@ -81,16 +88,26 @@ export const useAuth = () => {
 
       if (!res.ok) throw new Error("Not logged in");
 
-      const data: UserProfile = await res.json();
+      // 백엔드 응답 구조에 맞게 수정
+      const response: BackendResponse<UserProfile> = await res.json();
+
+      // data 필드에서 실제 사용자 정보 추출
+      const userData = response.data;
+
       setIsLoggedIn(true);
-      setUserName(data.nickname || "User");
-      setMemberId(data.id.toString());
-      setUserProfile(data);
+      // email을 userName으로 사용하거나 email에서 사용자명 추출
+      const displayName = userData.email
+        ? userData.email.split("@")[0]
+        : "User";
+      setUserName(displayName);
+      setMemberId(userData.id.toString());
+      setUserProfile(userData);
     } catch (err) {
       console.warn("User not logged in:", err);
       setIsLoggedIn(false);
       setUserName("");
       setMemberId(null);
+      setUserProfile(null);
     } finally {
       setIsLoading(false);
     }

@@ -16,24 +16,31 @@ import {
   Palette,
   LogOut,
   Edit,
-  Share2,
   Settings,
   Crown,
   Activity,
-  FileText,
   Package,
+  Mail,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { config } from "@/config";
 
+// 백엔드 응답 구조
+interface BackendResponse<T> {
+  timestamp: string;
+  statusCode: number;
+  message: string;
+  data: T;
+}
+
+// 백엔드 스펙에 맞게 수정된 UserProfile
 interface UserProfile {
   id: number;
-  nickname: string;
+  email: string;
   profileImage: string;
   credit: number;
-  sharedImageCount: number;
 }
 
 const ProfilePage: React.FC = () => {
@@ -42,7 +49,18 @@ const ProfilePage: React.FC = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // 프로필 데이터 가져오기
+  // 이메일에서 사용자명 추출하는 함수
+  const getUserNameFromEmail = (email: string) => {
+    return email ? email.split("@")[0] : "사용자";
+  };
+
+  // 이메일에서 이니셜 추출하는 함수
+  const getInitialsFromEmail = (email: string) => {
+    const username = getUserNameFromEmail(email);
+    return username.slice(0, 2).toUpperCase();
+  };
+
+  // 프로필 데이터 가져오기 - 백엔드 응답 구조에 맞게 수정
   const fetchProfile = async () => {
     try {
       setLoading(true);
@@ -54,8 +72,10 @@ const ProfilePage: React.FC = () => {
         throw new Error("Failed to fetch profile");
       }
 
-      const data = await response.json();
-      setProfile(data);
+      // 백엔드 응답 구조에 맞게 수정
+      const backendResponse: BackendResponse<UserProfile> =
+        await response.json();
+      setProfile(backendResponse.data); // data 필드에서 실제 프로필 정보 추출
     } catch (error) {
       console.error("Profile fetch error:", error);
       toast.error("프로필 정보를 불러오는데 실패했습니다.");
@@ -121,24 +141,32 @@ const ProfilePage: React.FC = () => {
                 <Avatar className="h-16 w-16 border-2 border-primary/10">
                   <AvatarImage
                     src={profile.profileImage}
-                    alt={profile.nickname}
+                    alt={getUserNameFromEmail(profile.email)}
                   />
                   <AvatarFallback className="text-lg bg-primary/10 text-primary">
-                    {profile.nickname.slice(0, 2).toUpperCase()}
+                    {getInitialsFromEmail(profile.email)}
                   </AvatarFallback>
                 </Avatar>
                 <div>
                   <div className="flex items-center gap-2">
                     <User className="text-primary size-5" />
                     <h2 className="text-lg font-semibold">
-                      {profile.nickname}
+                      {getUserNameFromEmail(profile.email)}
                     </h2>
                     <Badge>활성 사용자</Badge>
                   </div>
-                  <p className="text-muted-foreground mt-1 text-sm">
-                    사용자 ID: {profile.id} • 가입일:{" "}
-                    {new Date().toLocaleDateString()}
-                  </p>
+                  <div className="mt-1 space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Mail className="text-muted-foreground size-4" />
+                      <p className="text-muted-foreground text-sm">
+                        {profile.email}
+                      </p>
+                    </div>
+                    <p className="text-muted-foreground text-sm">
+                      사용자 ID: {profile.id} • 가입일:{" "}
+                      {new Date().toLocaleDateString()}
+                    </p>
+                  </div>
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -179,15 +207,13 @@ const ProfilePage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <div className="flex items-center gap-2">
-                    <Share2 className="text-blue-500 size-5" />
-                    <span className="text-sm font-medium">공유한 이미지</span>
+                    <ImageIcon className="text-blue-500 size-5" />
+                    <span className="text-sm font-medium">생성된 이미지</span>
                   </div>
                   <div className="mt-2">
-                    <div className="text-2xl font-bold text-blue-600">
-                      {profile.sharedImageCount.toLocaleString()}
-                    </div>
+                    <div className="text-2xl font-bold text-blue-600">-</div>
                     <p className="text-muted-foreground text-xs">
-                      다른 사용자와 공유
+                      총 생성한 이미지 수
                     </p>
                   </div>
                 </div>
@@ -282,6 +308,26 @@ const ProfilePage: React.FC = () => {
               <div className="flex flex-col items-start justify-between gap-3 border-b py-3 last:border-0 sm:flex-row sm:items-center">
                 <div className="flex items-center gap-3">
                   <div className="bg-muted rounded-md p-2">
+                    <Mail className="text-muted-foreground size-4" />
+                  </div>
+                  <div>
+                    <p className="font-medium">이메일</p>
+                    <p className="text-muted-foreground text-sm">
+                      {profile.email}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <Badge variant="outline">인증됨</Badge>
+                  <Button variant="ghost" size="sm">
+                    <Activity className="size-4" />
+                  </Button>
+                </div>
+              </div>
+
+              <div className="flex flex-col items-start justify-between gap-3 border-b py-3 last:border-0 sm:flex-row sm:items-center">
+                <div className="flex items-center gap-3">
+                  <div className="bg-muted rounded-md p-2">
                     <Calendar className="text-muted-foreground size-4" />
                   </div>
                   <div>
@@ -330,7 +376,7 @@ const ProfilePage: React.FC = () => {
   );
 };
 
-// 로딩 스켈레톤 컴포넌트
+// 로딩 스켈레톤 컴포넌트 (변경사항 없음)
 const ProfileSkeleton: React.FC = () => {
   return (
     <div className="container mx-auto px-4 py-6 md:px-6 2xl:max-w-[1400px]">
