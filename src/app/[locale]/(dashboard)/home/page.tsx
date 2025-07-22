@@ -88,20 +88,57 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="p-10 bg-gray-50">
-      {/* Hero Section */}
-      <section className="relative h-[500px] rounded-xl overflow-hidden mb-12 shadow-2xl">
-        <video
-          src="https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/tomato_00467.mp4"
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-12">
-          <h2 className="text-6xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
-            {bannerTexts[currentBannerTextIndex]}
-          </h2>
+      {/* Hero Section - 3개 박스 */}
+      <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
+        {/* 상단 박스 (전체 너비) */}
+        <div className="lg:col-span-2 relative h-[300px] rounded-xl overflow-hidden shadow-2xl">
+          <video
+            src="https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/tomato_00467.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-8">
+            <h2 className="text-4xl lg:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
+              Consistent Character Animation
+            </h2>
+          </div>
+        </div>
+
+        {/* 하단 왼쪽 박스 */}
+        <div className="relative h-[250px] rounded-xl overflow-hidden shadow-2xl">
+          <video
+            src="https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/tomato_00467.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
+            <h3 className="text-2xl lg:text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
+              Unified Style
+            </h3>
+          </div>
+        </div>
+
+        {/* 하단 오른쪽 박스 */}
+        <div className="relative h-[250px] rounded-xl overflow-hidden shadow-2xl">
+          <video
+            src="https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/tomato_00467.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
+            <h3 className="text-2xl lg:text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
+              Continuous Stories
+            </h3>
+          </div>
         </div>
       </section>
 

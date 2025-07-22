@@ -14,7 +14,6 @@ export default function DashboardLayout({
   const t = useTranslations("Dashboard");
   const pathname = usePathname();
 
-  // 경로에 따른 페이지 제목 설정 (번역 적용)
   const getPageTitle = () => {
     if (pathname.includes("/home")) return t("pageTitle.home");
     if (pathname.includes("/profile")) return t("pageTitle.profile");
@@ -27,12 +26,10 @@ export default function DashboardLayout({
       <div className="flex min-h-screen w-full">
         <AppSidebar />
         <main className="flex-1">
-          <div className="flex items-center justify-between gap-2 p-4 border-b bg-white">
-            <div className="flex items-center gap-2">
-              <SidebarTrigger />
-              <h1 className="text-lg font-semibold">{getPageTitle()}</h1>
-            </div>
-            <LocaleSwitcher />
+          {/* 모바일에서만 보이는 헤더 */}
+          <div className="md:hidden flex items-center gap-2 p-4 border-b bg-white">
+            <SidebarTrigger />
+            <h1 className="text-lg font-semibold">{getPageTitle()}</h1>
           </div>
           <div className="flex-1 overflow-y-auto">{children}</div>
         </main>
