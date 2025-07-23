@@ -4,6 +4,7 @@
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import { routing } from "../../i18n/routing";
+import { Toaster } from "@/components/ui/sonner";
 
 export default async function LocaleLayout({
   children,
@@ -19,6 +20,9 @@ export default async function LocaleLayout({
 
   return (
     // html / body 제거 → Fragment 로 감싸거나 div 등 원하는 컨테이너 사용
-    <NextIntlClientProvider locale={locale}>{children}</NextIntlClientProvider>
+    <NextIntlClientProvider locale={locale}>
+      {children}
+      <Toaster />
+    </NextIntlClientProvider>
   );
 }
