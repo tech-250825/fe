@@ -356,7 +356,7 @@ export default function VideoGenerationScreen() {
                     : "border-gray-300 hover:border-gray-400",
                   currentSceneIndex === index && isPlayingAll
                     ? "ring-2 ring-green-400"
-                    : ""
+                    : "",
                 )}
                 onClick={() => handleSceneClick(scene, index)}
                 style={{

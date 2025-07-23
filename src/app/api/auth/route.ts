@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     if (!username || !password) {
       return NextResponse.json(
         { error: "사용자명과 비밀번호를 입력해주세요" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -44,14 +44,14 @@ export async function POST(request: NextRequest) {
     } else {
       return NextResponse.json(
         { error: "잘못된 사용자명 또는 비밀번호입니다" },
-        { status: 401 }
+        { status: 401 },
       );
     }
   } catch (error) {
     console.error("Login error:", error);
     return NextResponse.json(
       { error: "서버 오류가 발생했습니다" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

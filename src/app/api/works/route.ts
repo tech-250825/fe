@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     console.error("Get works error:", error);
     return NextResponse.json(
       { error: "작품 목록을 불러오는데 실패했습니다" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -47,14 +47,14 @@ export async function POST(request: NextRequest) {
       console.log("Title is missing");
       return NextResponse.json(
         { error: "작품 제목은 필수입니다" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     console.log("About to execute SQL query...");
     console.log(
       "SQL:",
-      "INSERT INTO works (title, description, image_url, video_url, user_info) VALUES (?, ?, ?, ?, ?)"
+      "INSERT INTO works (title, description, image_url, video_url, user_info) VALUES (?, ?, ?, ?, ?)",
     );
     console.log("Params:", [
       title,
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
         imageUrl || null,
         videoUrl || null,
         userInfo || null,
-      ]
+      ],
     );
 
     console.log("SQL execution result:", result);
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       { error: "작품 등록에 실패했습니다: " + (error as Error).message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -111,7 +111,7 @@ export async function DELETE(request: NextRequest) {
     if (!id) {
       return NextResponse.json(
         { error: "작품 ID가 필요합니다" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -122,7 +122,7 @@ export async function DELETE(request: NextRequest) {
     console.error("Delete work error:", error);
     return NextResponse.json(
       { error: "작품 삭제에 실패했습니다" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

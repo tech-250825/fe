@@ -495,7 +495,7 @@ export default function LibraryPage() {
           `${config.apiUrl}/api/images/mypage?${params.toString()}`,
           {
             credentials: "include",
-          }
+          },
         );
 
         if (!response.ok) throw new Error("Failed to fetch media");
@@ -519,7 +519,7 @@ export default function LibraryPage() {
         setLoading(false);
       }
     },
-    [loading]
+    [loading],
   );
 
   const handleScroll = useCallback(() => {

@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     if (!file) {
       return NextResponse.json(
         { error: "파일이 선택되지 않았습니다" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     if (file.size > 70 * 1024 * 1024) {
       return NextResponse.json(
         { error: "파일 크기는 50MB를 초과할 수 없습니다" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
         { error: "지원되지 않는 파일 형식입니다" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
     console.error("Upload error:", error);
     return NextResponse.json(
       { error: "파일 업로드에 실패했습니다" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -35,7 +35,7 @@ export interface QueueResponse {
 export class VideoAPIService {
   // 비디오 생성 요청
   static async createVideo(
-    request: CreateVideoRequest
+    request: CreateVideoRequest,
   ): Promise<CreateVideoResponse> {
     try {
       const response = await fetch(`${config.apiUrl}/api/videos/create`, {
@@ -140,7 +140,7 @@ export class VideoAPIService {
     taskId: string,
     onProgress?: (progress: number) => void,
     onComplete?: (videoUrl: string) => void,
-    onError?: (error: string) => void
+    onError?: (error: string) => void,
   ): Promise<void> {
     const poll = async () => {
       try {
@@ -213,7 +213,7 @@ export class VideoAPIService {
             }
           },
           "image/jpeg",
-          0.8 // 품질 80%
+          0.8, // 품질 80%
         );
       };
 
@@ -229,11 +229,11 @@ export class VideoAPIService {
       if (file.size > 1048576) {
         // 1MB
         console.log(
-          `Compressing image from ${(file.size / 1024 / 1024).toFixed(2)}MB`
+          `Compressing image from ${(file.size / 1024 / 1024).toFixed(2)}MB`,
         );
         uploadFile = await this.compressImage(file);
         console.log(
-          `Compressed to ${(uploadFile.size / 1024 / 1024).toFixed(2)}MB`
+          `Compressed to ${(uploadFile.size / 1024 / 1024).toFixed(2)}MB`,
         );
       }
 

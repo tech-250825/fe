@@ -18,7 +18,7 @@ export default function WorkForm({ onSuccess }: WorkFormProps) {
   const [error, setError] = useState("");
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -26,7 +26,7 @@ export default function WorkForm({ onSuccess }: WorkFormProps) {
 
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    type: "image" | "video"
+    type: "image" | "video",
   ) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -102,7 +102,7 @@ export default function WorkForm({ onSuccess }: WorkFormProps) {
     } catch (error) {
       console.error("Submit error:", error);
       setError(
-        error instanceof Error ? error.message : "작품 등록에 실패했습니다"
+        error instanceof Error ? error.message : "작품 등록에 실패했습니다",
       );
     } finally {
       setLoading(false);

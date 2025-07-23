@@ -385,12 +385,12 @@ export const SSEProvider = ({
 }: SSEProviderProps) => {
   const { isLoggedIn, memberId } = useAuth();
   const [notifications, setNotifications] = useState<ProcessedNotification[]>(
-    []
+    [],
   );
 
   // SSE 메시지 처리 함수
   const processSSEData = (
-    data: SSENotificationData
+    data: SSENotificationData,
   ): ProcessedNotification[] => {
     const processedNotifications: ProcessedNotification[] = [];
 
@@ -469,7 +469,7 @@ export const SSEProvider = ({
 
           newNotifications.forEach((newNotification) => {
             const existingIndex = updatedNotifications.findIndex(
-              (n) => n.id === newNotification.id
+              (n) => n.id === newNotification.id,
             );
 
             if (existingIndex >= 0) {
@@ -484,7 +484,7 @@ export const SSEProvider = ({
           // 최신 순으로 정렬
           return updatedNotifications.sort(
             (a, b) =>
-              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
           );
         });
 
@@ -566,14 +566,14 @@ export const SSEProvider = ({
   const markAsRead = (id: string) => {
     setNotifications((prev) =>
       prev.map((notification) =>
-        notification.id === id ? { ...notification, read: true } : notification
-      )
+        notification.id === id ? { ...notification, read: true } : notification,
+      ),
     );
   };
 
   const markAllAsRead = () => {
     setNotifications((prev) =>
-      prev.map((notification) => ({ ...notification, read: true }))
+      prev.map((notification) => ({ ...notification, read: true })),
     );
   };
 

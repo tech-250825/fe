@@ -86,7 +86,7 @@ export const useSSEManager = ({
           if (reconnectAttemptsRef.current < maxReconnectAttempts) {
             reconnectAttemptsRef.current++;
             console.log(
-              `SSE 재연결 시도 ${reconnectAttemptsRef.current}/${maxReconnectAttempts}`
+              `SSE 재연결 시도 ${reconnectAttemptsRef.current}/${maxReconnectAttempts}`,
             );
 
             reconnectTimeoutRef.current = setTimeout(() => {

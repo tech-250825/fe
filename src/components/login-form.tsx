@@ -31,7 +31,7 @@ export function LoginForm({
                 variant="outline"
                 onClick={() => {
                   window.location.assign(
-                    `${config.apiUrl}/oauth2/authorization/google`
+                    `${config.apiUrl}/oauth2/authorization/google`,
                   );
                 }}
               >

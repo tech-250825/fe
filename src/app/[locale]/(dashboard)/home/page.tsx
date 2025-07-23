@@ -28,7 +28,7 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentBannerTextIndex(
-        (prevIndex) => (prevIndex + 1) % bannerTexts.length
+        (prevIndex) => (prevIndex + 1) % bannerTexts.length,
       );
     }, 3000);
     return () => clearInterval(interval);
@@ -183,7 +183,7 @@ const HomePage: React.FC = () => {
                   onMouseEnter={() => {
                     if (hasVideo && !hasImage) {
                       const video = document.getElementById(
-                        `video-${work.id}`
+                        `video-${work.id}`,
                       ) as HTMLVideoElement;
                       if (video) {
                         video.play().catch(() => {
@@ -195,7 +195,7 @@ const HomePage: React.FC = () => {
                   onMouseLeave={() => {
                     if (hasVideo && !hasImage) {
                       const video = document.getElementById(
-                        `video-${work.id}`
+                        `video-${work.id}`,
                       ) as HTMLVideoElement;
                       if (video) {
                         video.pause();

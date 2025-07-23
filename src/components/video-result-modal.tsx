@@ -98,7 +98,7 @@ export default function VideoResultModal({
                         <p className="text-neutral-500">{key}</p>
                         <p className="text-neutral-200 font-medium">{value}</p>
                       </div>
-                    )
+                    ),
                   )}
                 </div>
               </div>

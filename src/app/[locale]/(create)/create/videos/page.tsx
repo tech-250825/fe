@@ -67,22 +67,22 @@ export default function CreatePage() {
 
   const [prompt, setPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
-  const [taskList, setTaskList] = useState([]);
+  const [taskList, setTaskList] = useState<TaskItem[]>([]);
   const [lastFetchTime, setLastFetchTime] = useState("");
 
   // 모델 관련 상태
-  const [availableModels, setAvailableModels] = useState([]);
+  const [availableModels, setAvailableModels] = useState<any[]>([]);
   const [selectedModel, setSelectedModel] = useState("");
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [tempModel, setTempModel] = useState("");
 
   // 현재 RadioGroup 대신 선택된 모델 객체 전체를 저장
-  const [selectedModelData, setSelectedModelData] = useState(null);
-  const [tempSelectedModel, setTempSelectedModel] = useState(null);
+  const [selectedModelData, setSelectedModelData] = useState<any>(null);
+  const [tempSelectedModel, setTempSelectedModel] = useState<any>(null);
 
   const [selectedTab, setSelectedTab] = useState("STYLE"); // 또는 "CHARACTER"
-  const [styleModels, setStyleModels] = useState([]);
-  const [characterModels, setCharacterModels] = useState([]);
+  const [styleModels, setStyleModels] = useState<any[]>([]);
+  const [characterModels, setCharacterModels] = useState<any[]>([]);
 
   // 모달 관련 상태 추가
   //   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -95,22 +95,34 @@ export default function CreatePage() {
   // 무한 스크롤 관련 상태 추가
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const [nextCursor, setNextCursor] = useState(null);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
 
   // 기존 상태들 아래에 추가
-  const [selectedResolution, setSelectedResolution] = useState("720p");
-  const [selectedAspectRatio, setSelectedAspectRatio] = useState("16:9");
+  const [selectedResolution, setSelectedResolution] = useState<"720p" | "480p">(
+    "720p"
+  );
+  const [selectedAspectRatio, setSelectedAspectRatio] = useState<
+    "1:1" | "16:9" | "9:16"
+  >("16:9");
   const [selectedFrames, setSelectedFrames] = useState(81);
 
   const [showSelectedSettings, setShowSelectedSettings] = useState(false);
 
-  // 해상도와 비율에 따른 width, height 계산 함수
-  const getVideoSize = (resolution, aspectRatio) => {
-    const resolutionMap = {
+  type Resolution = "720p" | "480p";
+  type AspectRatio = "1:1" | "16:9" | "9:16";
+
+  const getVideoSize = (
+    resolution: Resolution,
+    aspectRatio: AspectRatio
+  ): [number, number] => {
+    const resolutionMap: Record<
+      Resolution,
+      Record<AspectRatio, [number, number]>
+    > = {
       "720p": { "1:1": [720, 720], "16:9": [1280, 720], "9:16": [720, 1280] },
       "480p": { "1:1": [480, 480], "16:9": [854, 480], "9:16": [480, 854] },
     };
-    return resolutionMap[resolution][aspectRatio] || [1280, 720];
+    return resolutionMap[resolution]?.[aspectRatio] || [1280, 720];
   };
 
   // 모델 목록 불러오기 - 백엔드 응답 구조에 맞게 수정
@@ -150,9 +162,9 @@ export default function CreatePage() {
   };
 
   // ref들
-  const taskListRef = useRef([]);
+  const taskListRef = useRef<TaskItem[]>([]);
   const loadingRef = useRef(false);
-  const nextCursorRef = useRef(null);
+  const nextCursorRef = useRef<string | null>(null);
   const hasMoreRef = useRef(true);
 
   // 상태 동기화
@@ -180,7 +192,7 @@ export default function CreatePage() {
       }
     };
 
-    let timeoutId;
+    let timeoutId: NodeJS.Timeout; // 타입 명시
     const debouncedHandleScroll = () => {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(handleScroll, 100);
@@ -214,7 +226,9 @@ export default function CreatePage() {
         params.append("nextPageCursor", currentCursor);
         console.log(
           "📝 현재 커서 전달:",
-          currentCursor.substring(0, 30) + "..."
+          typeof currentCursor === "string"
+            ? currentCursor.substring(0, 30) + "..."
+            : currentCursor
         );
       }
 
@@ -467,10 +481,10 @@ export default function CreatePage() {
   };
 
   // 🔥 v0 모달 데이터 포맷에 맞게 변경 🔥
-  const handleMediaClick = (clickedItem) => {
+  const handleMediaClick = (clickedItem: TaskItem) => {
     // TaskItem을 VideoResult 형태로 변환
     const videoResult: VideoResult = {
-      src: clickedItem.image.url,
+      src: clickedItem.image?.url || "", // null인 경우 빈 문자열
       prompt: clickedItem.task.prompt,
       parameters: {
         "Aspect Ratio": selectedAspectRatio,
@@ -799,7 +813,9 @@ export default function CreatePage() {
                           <select
                             value={selectedResolution}
                             onChange={(e) =>
-                              setSelectedResolution(e.target.value)
+                              setSelectedResolution(
+                                e.target.value as "720p" | "480p"
+                              )
                             }
                             className="w-full border rounded-md px-3 py-2"
                           >
@@ -815,7 +831,9 @@ export default function CreatePage() {
                           <select
                             value={selectedAspectRatio}
                             onChange={(e) =>
-                              setSelectedAspectRatio(e.target.value)
+                              setSelectedAspectRatio(
+                                e.target.value as "1:1" | "16:9" | "9:16"
+                              )
                             }
                             className="w-full border rounded-md px-3 py-2"
                           >
