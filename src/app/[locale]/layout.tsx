@@ -1,5 +1,6 @@
 // src/app/[locale]/layout.tsx   (파일 위치는 그대로)
 // ※ Next 14 기준, params 는 Promise 가 아니라 바로 객체입니다.
+"use client";
 
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
