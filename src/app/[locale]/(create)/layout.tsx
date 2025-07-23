@@ -79,7 +79,19 @@
 
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import { SSEProvider } from "@/components/SSEProvider";
+// import { SSEProvider } from "@/components/SSEProvider";
+import dynamic from "next/dynamic";
+
+// SSEProvider를 동적 임포트로 변경
+const SSEProvider = dynamic(
+  () =>
+    import("@/components/SSEProvider").then((mod) => ({
+      default: mod.SSEProvider,
+    })),
+  {
+    ssr: false,
+  }
+);
 
 export default function CreateLayout({
   children,
