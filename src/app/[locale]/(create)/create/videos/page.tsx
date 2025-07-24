@@ -89,6 +89,11 @@ export default function CreatePage() {
   const [styleModels, setStyleModels] = useState<any[]>([]);
   const [characterModels, setCharacterModels] = useState<any[]>([]);
 
+  // 기존 상태들 아래에 추가
+  const [selectedMode, setSelectedMode] = useState<"t2v" | "i2v">("t2v");
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
   // 모달 관련 상태 추가
   //   const [isModalOpen, setIsModalOpen] = useState(false);
   //   const [selectedMediaIndex, setSelectedMediaIndex] = useState(0);
@@ -330,8 +335,15 @@ export default function CreatePage() {
   // 비디오 생성 요청
   const handlePromptSubmit = async () => {
     if (!prompt.trim()) return;
-    if (!selectedModel) {
+    // 수정:
+    if (selectedMode === "t2v" && !selectedModel) {
       alert("모델을 선택해주세요.");
+      return;
+    }
+
+    // 추가:
+    if (selectedMode === "i2v" && !selectedImage) {
+      alert("이미지를 선택해주세요.");
       return;
     }
 
@@ -366,19 +378,54 @@ export default function CreatePage() {
     setIsGenerating(true);
 
     try {
-      const response = await fetch(`${config.apiUrl}/api/videos/create/t2v`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
+      const endpoint =
+        selectedMode === "t2v"
+          ? "/api/videos/create/t2v"
+          : "/api/videos/create/i2v";
 
-        body: JSON.stringify({
-          prompt,
-          lora: selectedModel,
-          width: width, // 추가 필요
-          height: height, // 추가 필요
-          numFrames: selectedFrames, // 추가 필요
-        }),
-      });
+      let requestOptions;
+
+      if (selectedMode === "i2v") {
+        const formData = new FormData();
+        formData.append("image", selectedImage!);
+        formData.append(
+          "request",
+          JSON.stringify({
+            lora: "adapter_model.safetensors",
+            prompt,
+            numFrames: selectedFrames,
+          })
+        );
+
+        // 디버그용
+        console.log("FormData 내용:");
+        for (let [key, value] of formData.entries()) {
+          console.log(key, value);
+        }
+
+        requestOptions = {
+          method: "POST",
+          credentials: "include" as RequestCredentials,
+          body: formData,
+        };
+      } else {
+        requestOptions = {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include" as RequestCredentials,
+          body: JSON.stringify({
+            prompt,
+            lora: selectedModel,
+            width: width,
+            height: height,
+            numFrames: selectedFrames,
+          }),
+        };
+      }
+      const response = await fetch(
+        `${config.apiUrl}${endpoint}`,
+        requestOptions
+      );
 
       console.log("📤 API 요청 완료, 응답 상태:", response.status);
 
@@ -488,6 +535,16 @@ export default function CreatePage() {
   const handleCancel = () => {
     setTempSelectedModel(selectedModelData);
     setIsPopoverOpen(false);
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedImage(file);
+      const reader = new FileReader();
+      reader.onload = () => setImagePreview(reader.result as string);
+      reader.readAsDataURL(file);
+    }
   };
 
   // 🔥 v0 모달 데이터 포맷에 맞게 변경 🔥
@@ -754,7 +811,55 @@ export default function CreatePage() {
                         <ArrowUpRight className="w-4 h-4" />
                       </Button>
                     </div>
-
+                    <div className="flex space-x-1 mb-4 bg-gray-100 rounded-lg p-1">
+                      <button
+                        className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                          selectedMode === "t2v"
+                            ? "bg-white text-black shadow-sm"
+                            : "text-gray-600 hover:text-black"
+                        }`}
+                        onClick={() => setSelectedMode("t2v")}
+                      >
+                        T2V (Text to Video)
+                      </button>
+                      <button
+                        className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                          selectedMode === "i2v"
+                            ? "bg-white text-black shadow-sm"
+                            : "text-gray-600 hover:text-black"
+                        }`}
+                        onClick={() => setSelectedMode("i2v")}
+                      >
+                        I2V (Image to Video)
+                      </button>
+                    </div>
+                    {selectedMode === "i2v" && (
+                      <div className="mb-6 p-4 border-2 border-dashed border-gray-300 rounded-lg">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          className="hidden"
+                          id="image-upload"
+                        />
+                        <label
+                          htmlFor="image-upload"
+                          className="cursor-pointer"
+                        >
+                          {imagePreview ? (
+                            <img
+                              src={imagePreview}
+                              alt="Preview"
+                              className="w-full h-40 object-cover rounded"
+                            />
+                          ) : (
+                            <div className="text-center py-8">
+                              <p>Click to upload image</p>
+                            </div>
+                          )}
+                        </label>
+                      </div>
+                    )}
                     {/* 탭바 */}
                     <div className="flex space-x-1 mb-6 bg-gray-100 rounded-lg p-1">
                       <button
@@ -778,57 +883,57 @@ export default function CreatePage() {
                         Character
                       </button>
                     </div>
-
-                    {/* 모델 그리드 */}
-                    <div className="grid grid-cols-5 gap-4 max-h-80 overflow-y-auto">
-                      {availableModels.map((model) => (
-                        <div
-                          key={model.modelName}
-                          className={`relative group cursor-pointer rounded-xl overflow-hidden border-2 transition-all ${
-                            tempSelectedModel?.modelName === model.modelName
-                              ? "border-blue-500 ring-2 ring-blue-200"
-                              : "border-transparent hover:border-gray-300"
-                          }`}
-                          onClick={() => setTempSelectedModel(model)}
-                        >
-                          <div className="aspect-[3/4] relative">
-                            <img
-                              src={model.image}
-                              alt={model.name}
-                              className="w-full h-full object-cover"
-                            />
-                            {/* 모델 타입 뱃지 */}
-                            <div className="absolute top-2 left-2">
-                              <span className="bg-black/70 text-white text-xs px-2 py-1 rounded">
-                                {selectedTab}
-                              </span>
-                            </div>
-                            {/* New 뱃지 */}
-                            {model.isNew && (
-                              <div className="absolute top-2 right-2">
-                                <span className="bg-green-500 text-white text-xs px-2 py-1 rounded">
-                                  New
+                    {selectedMode === "t2v" && (
+                      <div className="grid grid-cols-5 gap-4 max-h-80 overflow-y-auto">
+                        {availableModels.map((model) => (
+                          <div
+                            key={model.modelName}
+                            className={`relative group cursor-pointer rounded-xl overflow-hidden border-2 transition-all ${
+                              tempSelectedModel?.modelName === model.modelName
+                                ? "border-blue-500 ring-2 ring-blue-200"
+                                : "border-transparent hover:border-gray-300"
+                            }`}
+                            onClick={() => setTempSelectedModel(model)}
+                          >
+                            <div className="aspect-[3/4] relative">
+                              <img
+                                src={model.image}
+                                alt={model.name}
+                                className="w-full h-full object-cover"
+                              />
+                              {/* 모델 타입 뱃지 */}
+                              <div className="absolute top-2 left-2">
+                                <span className="bg-black/70 text-white text-xs px-2 py-1 rounded">
+                                  {selectedTab}
                                 </span>
                               </div>
-                            )}
-                            {/* 선택 체크마크 */}
-                            {tempSelectedModel?.modelName ===
-                              model.modelName && (
-                              <div className="absolute inset-0 bg-blue-500/20 flex items-center justify-center">
-                                <div className="bg-blue-500 text-white rounded-full p-1">
-                                  <Check className="w-4 h-4" />
+                              {/* New 뱃지 */}
+                              {model.isNew && (
+                                <div className="absolute top-2 right-2">
+                                  <span className="bg-green-500 text-white text-xs px-2 py-1 rounded">
+                                    New
+                                  </span>
                                 </div>
-                              </div>
-                            )}
+                              )}
+                              {/* 선택 체크마크 */}
+                              {tempSelectedModel?.modelName ===
+                                model.modelName && (
+                                <div className="absolute inset-0 bg-blue-500/20 flex items-center justify-center">
+                                  <div className="bg-blue-500 text-white rounded-full p-1">
+                                    <Check className="w-4 h-4" />
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                            <div className="p-3 bg-white">
+                              <h3 className="font-medium text-sm truncate">
+                                {model.name}
+                              </h3>
+                            </div>
                           </div>
-                          <div className="p-3 bg-white">
-                            <h3 className="font-medium text-sm truncate">
-                              {model.name}
-                            </h3>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                    )}
                     {/* 🔥 바로 여기에 추가 🔥 */}
                     <div className="mt-6 pt-6 border-t">
                       <h5 className="text-lg font-medium mb-4">
@@ -903,7 +1008,7 @@ export default function CreatePage() {
                       </Button>
                       <Button
                         onClick={handleConfirm}
-                        disabled={!tempSelectedModel}
+                        disabled={selectedMode === "t2v" && !tempSelectedModel} // 🔥 수정
                       >
                         Use Model
                       </Button>
