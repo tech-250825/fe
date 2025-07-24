@@ -547,32 +547,13 @@ export default function CreatePage() {
     }
   };
 
-  // 🔥 v0 모달 데이터 포맷에 맞게 변경 🔥
   const handleMediaClick = (clickedItem: TaskItem) => {
-    router.push(`/create/videos?taskId=${clickedItem.task.id}`, undefined, {
-      shallow: true,
-    });
-    // TaskItem을 VideoResult 형태로 변환
-    // const videoResult: VideoResult = {
-    //   src: clickedItem.image?.url || "", // null인 경우 빈 문자열
-    //   prompt: clickedItem.task.prompt,
-    //   parameters: {
-    //     "Aspect Ratio": selectedAspectRatio,
-    //     Duration: selectedFrames === 81 ? "4s" : "8s",
-    //     Style: clickedItem.task.lora,
-    //     Resolution: selectedResolution,
-    //     "Task ID": clickedItem.task.id.toString(),
-    //     "Created At": new Date(clickedItem.task.createdAt).toLocaleDateString(),
-    //   },
-    // };
-
-    // setSelectedVideoResult(videoResult);
-    // setIsModalOpen(true);
+    router.push(`/create/videos?taskId=${clickedItem.task.id}`);
   };
 
   const handleCloseModal = () => {
     // URL에서 taskId 제거
-    router.push("/create/videos", undefined, { shallow: true });
+    router.push("/create/videos");
   };
 
   // 뒤로가기 버튼 처리
