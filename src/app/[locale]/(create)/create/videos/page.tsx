@@ -26,6 +26,7 @@ import { ModernVideoCard } from "@/components/ModernVideoCard";
 import { config } from "@/config";
 import VideoResultModal from "@/components/video-result-modal";
 import type { VideoResult } from "@/components/video-result-modal";
+import { useRouter, useSearchParams } from "next/navigation";
 
 // 백엔드 응답 구조
 interface BackendResponse<T> {
@@ -60,6 +61,9 @@ interface TaskItem {
 }
 
 export default function CreatePage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const taskId = searchParams.get("taskId"); // URL에서 taskId 읽기
   const { isLoggedIn, userName, memberId } = useAuth();
   const { isConnected, notifications } = useSSE(); // lastNotification 제거
 
@@ -67,6 +71,7 @@ export default function CreatePage() {
 
   const [prompt, setPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  // const [taskList, setTaskList] = useState<TaskItem[]>([]);
   const [taskList, setTaskList] = useState<TaskItem[]>([]);
   const [lastFetchTime, setLastFetchTime] = useState("");
 
@@ -88,9 +93,9 @@ export default function CreatePage() {
   //   const [isModalOpen, setIsModalOpen] = useState(false);
   //   const [selectedMediaIndex, setSelectedMediaIndex] = useState(0);
   //   const [allMediaItems, setAllMediaItems] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedVideoResult, setSelectedVideoResult] =
-    useState<VideoResult | null>(null);
+  //   const [isModalOpen, setIsModalOpen] = useState(false);
+  //   const [selectedVideoResult, setSelectedVideoResult] =
+  //     useState<VideoResult | null>(null);
 
   // 무한 스크롤 관련 상태 추가
   const [loading, setLoading] = useState(false);
@@ -107,6 +112,11 @@ export default function CreatePage() {
   const [selectedFrames, setSelectedFrames] = useState(81);
 
   const [showSelectedSettings, setShowSelectedSettings] = useState(false);
+
+  // taskId가 있으면 해당 영상 찾기
+  const selectedTask = taskId
+    ? taskList.find((item) => item.task.id.toString() === taskId.toString())
+    : null;
 
   type Resolution = "720p" | "480p";
   type AspectRatio = "1:1" | "16:9" | "9:16";
@@ -356,7 +366,7 @@ export default function CreatePage() {
     setIsGenerating(true);
 
     try {
-      const response = await fetch(`${config.apiUrl}/api/videos/create`, {
+      const response = await fetch(`${config.apiUrl}/api/videos/create/t2v`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -482,23 +492,43 @@ export default function CreatePage() {
 
   // 🔥 v0 모달 데이터 포맷에 맞게 변경 🔥
   const handleMediaClick = (clickedItem: TaskItem) => {
+    router.push(`/create/videos?taskId=${clickedItem.task.id}`, undefined, {
+      shallow: true,
+    });
     // TaskItem을 VideoResult 형태로 변환
-    const videoResult: VideoResult = {
-      src: clickedItem.image?.url || "", // null인 경우 빈 문자열
-      prompt: clickedItem.task.prompt,
-      parameters: {
-        "Aspect Ratio": selectedAspectRatio,
-        Duration: selectedFrames === 81 ? "4s" : "8s",
-        Style: clickedItem.task.lora,
-        Resolution: selectedResolution,
-        "Task ID": clickedItem.task.id.toString(),
-        "Created At": new Date(clickedItem.task.createdAt).toLocaleDateString(),
-      },
-    };
+    // const videoResult: VideoResult = {
+    //   src: clickedItem.image?.url || "", // null인 경우 빈 문자열
+    //   prompt: clickedItem.task.prompt,
+    //   parameters: {
+    //     "Aspect Ratio": selectedAspectRatio,
+    //     Duration: selectedFrames === 81 ? "4s" : "8s",
+    //     Style: clickedItem.task.lora,
+    //     Resolution: selectedResolution,
+    //     "Task ID": clickedItem.task.id.toString(),
+    //     "Created At": new Date(clickedItem.task.createdAt).toLocaleDateString(),
+    //   },
+    // };
 
-    setSelectedVideoResult(videoResult);
-    setIsModalOpen(true);
+    // setSelectedVideoResult(videoResult);
+    // setIsModalOpen(true);
   };
+
+  const handleCloseModal = () => {
+    // URL에서 taskId 제거
+    router.push("/create/videos", undefined, { shallow: true });
+  };
+
+  // 뒤로가기 버튼 처리
+  //   useEffect(() => {
+  //     const handleRouteChange = () => {
+  //       // URL이 변경되면 자동으로 selectedTask가 업데이트됨
+  //     };
+
+  //     router.events.on("routeChangeComplete", handleRouteChange);
+  //     return () => {
+  //       router.events.off("routeChangeComplete", handleRouteChange);
+  //     };
+  //   }, [router]);
 
   if (!isLoggedIn) {
     return (
@@ -899,12 +929,25 @@ export default function CreatePage() {
         </div>
       </div>
 
-      {/* 🔥 v0 VideoResultModal로 교체 🔥 */}
-      {isModalOpen && selectedVideoResult && (
+      {/* ✅ URL 기반 모달 */}
+      {selectedTask && (
         <VideoResultModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          videoResult={selectedVideoResult}
+          isOpen={true} // 항상 true (selectedTask가 있을 때만 렌더링되므로)
+          onClose={handleCloseModal} // URL에서 taskId 제거하는 함수
+          videoResult={{
+            src: selectedTask.image?.url || "",
+            prompt: selectedTask.task.prompt,
+            parameters: {
+              "Aspect Ratio": selectedAspectRatio,
+              Duration: selectedFrames === 81 ? "4s" : "8s",
+              Style: selectedTask.task.lora,
+              Resolution: selectedResolution,
+              "Task ID": selectedTask.task.id.toString(),
+              "Created At": new Date(
+                selectedTask.task.createdAt
+              ).toLocaleDateString(),
+            },
+          }}
         />
       )}
     </>
