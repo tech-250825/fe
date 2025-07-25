@@ -1,64 +1,19 @@
 "use client";
 
 import React, { useEffect, useState, useCallback, useRef } from "react";
-import {
-  RotateCcw,
-  MoreHorizontal,
-  ArrowUpRight,
-  ArrowUp,
-  Loader2,
-  Sparkles,
-  Check,
-  Wifi,
-  WifiOff,
-  Settings,
-} from "lucide-react";
-import { Heart, Share2, Download } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { useAuth } from "@/hooks/useAuth";
 import { useSSE } from "@/components/SSEProvider";
-import { ModernVideoCard } from "@/components/ModernVideoCard";
 import { config } from "@/config";
 import VideoResultModal from "@/components/video-result-modal";
-import type { VideoResult } from "@/components/video-result-modal";
 import { useRouter, useSearchParams } from "next/navigation";
-
-// 백엔드 응답 구조
-interface BackendResponse<T> {
-  timestamp: string;
-  statusCode: number;
-  message: string;
-  data: T;
-}
-
-interface TaskListData {
-  content: TaskItem[];
-  nextPageCursor: string | null;
-  previousPageCursor: string | null;
-}
-
-interface TaskItem {
-  type: string;
-  task: {
-    id: number;
-    prompt: string;
-    lora: string;
-    status: string;
-    runpodId: string | null;
-    createdAt: string;
-  };
-  image: {
-    id: number;
-    url: string;
-    index: number;
-    createdAt: string;
-  } | null;
-}
+import { VideoList } from "@/components/video/VideoList";
+import {
+  TaskItem,
+  BackendResponse,
+  TaskListData,
+} from "@/services/types/video.types";
+import { ChatInput } from "@/components/input/ChatInput";
+import { VideoGenerationParams } from "@/services/types/input.types";
 
 export default function CreatePage() {
   const router = useRouter();
@@ -67,9 +22,7 @@ export default function CreatePage() {
   const { isLoggedIn, userName, memberId } = useAuth();
   const { isConnected, notifications } = useSSE(); // lastNotification 제거
 
-  const listRef = useRef(null);
-
-  const [prompt, setPrompt] = useState("");
+  //   const listRef = useRef(null)
   const [isGenerating, setIsGenerating] = useState(false);
   // const [taskList, setTaskList] = useState<TaskItem[]>([]);
   const [taskList, setTaskList] = useState<TaskItem[]>([]);
@@ -77,30 +30,10 @@ export default function CreatePage() {
 
   // 모델 관련 상태
   const [availableModels, setAvailableModels] = useState<any[]>([]);
-  const [selectedModel, setSelectedModel] = useState("");
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [tempModel, setTempModel] = useState("");
-
-  // 현재 RadioGroup 대신 선택된 모델 객체 전체를 저장
-  const [selectedModelData, setSelectedModelData] = useState<any>(null);
-  const [tempSelectedModel, setTempSelectedModel] = useState<any>(null);
 
   const [selectedTab, setSelectedTab] = useState("STYLE"); // 또는 "CHARACTER"
   const [styleModels, setStyleModels] = useState<any[]>([]);
   const [characterModels, setCharacterModels] = useState<any[]>([]);
-
-  // 기존 상태들 아래에 추가
-  const [selectedMode, setSelectedMode] = useState<"t2v" | "i2v">("t2v");
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-
-  // 모달 관련 상태 추가
-  //   const [isModalOpen, setIsModalOpen] = useState(false);
-  //   const [selectedMediaIndex, setSelectedMediaIndex] = useState(0);
-  //   const [allMediaItems, setAllMediaItems] = useState([]);
-  //   const [isModalOpen, setIsModalOpen] = useState(false);
-  //   const [selectedVideoResult, setSelectedVideoResult] =
-  //     useState<VideoResult | null>(null);
 
   // 무한 스크롤 관련 상태 추가
   const [loading, setLoading] = useState(false);
@@ -116,29 +49,10 @@ export default function CreatePage() {
   >("16:9");
   const [selectedFrames, setSelectedFrames] = useState(81);
 
-  const [showSelectedSettings, setShowSelectedSettings] = useState(false);
-
   // taskId가 있으면 해당 영상 찾기
   const selectedTask = taskId
     ? taskList.find((item) => item.task.id.toString() === taskId.toString())
     : null;
-
-  type Resolution = "720p" | "480p";
-  type AspectRatio = "1:1" | "16:9" | "9:16";
-
-  const getVideoSize = (
-    resolution: Resolution,
-    aspectRatio: AspectRatio
-  ): [number, number] => {
-    const resolutionMap: Record<
-      Resolution,
-      Record<AspectRatio, [number, number]>
-    > = {
-      "720p": { "1:1": [720, 720], "16:9": [1280, 720], "9:16": [720, 1280] },
-      "480p": { "1:1": [480, 480], "16:9": [854, 480], "9:16": [480, 854] },
-    };
-    return resolutionMap[resolution]?.[aspectRatio] || [1280, 720];
-  };
 
   // 모델 목록 불러오기 - 백엔드 응답 구조에 맞게 수정
   const fetchAvailableModels = async () => {
@@ -332,41 +246,17 @@ export default function CreatePage() {
     }
   }, []);
 
-  // 비디오 생성 요청
-  const handlePromptSubmit = async () => {
-    if (!prompt.trim()) return;
-    // 수정:
-    if (selectedMode === "t2v" && !selectedModel) {
-      alert("모델을 선택해주세요.");
-      return;
-    }
-
-    // 추가:
-    if (selectedMode === "i2v" && !selectedImage) {
-      alert("이미지를 선택해주세요.");
-      return;
-    }
-
-    // 추가
-    if (!selectedResolution || !selectedAspectRatio || !selectedFrames) {
-      alert("비디오 설정을 모두 선택해주세요.");
-      return;
-    }
-
-    console.log("🚀 비디오 생성 요청:", prompt, "모델:", selectedModel);
-
-    const [width, height] = getVideoSize(
-      selectedResolution,
-      selectedAspectRatio
-    );
+  // handlePromptSubmit을 이것으로 교체
+  const handleVideoGeneration = async (params: VideoGenerationParams) => {
+    setIsGenerating(true);
 
     const tempId = Date.now();
     const optimisticTask = {
       type: "video",
       task: {
         id: tempId,
-        prompt,
-        lora: selectedModel,
+        prompt: params.prompt,
+        lora: params.selectedModel || "",
         status: "IN_PROGRESS",
         runpodId: null,
         createdAt: new Date().toISOString(),
@@ -375,34 +265,25 @@ export default function CreatePage() {
     };
 
     setTaskList((prev) => [optimisticTask, ...prev]);
-    setIsGenerating(true);
 
     try {
       const endpoint =
-        selectedMode === "t2v"
+        params.mode === "t2v"
           ? "/api/videos/create/t2v"
           : "/api/videos/create/i2v";
-
       let requestOptions;
 
-      if (selectedMode === "i2v") {
+      if (params.mode === "i2v") {
         const formData = new FormData();
-        formData.append("image", selectedImage!);
+        formData.append("image", params.selectedImage!);
         formData.append(
           "request",
           JSON.stringify({
             lora: "adapter_model.safetensors",
-            prompt,
-            numFrames: selectedFrames,
+            prompt: params.prompt,
+            numFrames: params.frames,
           })
         );
-
-        // 디버그용
-        console.log("FormData 내용:");
-        for (let [key, value] of formData.entries()) {
-          console.log(key, value);
-        }
-
         requestOptions = {
           method: "POST",
           credentials: "include" as RequestCredentials,
@@ -414,32 +295,29 @@ export default function CreatePage() {
           headers: { "Content-Type": "application/json" },
           credentials: "include" as RequestCredentials,
           body: JSON.stringify({
-            prompt,
-            lora: selectedModel,
-            width: width,
-            height: height,
-            numFrames: selectedFrames,
+            prompt: params.prompt,
+            lora: params.selectedModel,
+            width: params.width,
+            height: params.height,
+            numFrames: params.frames,
           }),
         };
       }
+
       const response = await fetch(
         `${config.apiUrl}${endpoint}`,
         requestOptions
       );
 
-      console.log("📤 API 요청 완료, 응답 상태:", response.status);
-
       if (response.ok) {
         const backendResponse: BackendResponse<any> = await response.json();
         console.log("✅ 비디오 생성 요청 성공!", backendResponse);
 
-        // 주기적으로 상태 확인 (SSE 대신)
         const checkInterval = setInterval(() => {
           console.log("🔄 상태 확인을 위해 fetchTaskList 호출");
-          fetchTaskList(true); // 전체 새로고침으로 최신 상태 확인
-        }, 5000); // 5초마다 확인
+          fetchTaskList(true);
+        }, 5000);
 
-        // 30초 후 주기적 확인 중단
         setTimeout(() => {
           clearInterval(checkInterval);
           setIsGenerating(false);
@@ -456,8 +334,11 @@ export default function CreatePage() {
       setTaskList((prev) => prev.filter((task) => task.task.id !== tempId));
       setIsGenerating(false);
     }
+  };
 
-    setPrompt(""); // 프롬프트 초기화
+  const handleTabChange = (tab: "STYLE" | "CHARACTER") => {
+    const currentModels = tab === "STYLE" ? styleModels : characterModels;
+    setAvailableModels(currentModels);
   };
 
   // 초기 데이터 로드
@@ -516,57 +397,34 @@ export default function CreatePage() {
     };
   }, [fetchTaskList]);
 
-  // 완료된 항목 필터링
-  //   useEffect(() => {
-  //     const completedItems = taskList.filter(
-  //       (item) => item.task.status === "COMPLETED" && item.image?.url
-  //     );
-  //     setAllMediaItems(completedItems);
-  //   }, [taskList]);
-
-  // 모델 선택 핸들러들
-  const handleConfirm = () => {
-    setSelectedModelData(tempSelectedModel);
-    setSelectedModel(tempSelectedModel?.modelName || "");
-    setShowSelectedSettings(true); // 🔥 추가 🔥
-    setIsPopoverOpen(false);
-  };
-
-  const handleCancel = () => {
-    setTempSelectedModel(selectedModelData);
-    setIsPopoverOpen(false);
-  };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setSelectedImage(file);
-      const reader = new FileReader();
-      reader.onload = () => setImagePreview(reader.result as string);
-      reader.readAsDataURL(file);
-    }
-  };
-
   const handleMediaClick = (clickedItem: TaskItem) => {
     router.push(`/create/videos?taskId=${clickedItem.task.id}`);
+  };
+
+  const handleShowMore = (item: TaskItem) => {
+    console.log("Show more for:", item.task.id);
+    // Show more 로직 구현
+  };
+
+  const handleBrainstorm = (item: TaskItem) => {
+    console.log("Brainstorm for:", item.task.id);
+    // Brainstorm 로직 구현
+  };
+
+  const handleReply = (item: TaskItem) => {
+    console.log("Reply to:", item.task.id);
+    // Reply 로직 구현
+  };
+
+  const handleMore = (item: TaskItem) => {
+    console.log("More options for:", item.task.id);
+    // More options 로직 구현
   };
 
   const handleCloseModal = () => {
     // URL에서 taskId 제거
     router.push("/create/videos");
   };
-
-  // 뒤로가기 버튼 처리
-  //   useEffect(() => {
-  //     const handleRouteChange = () => {
-  //       // URL이 변경되면 자동으로 selectedTask가 업데이트됨
-  //     };
-
-  //     router.events.on("routeChangeComplete", handleRouteChange);
-  //     return () => {
-  //       router.events.off("routeChangeComplete", handleRouteChange);
-  //     };
-  //   }, [router]);
 
   if (!isLoggedIn) {
     return (
@@ -578,442 +436,25 @@ export default function CreatePage() {
 
   return (
     <>
-      {/* SSE 상태 표시 (개발용) */}
-      {/* <div className="fixed top-4 right-4 z-50 bg-black/80 text-white px-3 py-2 rounded-lg text-xs">
-        <div className="flex items-center gap-2">
-          {isConnected ? (
-            <>
-              <Wifi className="w-3 h-3 text-green-400" />
-              <span>SSE 연결됨 (ID: {memberId})</span>
-            </>
-          ) : (
-            <>
-              <WifiOff className="w-3 h-3 text-red-400" />
-              <span>SSE 연결 끊어짐</span>
-            </>
-          )}
-        </div>
-        {lastFetchTime && (
-          <div className="text-gray-400 mt-1">
-            마지막 업데이트: {lastFetchTime}
-          </div>
-        )}
-        <div className="text-gray-400">총 알림: {notifications.length}개</div>
-      </div> */}
+      <VideoList
+        taskList={taskList}
+        loading={loading}
+        hasMore={hasMore}
+        onVideoClick={handleMediaClick}
+        onShowMore={handleShowMore}
+        onBrainstorm={handleBrainstorm}
+        onReply={handleReply}
+        onMore={handleMore}
+      />
 
-      <div
-        ref={listRef}
-        className="w-full p-6 space-y-6 pb-32"
-        style={{
-          minHeight: "auto",
-          height: "auto",
-          overflow: "visible",
-        }}
-      >
-        {taskList.length === 0 ? (
-          <div className="text-center py-12 text-gray-500">
-            <p>아직 생성된 영상이 없습니다.</p>
-            <p className="text-sm mt-2">
-              아래에서 프롬프트를 입력해 영상을 생성해보세요!
-            </p>
-          </div>
-        ) : (
-          taskList.map((item) => (
-            <div key={item.task.id} className="max-w-2xl mx-auto mb-25">
-              {/* 프롬프트 텍스트 */}
-              <div className="mb-4">
-                <p className="text-gray-700 text-base leading-relaxed">
-                  {item.task.prompt}
-                </p>
-              </div>
-
-              {/* 액션 버튼들 */}
-              <div className="flex items-center gap-3 mb-4">
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700"
-                >
-                  <RotateCcw className="w-4 h-4 mr-2" />
-                  Show More
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700"
-                >
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Brainstorm
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700"
-                >
-                  💬 Reply
-                </Button>
-                <Button variant="ghost" size="sm" className="rounded-full">
-                  <MoreHorizontal className="w-4 h-4" />
-                </Button>
-              </div>
-
-              {/* 비디오/상태 표시 */}
-              {item.task.status === "IN_PROGRESS" ? (
-                <div className="w-full aspect-video bg-gradient-to-br from-blue-50 to-purple-50 flex flex-col items-center justify-center border-2 border-dashed border-blue-200 rounded-2xl">
-                  <div className="flex items-center space-x-3 mb-4">
-                    <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
-                    <Sparkles className="w-5 h-5 text-purple-500 animate-pulse" />
-                  </div>
-                  <p className="text-sm text-gray-500">영상 생성 중...</p>
-                  <p className="text-xs text-gray-400 mt-2">
-                    주기적으로 상태를 확인하고 있습니다
-                  </p>
-                  <div className="text-xs text-gray-300 mt-1">
-                    Task ID: {item.task.id} | LoRA: {item.task.lora}
-                  </div>
-                </div>
-              ) : item.task.status === "COMPLETED" && item.image?.url ? (
-                <div
-                  className="relative rounded-2xl overflow-hidden shadow-lg cursor-pointer group"
-                  onClick={() => handleMediaClick(item)}
-                >
-                  <ModernVideoCard
-                    videoUrl={item.image.url}
-                    prompt={item.task.prompt}
-                    taskId={item.task.id}
-                    createdAt={item.task.createdAt}
-                    isNew={true}
-                    variant="cinematic"
-                  />
-                  {/* 호버 효과 */}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none" />
-                </div>
-              ) : item.task.status === "FAILED" ? (
-                <div className="w-full aspect-video bg-gradient-to-br from-red-50 to-orange-50 flex flex-col items-center justify-center border-2 border-dashed border-red-200 rounded-2xl">
-                  <div className="flex items-center space-x-3 mb-4">
-                    <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
-                      <span className="text-white text-sm font-bold">✕</span>
-                    </div>
-                  </div>
-                  <p className="text-sm text-red-600 font-medium">
-                    영상 생성 실패
-                  </p>
-                  <p className="text-xs text-red-400 mt-2">다시 시도해주세요</p>
-                  <div className="text-xs text-red-300 mt-1">
-                    Task ID: {item.task.id}
-                  </div>
-                </div>
-              ) : (
-                <div className="text-red-500 p-4 bg-red-50 rounded-2xl">
-                  <p>❌ 상태: {item.task.status}</p>
-                  <p className="text-xs mt-1">예상하지 못한 상태입니다.</p>
-                  <p className="text-xs mt-1">
-                    Task ID: {item.task.id} | Type: {item.type}
-                  </p>
-                </div>
-              )}
-            </div>
-          ))
-        )}
-      </div>
-
-      {/* 로딩 표시 */}
-      {loading && (
-        <div className="flex justify-center py-8">
-          <div className="flex items-center gap-2 text-gray-500">
-            <Loader2 className="w-5 h-5 animate-spin" />
-            <span>더 불러오는 중...</span>
-          </div>
-        </div>
-      )}
-
-      {/* 더 이상 데이터가 없을 때 */}
-      {!hasMore && taskList.length > 0 && (
-        <div className="text-center py-8 text-gray-500">
-          <p>모든 콘텐츠를 불러왔습니다.</p>
-        </div>
-      )}
-
-      {/* 하단 입력 영역 */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 p-6 bg-transparent sm:left-64">
-        <div className="max-w-4xl mx-auto">
-          {/* 🔥 선택된 설정 표시 (input 위에 추가) 🔥 */}
-          {showSelectedSettings && selectedModelData && (
-            <div className="mb-4 p-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4 text-sm text-gray-700">
-                  <span className="font-medium">{selectedModelData.name}</span>
-                  <span className="text-gray-500">•</span>
-                  <span>
-                    {selectedResolution} {selectedAspectRatio}
-                  </span>
-                  <span className="text-gray-500">•</span>
-                  <span>{selectedFrames === 81 ? "4s" : "8s"}</span>
-                </div>
-                <button
-                  onClick={() => setShowSelectedSettings(false)}
-                  className="text-gray-400 hover:text-gray-600 text-lg"
-                >
-                  ×
-                </button>
-              </div>
-            </div>
-          )}
-          <div className="relative">
-            <input
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handlePromptSubmit()}
-              placeholder="What do you want to see..."
-              className="w-full bg-white/90 backdrop-blur-sm border border-gray-200 rounded-2xl px-6 py-4 text-gray-700 placeholder-gray-500 pr-32 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-lg transition-all"
-              disabled={isGenerating}
-            />
-            <div className="absolute right-4 top-1/2 transform -translate-y-1/2 flex items-center space-x-2">
-              {/* 모델 선택 버튼 */}
-              <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="bg-white/90 backdrop-blur-sm border-gray-200 text-gray-700 hover:bg-gray-50"
-                  >
-                    <Settings className="w-4 h-4 mr-2" />
-                    모델
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent
-                  className="w-[800px] max-h-[600px] p-0"
-                  align="end"
-                >
-                  <div className="p-6">
-                    <div className="flex items-center justify-between mb-6">
-                      <h4 className="text-xl font-semibold">Choose a Model</h4>
-                      <Button variant="ghost" size="sm">
-                        <ArrowUpRight className="w-4 h-4" />
-                      </Button>
-                    </div>
-                    <div className="flex space-x-1 mb-4 bg-gray-100 rounded-lg p-1">
-                      <button
-                        className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                          selectedMode === "t2v"
-                            ? "bg-white text-black shadow-sm"
-                            : "text-gray-600 hover:text-black"
-                        }`}
-                        onClick={() => setSelectedMode("t2v")}
-                      >
-                        T2V (Text to Video)
-                      </button>
-                      <button
-                        className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                          selectedMode === "i2v"
-                            ? "bg-white text-black shadow-sm"
-                            : "text-gray-600 hover:text-black"
-                        }`}
-                        onClick={() => setSelectedMode("i2v")}
-                      >
-                        I2V (Image to Video)
-                      </button>
-                    </div>
-                    {selectedMode === "i2v" && (
-                      <div className="mb-6 p-4 border-2 border-dashed border-gray-300 rounded-lg">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={handleImageUpload}
-                          className="hidden"
-                          id="image-upload"
-                        />
-                        <label
-                          htmlFor="image-upload"
-                          className="cursor-pointer"
-                        >
-                          {imagePreview ? (
-                            <img
-                              src={imagePreview}
-                              alt="Preview"
-                              className="w-full h-40 object-cover rounded"
-                            />
-                          ) : (
-                            <div className="text-center py-8">
-                              <p>Click to upload image</p>
-                            </div>
-                          )}
-                        </label>
-                      </div>
-                    )}
-                    {/* 탭바 */}
-                    <div className="flex space-x-1 mb-6 bg-gray-100 rounded-lg p-1">
-                      <button
-                        className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                          selectedTab === "STYLE"
-                            ? "bg-white text-black shadow-sm"
-                            : "text-gray-600 hover:text-black"
-                        }`}
-                        onClick={() => setSelectedTab("STYLE")}
-                      >
-                        Style
-                      </button>
-                      <button
-                        className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                          selectedTab === "CHARACTER"
-                            ? "bg-white text-black shadow-sm"
-                            : "text-gray-600 hover:text-black"
-                        }`}
-                        onClick={() => setSelectedTab("CHARACTER")}
-                      >
-                        Character
-                      </button>
-                    </div>
-                    {selectedMode === "t2v" && (
-                      <div className="grid grid-cols-5 gap-4 max-h-80 overflow-y-auto">
-                        {availableModels.map((model) => (
-                          <div
-                            key={model.modelName}
-                            className={`relative group cursor-pointer rounded-xl overflow-hidden border-2 transition-all ${
-                              tempSelectedModel?.modelName === model.modelName
-                                ? "border-blue-500 ring-2 ring-blue-200"
-                                : "border-transparent hover:border-gray-300"
-                            }`}
-                            onClick={() => setTempSelectedModel(model)}
-                          >
-                            <div className="aspect-[3/4] relative">
-                              <img
-                                src={model.image}
-                                alt={model.name}
-                                className="w-full h-full object-cover"
-                              />
-                              {/* 모델 타입 뱃지 */}
-                              <div className="absolute top-2 left-2">
-                                <span className="bg-black/70 text-white text-xs px-2 py-1 rounded">
-                                  {selectedTab}
-                                </span>
-                              </div>
-                              {/* New 뱃지 */}
-                              {model.isNew && (
-                                <div className="absolute top-2 right-2">
-                                  <span className="bg-green-500 text-white text-xs px-2 py-1 rounded">
-                                    New
-                                  </span>
-                                </div>
-                              )}
-                              {/* 선택 체크마크 */}
-                              {tempSelectedModel?.modelName ===
-                                model.modelName && (
-                                <div className="absolute inset-0 bg-blue-500/20 flex items-center justify-center">
-                                  <div className="bg-blue-500 text-white rounded-full p-1">
-                                    <Check className="w-4 h-4" />
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                            <div className="p-3 bg-white">
-                              <h3 className="font-medium text-sm truncate">
-                                {model.name}
-                              </h3>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    {/* 🔥 바로 여기에 추가 🔥 */}
-                    <div className="mt-6 pt-6 border-t">
-                      <h5 className="text-lg font-medium mb-4">
-                        Video Settings
-                      </h5>
-
-                      <div className="grid grid-cols-3 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium mb-2">
-                            Resolution
-                          </label>
-                          <select
-                            value={selectedResolution}
-                            onChange={(e) =>
-                              setSelectedResolution(
-                                e.target.value as "720p" | "480p"
-                              )
-                            }
-                            className="w-full border rounded-md px-3 py-2"
-                          >
-                            <option value="720p">720p</option>
-                            <option value="480p">480p</option>
-                          </select>
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium mb-2">
-                            Aspect Ratio
-                          </label>
-                          <select
-                            value={selectedAspectRatio}
-                            onChange={(e) =>
-                              setSelectedAspectRatio(
-                                e.target.value as "1:1" | "16:9" | "9:16"
-                              )
-                            }
-                            className="w-full border rounded-md px-3 py-2"
-                          >
-                            <option value="1:1">1:1 (Square)</option>
-                            <option value="16:9">16:9 (Landscape)</option>
-                            <option value="9:16">9:16 (Portrait)</option>
-                          </select>
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium mb-2">
-                            Frames
-                          </label>
-                          <select
-                            value={selectedFrames}
-                            onChange={(e) =>
-                              setSelectedFrames(Number(e.target.value))
-                            }
-                            className="w-full border rounded-md px-3 py-2"
-                          >
-                            <option value={81}>81</option>
-                            <option value={161}>161</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* 하단 버튼들 */}
-                  <div className="border-t p-4 flex justify-between items-center">
-                    <div className="text-sm text-gray-600">
-                      {tempSelectedModel?.name || "No model selected"}
-                    </div>
-                    <div className="flex space-x-2">
-                      <Button variant="outline" onClick={handleCancel}>
-                        Cancel
-                      </Button>
-                      <Button
-                        onClick={handleConfirm}
-                        disabled={selectedMode === "t2v" && !tempSelectedModel} // 🔥 수정
-                      >
-                        Use Model
-                      </Button>
-                    </div>
-                  </div>
-                </PopoverContent>
-              </Popover>
-
-              {/* 전송 버튼 */}
-              <button
-                onClick={handlePromptSubmit}
-                disabled={isGenerating || !prompt.trim()}
-                className="bg-black text-white p-2 rounded-full hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isGenerating ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <ArrowUp className="w-5 h-5" />
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <ChatInput
+        onSubmit={handleVideoGeneration}
+        isGenerating={isGenerating}
+        availableModels={availableModels}
+        styleModels={styleModels}
+        characterModels={characterModels}
+        onTabChange={handleTabChange}
+      />
 
       {/* ✅ URL 기반 모달 */}
       {selectedTask && (
