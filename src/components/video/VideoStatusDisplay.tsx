@@ -1,7 +1,7 @@
 import React from "react";
-import { Loader2, Sparkles } from "lucide-react";
 import { ModernVideoCard } from "@/components/ModernVideoCard";
 import { VideoGenerationScreen } from "./VideoGenerationScreen";
+import { VideoGenerationError } from "./VideoGenerationError";
 
 interface VideoStatusDisplayProps {
   status: string;
@@ -52,18 +52,7 @@ export function VideoStatusDisplay({
 
   if (status === "FAILED") {
     return (
-      <div
-        className={`w-full aspect-video bg-gradient-to-br from-red-50 to-orange-50 flex flex-col items-center justify-center border-2 border-dashed border-red-200 rounded-2xl ${className}`}
-      >
-        <div className="flex items-center space-x-3 mb-4">
-          <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
-            <span className="text-white text-sm font-bold">✕</span>
-          </div>
-        </div>
-        <p className="text-sm text-red-600 font-medium">영상 생성 실패</p>
-        <p className="text-xs text-red-400 mt-2">다시 시도해주세요</p>
-        <div className="text-xs text-red-300 mt-1">Task ID: {taskId}</div>
-      </div>
+      <VideoGenerationError taskId={taskId} />
     );
   }
 

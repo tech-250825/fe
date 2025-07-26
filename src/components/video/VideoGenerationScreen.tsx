@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Video } from "lucide-react";
 
 interface VideoGenerationScreenProps {
@@ -9,20 +8,6 @@ interface VideoGenerationScreenProps {
 }
 
 export function VideoGenerationScreen({ taskId, lora }: VideoGenerationScreenProps) {
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          return 0;
-        }
-        return prev + Math.random() * 3 + 1;
-      });
-    }, 150);
-
-    return () => clearInterval(interval);
-  }, []);
 
   return (
     <div className="w-full aspect-video bg-black flex items-center justify-center p-8 rounded-2xl">
