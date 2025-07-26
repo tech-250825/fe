@@ -14,6 +14,9 @@ import {
 } from "@/services/types/video.types";
 import { ChatInput } from "@/components/input/ChatInput";
 import { VideoGenerationParams } from "@/services/types/input.types";
+import { VideoGenerationUI } from "@/components/VideoGenerationUI";
+import type { VideoOptions, GenerationMode } from "@/lib/types";
+import { VideoGenerationChatBar } from "@/components/VideoGenerationChatBar";
 
 export default function CreatePage() {
   const router = useRouter();
@@ -67,6 +70,7 @@ export default function CreatePage() {
         const styleData = await styleResponse.json();
         const styleModels = styleData.data || styleData; // 백엔드 응답 구조에 따라 처리
         setStyleModels(styleModels);
+        console.log("styleModels:", styleModels); // 여기 추가
       }
 
       // CHARACTER 모델 조회
@@ -246,8 +250,13 @@ export default function CreatePage() {
     }
   }, []);
 
-  // handlePromptSubmit을 이것으로 교체
-  const handleVideoGeneration = async (params: VideoGenerationParams) => {
+  // VideoGenerationUI에서 사용할 새로운 핸들러
+  const handleVideoGeneration = async (
+    prompt: string,
+    mode: GenerationMode,
+    options: VideoOptions,
+    uploadedImageFile?: File
+  ) => {
     setIsGenerating(true);
 
     const tempId = Date.now();
@@ -255,8 +264,8 @@ export default function CreatePage() {
       type: "video",
       task: {
         id: tempId,
-        prompt: params.prompt,
-        lora: params.selectedModel || "",
+        prompt: prompt,
+        lora: (options.style || options.character)?.modelName,
         status: "IN_PROGRESS",
         runpodId: null,
         createdAt: new Date().toISOString(),
@@ -268,20 +277,40 @@ export default function CreatePage() {
 
     try {
       const endpoint =
-        params.mode === "t2v"
-          ? "/api/videos/create/t2v"
-          : "/api/videos/create/i2v";
+        mode === "t2v" ? "/api/videos/create/t2v" : "/api/videos/create/i2v";
       let requestOptions;
 
-      if (params.mode === "i2v") {
+      // aspect ratio에 따른 width, height 계산
+      const getVideoDimensions = (aspectRatio: string, quality: string) => {
+        const isHD = quality === "720p";
+        switch (aspectRatio) {
+          case "1:1":
+            return { width: isHD ? 720 : 480, height: isHD ? 720 : 480 };
+          case "16:9":
+            return { width: isHD ? 1280 : 854, height: isHD ? 720 : 480 };
+          case "9:16":
+            return { width: isHD ? 720 : 480, height: isHD ? 1280 : 854 };
+          default:
+            return { width: isHD ? 1280 : 854, height: isHD ? 720 : 480 };
+        }
+      };
+
+      const { width, height } = getVideoDimensions(
+        options.aspectRatio,
+        options.quality
+      );
+      const frames =
+        options.duration === 2 ? 41 : options.duration === 4 ? 81 : 161;
+
+      if (mode === "i2v" && uploadedImageFile) {
         const formData = new FormData();
-        formData.append("image", params.selectedImage!);
+        formData.append("image", uploadedImageFile);
         formData.append(
           "request",
           JSON.stringify({
             lora: "adapter_model.safetensors",
-            prompt: params.prompt,
-            numFrames: params.frames,
+            prompt: prompt,
+            numFrames: frames,
           })
         );
         requestOptions = {
@@ -295,11 +324,11 @@ export default function CreatePage() {
           headers: { "Content-Type": "application/json" },
           credentials: "include" as RequestCredentials,
           body: JSON.stringify({
-            prompt: params.prompt,
-            lora: params.selectedModel,
-            width: params.width,
-            height: params.height,
-            numFrames: params.frames,
+            prompt: prompt,
+            lora: (options.style || options.character)?.modelName,
+            width: width,
+            height: height,
+            numFrames: frames,
           }),
         };
       }
@@ -446,16 +475,13 @@ export default function CreatePage() {
         onReply={handleReply}
         onMore={handleMore}
       />
-
-      <ChatInput
+      <VideoGenerationChatBar
         onSubmit={handleVideoGeneration}
         isGenerating={isGenerating}
         availableModels={availableModels}
         styleModels={styleModels}
         characterModels={characterModels}
-        onTabChange={handleTabChange}
       />
-
       {/* ✅ URL 기반 모달 */}
       {selectedTask && (
         <VideoResultModal
