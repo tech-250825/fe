@@ -36,6 +36,17 @@ export default function VideoResultModal({
     toast.success("Prompt copied to clipboard!");
   };
 
+  const handleDownload = () => {
+    // Create a temporary anchor element to trigger download
+    const link = document.createElement('a');
+    link.href = videoResult.src;
+    link.download = `video-${Date.now()}.mp4`; // Generate filename with timestamp
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success("Download started!");
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent
@@ -60,19 +71,24 @@ export default function VideoResultModal({
             </div>
 
             {/* Right Side: Details Panel */}
-            <div className="w-full md:w-1/3 p-6 flex flex-col space-y-6 overflow-y-auto">
-              {/* Prompt Section */}
-              <div>
-                <div className="flex justify-between items-center mb-2">
+            <div className="w-full md:w-1/3 p-6 flex flex-col space-y-6 overflow-y-auto relative">
+              {/* Prompt Section - Centered */}
+              <div className="text-center">
+                <div className="flex justify-center items-center mb-4">
                   <h3 className="text-lg font-semibold text-neutral-200">
                     Prompt
                   </h3>
+                </div>
+                <div className="bg-neutral-800 rounded-lg p-4 relative">
+                  <p className="text-sm text-neutral-300 leading-relaxed text-center">
+                    {videoResult.prompt}
+                  </p>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="w-8 h-8 text-neutral-400 hover:text-white"
+                        className="absolute top-2 right-2 w-8 h-8 text-neutral-400 hover:text-white"
                         onClick={handleCopyPrompt}
                       >
                         <Copy className="w-4 h-4" />
@@ -81,22 +97,22 @@ export default function VideoResultModal({
                     <TooltipContent>Copy Prompt</TooltipContent>
                   </Tooltip>
                 </div>
-                <p className="text-sm text-neutral-400 leading-relaxed">
-                  {videoResult.prompt}
-                </p>
               </div>
 
-              {/* Parameters Section */}
+              {/* Parameters Section - Button Style */}
               <div>
-                <h3 className="text-lg font-semibold text-neutral-200 mb-3">
+                <h3 className="text-lg font-semibold text-neutral-200 mb-3 text-center">
                   Parameters
                 </h3>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+                <div className="flex flex-wrap gap-2 justify-center">
                   {Object.entries(videoResult.parameters).map(
                     ([key, value]) => (
-                      <div key={key}>
-                        <p className="text-neutral-500">{key}</p>
-                        <p className="text-neutral-200 font-medium">{value}</p>
+                      <div 
+                        key={key}
+                        className="bg-neutral-800 rounded-full px-4 py-2 border border-neutral-700 hover:border-neutral-600 transition-colors"
+                      >
+                        <span className="text-xs text-neutral-400 mr-1">{key}:</span>
+                        <span className="text-xs text-neutral-200 font-medium">{value}</span>
                       </div>
                     ),
                   )}
@@ -112,6 +128,7 @@ export default function VideoResultModal({
                   <Button
                     variant="secondary"
                     className="bg-neutral-800 hover:bg-neutral-700"
+                    onClick={handleDownload}
                   >
                     <Download className="w-4 h-4 mr-2" />
                     Download
@@ -145,7 +162,7 @@ export default function VideoResultModal({
           <DialogClose asChild>
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 rounded-full p-2 bg-black/50 text-neutral-400 hover:text-white hover:bg-black/70 transition-colors focus:outline-none focus:ring-2 focus:ring-white"
+              className="absolute top-4 right-4 z-50 rounded-full p-2 bg-black/70 text-neutral-400 hover:text-white hover:bg-black/90 transition-colors focus:outline-none focus:ring-2 focus:ring-white"
             >
               <X className="w-5 h-5" />
             </button>
