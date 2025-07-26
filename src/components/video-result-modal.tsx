@@ -67,7 +67,7 @@ export default function VideoResultModal({
           <div className="flex flex-col md:flex-row h-full">
             {/* Left Side: Video Player */}
             <div className="w-full md:w-2/3 bg-black flex items-center justify-center p-4 md:p-0">
-              <VideoPlayerV2 src={videoResult.src} />
+              <VideoPlayerV2 src={videoResult.src} autoplay={true} />
             </div>
 
             {/* Right Side: Details Panel */}

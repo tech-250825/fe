@@ -13,9 +13,10 @@ import {
 
 interface VideoPlayerProps {
   src: string;
+  autoplay?: boolean;
 }
 
-export default function VideoPlayerV2({ src }: VideoPlayerProps) {
+export default function VideoPlayerV2({ src, autoplay = false }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const playerRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -46,7 +47,15 @@ export default function VideoPlayerV2({ src }: VideoPlayerProps) {
       setProgress((video.currentTime / video.duration) * 100);
       setCurrentTime(video.currentTime);
     };
-    const handleLoadedMetadata = () => setDuration(video.duration);
+    const handleLoadedMetadata = () => {
+      setDuration(video.duration);
+      // Auto-play when metadata is loaded if autoplay is enabled
+      if (autoplay) {
+        video.play().catch((error) => {
+          console.log("Autoplay failed:", error);
+        });
+      }
+    };
     const handlePlay = () => setIsPlaying(true);
     const handlePause = () => setIsPlaying(false);
 
@@ -64,7 +73,7 @@ export default function VideoPlayerV2({ src }: VideoPlayerProps) {
       video.removeEventListener("ended", handlePause);
       if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
     };
-  }, []);
+  }, [autoplay]);
 
   useEffect(() => {
     showControls();
