@@ -259,6 +259,34 @@ export default function CreatePage() {
     }
   }, []);
 
+  // 이미지 크기를 가져오는 유틸리티 함수
+  const getImageDimensions = (file: File): Promise<{ width: number; height: number }> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        resolve({ width: img.naturalWidth, height: img.naturalHeight });
+      };
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
+  // 이미지 크기를 품질 설정에 맞게 조정하는 함수
+  const calculateScaledDimensions = (
+    originalWidth: number,
+    originalHeight: number,
+    quality: string
+  ) => {
+    const targetSize = quality === "720p" ? 720 : 480;
+    const minDimension = Math.min(originalWidth, originalHeight);
+    
+    // 더 작은 차원을 목표 크기로 맞추고 비율을 유지
+    const scale = targetSize / minDimension;
+    const scaledWidth = Math.round(originalWidth * scale);
+    const scaledHeight = Math.round(originalHeight * scale);
+    
+    return { width: scaledWidth, height: scaledHeight };
+  };
+
   // VideoGenerationUI에서 사용할 새로운 핸들러
   const handleVideoGeneration = async (
     prompt: string,
@@ -289,7 +317,7 @@ export default function CreatePage() {
         mode === "t2v" ? "/api/videos/create/t2v" : "/api/videos/create/i2v";
       let requestOptions;
 
-      // aspect ratio에 따른 width, height 계산
+      // aspect ratio에 따른 width, height 계산 (t2v용)
       const getVideoDimensions = (aspectRatio: string, quality: string) => {
         const isHD = quality === "720p";
         switch (aspectRatio) {
@@ -304,10 +332,28 @@ export default function CreatePage() {
         }
       };
 
-      const { width, height } = getVideoDimensions(
-        options.aspectRatio,
-        options.quality
-      );
+      let width: number, height: number;
+      
+      // i2v의 경우 업로드된 이미지 크기를 기반으로 계산
+      if (mode === "i2v" && uploadedImageFile) {
+        const imageDimensions = await getImageDimensions(uploadedImageFile);
+        const scaledDimensions = calculateScaledDimensions(
+          imageDimensions.width,
+          imageDimensions.height,
+          options.quality
+        );
+        width = scaledDimensions.width;
+        height = scaledDimensions.height;
+        
+        console.log(`📏 Original image: ${imageDimensions.width}x${imageDimensions.height}`);
+        console.log(`📏 Scaled for ${options.quality}: ${width}x${height}`);
+      } else {
+        // t2v의 경우 기존 로직 사용
+        const dimensions = getVideoDimensions(options.aspectRatio, options.quality);
+        width = dimensions.width;
+        height = dimensions.height;
+      }
+
       const frames =
         options.duration === 2 ? 41 : options.duration === 4 ? 81 : 161;
 
@@ -319,6 +365,8 @@ export default function CreatePage() {
           JSON.stringify({
             lora: "adapter_model.safetensors",
             prompt: prompt,
+            width: width,
+            height: height,
             numFrames: frames,
           })
         );
