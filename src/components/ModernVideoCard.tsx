@@ -358,12 +358,12 @@ const CinematicVideoCard: React.FC<VideoCardProps> = ({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {/* 16:9 비율 */}
-      <div className="relative aspect-video">
+      {/* Fixed height container for all aspect ratios */}
+      <div className="relative h-80 flex items-center justify-center">
         <video
           ref={videoRef}
           src={videoUrl}
-          className="w-full h-full object-cover"
+          className="max-w-full max-h-full object-contain"
           muted
           loop
           playsInline
