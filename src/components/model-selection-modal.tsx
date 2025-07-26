@@ -149,7 +149,12 @@ export function ModelSelectionModal({
               <Label
                 key={ratio}
                 htmlFor={`ratio-${ratio}`}
-                className="flex-1 text-center border rounded-md p-2 cursor-pointer transition-colors hover:bg-muted has-[:checked]:bg-primary has-[:checked]:text-primary-foreground has-[:checked]:border-primary"
+                className={cn(
+                  "flex-1 text-center border-2 rounded-md p-2 cursor-pointer transition-colors hover:bg-muted",
+                  tempOptions.aspectRatio === ratio
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "border-border"
+                )}
               >
                 <RadioGroupItem
                   value={ratio}
@@ -174,7 +179,12 @@ export function ModelSelectionModal({
             <Label
               key={sec}
               htmlFor={`sec-${sec}`}
-              className="flex-1 text-center border rounded-md p-2 cursor-pointer transition-colors hover:bg-muted has-[:checked]:bg-primary has-[:checked]:text-primary-foreground has-[:checked]:border-primary"
+              className={cn(
+                "flex-1 text-center border-2 rounded-md p-2 cursor-pointer transition-colors hover:bg-muted",
+                tempOptions.duration === sec
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "border-border"
+              )}
             >
               <RadioGroupItem
                 value={String(sec)}
@@ -198,7 +208,12 @@ export function ModelSelectionModal({
             <Label
               key={q}
               htmlFor={`q-${q}`}
-              className="flex-1 text-center border rounded-md p-2 cursor-pointer transition-colors hover:bg-muted has-[:checked]:bg-primary has-[:checked]:text-primary-foreground has-[:checked]:border-primary"
+              className={cn(
+                "flex-1 text-center border-2 rounded-md p-2 cursor-pointer transition-colors hover:bg-muted",
+                tempOptions.quality === q
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "border-border"
+              )}
             >
               <RadioGroupItem value={q} id={`q-${q}`} className="sr-only" />
               {q}
