@@ -186,7 +186,7 @@ export function VideoGenerationChatBar({
   }, [selections, mode]);
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 p-6 bg-transparent sm:left-64">
+    <div className="fixed top-0 left-0 right-0 z-50 p-6 bg-transparent sm:left-64">
       {/* 채팅바 영역 */}
       <div 
         className="p-4 w-full max-w-3xl mx-auto relative"

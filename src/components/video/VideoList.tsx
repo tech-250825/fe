@@ -32,7 +32,7 @@ export function VideoList({
   // 빈 상태 렌더링
   if (taskList.length === 0 && !loading) {
     return (
-      <div className={`w-full p-6 space-y-6 pb-32 ${className}`}>
+      <div className={`w-full p-6 space-y-6 pb-32 pt-40 ${className}`}>
         <EmptyState
           title="아직 생성된 영상이 없습니다."
           description="아래에서 프롬프트를 입력해 영상을 생성해보세요!"
@@ -46,7 +46,7 @@ export function VideoList({
       {/* 비디오 목록 */}
       <div
         ref={listRef}
-        className={`w-full p-6 space-y-6 pb-32 ${className}`}
+        className={`w-full p-6 space-y-6 pb-32 pt-40 ${className}`}
         style={{
           minHeight: "auto",
           height: "auto",
