@@ -186,31 +186,30 @@ export function VideoGenerationChatBar({
   }, [selections, mode]);
 
   return (
-    <div
-      className="fixed bottom-0 left-0 right-0 z-50 p-6 bg-transparent sm:left-64"
-      onDragEnter={(e) => handleDragEvents(e, true)}
-    >
-      {/* 드래그 오버레이 */}
-      <div
-        className={cn(
-          "absolute inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm transition-opacity rounded-lg",
-          isDragging ? "opacity-100" : "opacity-0 pointer-events-none"
-        )}
-        onDragLeave={(e) => handleDragEvents(e, false)}
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={handleDrop}
-      >
-        <div className="text-center p-8 border-2 border-dashed border-primary rounded-lg">
-          <ImageIcon className="mx-auto h-12 w-12 text-muted-foreground" />
-          <p className="mt-4 text-lg font-semibold">Drop your image here</p>
-          <p className="text-sm text-muted-foreground">
-            to generate a video from it
-          </p>
-        </div>
-      </div>
-
+    <div className="fixed bottom-0 left-0 right-0 z-50 p-6 bg-transparent sm:left-64">
       {/* 채팅바 영역 */}
-      <div className="p-4 w-full max-w-3xl mx-auto">
+      <div 
+        className="p-4 w-full max-w-3xl mx-auto relative"
+        onDragEnter={(e) => handleDragEvents(e, true)}
+      >
+        {/* 드래그 오버레이 - 채팅바 영역에만 표시 */}
+        <div
+          className={cn(
+            "absolute inset-0 z-50 flex items-center justify-center bg-background/90 backdrop-blur-sm transition-opacity rounded-lg",
+            isDragging ? "opacity-100" : "opacity-0 pointer-events-none"
+          )}
+          onDragLeave={(e) => handleDragEvents(e, false)}
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={handleDrop}
+        >
+          <div className="text-center p-4 border-2 border-dashed border-primary rounded-lg">
+            <ImageIcon className="mx-auto h-8 w-8 text-muted-foreground" />
+            <p className="mt-2 text-sm font-semibold">Drop your image here</p>
+            <p className="text-xs text-muted-foreground">
+              to generate a video from it
+            </p>
+          </div>
+        </div>
         <div className="flex flex-wrap items-center gap-2 mb-2">
           <Badge variant={mode === "t2v" ? "default" : "destructive"}>
             {mode === "t2v" ? "Text-to-Video" : "Image-to-Video"}
