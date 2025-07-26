@@ -1,6 +1,7 @@
 import React from "react";
 import { Loader2, Sparkles } from "lucide-react";
 import { ModernVideoCard } from "@/components/ModernVideoCard";
+import { VideoGenerationScreen } from "./VideoGenerationScreen";
 
 interface VideoStatusDisplayProps {
   status: string;
@@ -25,21 +26,7 @@ export function VideoStatusDisplay({
 }: VideoStatusDisplayProps) {
   if (status === "IN_PROGRESS") {
     return (
-      <div
-        className={`w-full aspect-video bg-gradient-to-br from-blue-50 to-purple-50 flex flex-col items-center justify-center border-2 border-dashed border-blue-200 rounded-2xl ${className}`}
-      >
-        <div className="flex items-center space-x-3 mb-4">
-          <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
-          <Sparkles className="w-5 h-5 text-purple-500 animate-pulse" />
-        </div>
-        <p className="text-sm text-muted-foreground">영상 생성 중...</p>
-        <p className="text-xs text-muted-foreground mt-2">
-          주기적으로 상태를 확인하고 있습니다
-        </p>
-        <div className="text-xs text-muted-foreground mt-1">
-          Task ID: {taskId} | LoRA: {lora}
-        </div>
-      </div>
+      <VideoGenerationScreen taskId={taskId} lora={lora} />
     );
   }
 
