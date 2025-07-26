@@ -851,9 +851,17 @@ export function AppSidebar() {
 
   // 현재 경로인지 확인하는 함수
   const isActivePath = (url: string) => {
-    if (url === "/home") return pathname === "/home";
-    if (url.includes("/profile")) return pathname.includes("/profile");
-    if (url.includes("/create")) return pathname.includes("/create");
+    // 정확한 경로 매칭
+    if (url === "/home") return pathname === "/home" || pathname === "/";
+    if (url === "/profile") return pathname === "/profile";
+    if (url === "/library") return pathname === "/library";
+    
+    // Create 경로들은 더 구체적으로 매칭
+    if (url === "/create/images") return pathname === "/create/images";
+    if (url === "/create/videos") return pathname === "/create/videos";
+    if (url === "/create/characters") return pathname === "/create/characters";
+    
+    // 기본 매칭
     return pathname === url;
   };
 

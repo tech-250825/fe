@@ -28,8 +28,8 @@
   --color-sidebar-foreground: oklch(1 0 0);
   --color-sidebar-primary: oklch(0.556 0.222 250);
   --color-sidebar-primary-foreground: oklch(1 0 0);
-  --color-sidebar-accent: oklch(0.102 0 0);
-  --color-sidebar-accent-foreground: oklch(0.9 0 0);
+  --color-sidebar-accent: oklch(0.556 0.222 250);  /* Blue accent for active items */
+  --color-sidebar-accent-foreground: oklch(1 0 0);  /* White text on blue */
   --color-sidebar-border: oklch(0.2 0 0);
   --color-sidebar-ring: oklch(0.556 0.222 250);
 }
