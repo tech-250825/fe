@@ -234,11 +234,19 @@ export function ModelSelectionModal({
                 <Card>
                   <CardContent className="p-4 max-h-[300px] overflow-y-auto">
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {styleModels.map((style) => (
+                      {styleModels && styleModels.length > 0 ? styleModels.map((style) => (
                         <VisualSelectButton
-                          key={style.name}
-                          label={style.name}
-                          imgSrc={style.img}
+                          key={style.name || style.id}
+                          label={style.name || style.modelName || style.title}
+                          imgSrc={
+                            style.img || 
+                            style.image || 
+                            style.imageUrl || 
+                            style.thumbnailUrl || 
+                            style.url ||
+                            style.thumbnail ||
+                            "/placeholder.svg"
+                          }
                           isSelected={tempOptions.style?.name === style.name}
                           onClick={() =>
                             setTempOptions((prev) => ({
@@ -248,7 +256,11 @@ export function ModelSelectionModal({
                             }))
                           }
                         />
-                      ))}
+                      )) : (
+                        <div className="col-span-full text-center py-8 text-muted-foreground">
+                          {styleModels ? "No style models available" : "Loading style models..."}
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -257,11 +269,19 @@ export function ModelSelectionModal({
                 <Card>
                   <CardContent className="p-4 max-h-[300px] overflow-y-auto">
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {characterModels.map((char) => (
+                      {characterModels && characterModels.length > 0 ? characterModels.map((char) => (
                         <VisualSelectButton
-                          key={char.name}
-                          label={char.name}
-                          imgSrc={char.img}
+                          key={char.name || char.id}
+                          label={char.name || char.modelName || char.title}
+                          imgSrc={
+                            char.img || 
+                            char.image || 
+                            char.imageUrl || 
+                            char.thumbnailUrl || 
+                            char.url ||
+                            char.thumbnail ||
+                            "/placeholder.svg"
+                          }
                           isSelected={tempOptions.character?.name === char.name}
                           onClick={() =>
                             setTempOptions((prev) => ({
@@ -271,7 +291,11 @@ export function ModelSelectionModal({
                             }))
                           }
                         />
-                      ))}
+                      )) : (
+                        <div className="col-span-full text-center py-8 text-muted-foreground">
+                          {characterModels ? "No character models available" : "Loading character models..."}
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -344,23 +368,61 @@ function VisualSelectButton({
   isSelected: boolean;
   onClick: () => void;
 }) {
+  const [imageError, setImageError] = useState(false);
+  const [imageLoading, setImageLoading] = useState(true);
+
+  const handleImageLoad = () => {
+    setImageLoading(false);
+    setImageError(false);
+  };
+
+  const handleImageError = () => {
+    setImageLoading(false);
+    setImageError(true);
+    console.warn(`Failed to load image for ${label}:`, imgSrc);
+  };
+
   return (
     <button
       className={cn(
-        "relative rounded-lg overflow-hidden border-2 transition-all",
+        "relative rounded-lg overflow-hidden border-2 transition-all bg-secondary",
         isSelected
           ? "border-primary"
           : "border-transparent hover:border-muted-foreground/50"
       )}
       onClick={onClick}
     >
+      {/* Loading placeholder */}
+      {imageLoading && (
+        <div className="w-full aspect-[4/3] bg-muted animate-pulse flex items-center justify-center">
+          <div className="text-muted-foreground text-xs">Loading...</div>
+        </div>
+      )}
+      
+      {/* Image */}
       <img
         src={imgSrc || "/placeholder.svg"}
         alt={label}
-        className="w-full h-auto object-cover aspect-[3/2]"
+        className={cn(
+          "w-full h-auto object-cover aspect-[4/3]",
+          imageLoading && "hidden"
+        )}
+        onLoad={handleImageLoad}
+        onError={handleImageError}
       />
+      
+      {/* Error state */}
+      {imageError && !imageLoading && (
+        <div className="w-full aspect-[4/3] bg-muted flex items-center justify-center">
+          <div className="text-muted-foreground text-xs text-center p-2">
+            <div>Image failed</div>
+            <div className="text-[10px] mt-1 break-all">{imgSrc}</div>
+          </div>
+        </div>
+      )}
+      
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-      <p className="absolute bottom-1 left-2 text-white text-sm font-semibold">
+      <p className="absolute bottom-1 left-2 text-white text-sm font-semibold drop-shadow-sm">
         {label}
       </p>
       {isSelected && (

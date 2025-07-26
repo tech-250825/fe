@@ -70,7 +70,11 @@ export default function CreatePage() {
         const styleData = await styleResponse.json();
         const styleModels = styleData.data || styleData; // 백엔드 응답 구조에 따라 처리
         setStyleModels(styleModels);
-        console.log("styleModels:", styleModels); // 여기 추가
+        console.log("🎨 Style Models API Response:", styleData);
+        console.log("🎨 Style Models Array:", styleModels);
+        if (styleModels.length > 0) {
+          console.log("🎨 First Style Model Structure:", styleModels[0]);
+        }
       }
 
       // CHARACTER 모델 조회
@@ -83,6 +87,11 @@ export default function CreatePage() {
         const characterData = await characterResponse.json();
         const characterModels = characterData.data || characterData;
         setCharacterModels(characterModels);
+        console.log("👤 Character Models API Response:", characterData);
+        console.log("👤 Character Models Array:", characterModels);
+        if (characterModels.length > 0) {
+          console.log("👤 First Character Model Structure:", characterModels[0]);
+        }
       }
 
       // 전체 모델 목록 설정 (현재 탭에 따라)
