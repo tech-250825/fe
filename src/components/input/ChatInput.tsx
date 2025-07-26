@@ -155,7 +155,7 @@ export function ChatInput({
             onChange={(e) => setPrompt(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
             placeholder="What do you want to see..."
-            className="w-full bg-white/90 backdrop-blur-sm border border-gray-200 rounded-2xl px-6 py-4 text-gray-700 placeholder-gray-500 pr-32 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-lg transition-all"
+            className="w-full bg-card/90 backdrop-blur-sm border border-border rounded-2xl px-6 py-4 text-foreground placeholder-muted-foreground pr-32 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent shadow-lg transition-all"
             disabled={isGenerating}
           />
 
@@ -187,7 +187,7 @@ export function ChatInput({
             <button
               onClick={handleSubmit}
               disabled={isGenerating || !prompt.trim()}
-              className="bg-black text-white p-2 rounded-full hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-primary text-primary-foreground p-2 rounded-full hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isGenerating ? (
                 <Loader2 className="w-5 h-5 animate-spin" />

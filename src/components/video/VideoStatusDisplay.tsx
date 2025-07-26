@@ -32,11 +32,11 @@ export function VideoStatusDisplay({
           <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
           <Sparkles className="w-5 h-5 text-purple-500 animate-pulse" />
         </div>
-        <p className="text-sm text-gray-500">영상 생성 중...</p>
-        <p className="text-xs text-gray-400 mt-2">
+        <p className="text-sm text-muted-foreground">영상 생성 중...</p>
+        <p className="text-xs text-muted-foreground mt-2">
           주기적으로 상태를 확인하고 있습니다
         </p>
-        <div className="text-xs text-gray-300 mt-1">
+        <div className="text-xs text-muted-foreground mt-1">
           Task ID: {taskId} | LoRA: {lora}
         </div>
       </div>

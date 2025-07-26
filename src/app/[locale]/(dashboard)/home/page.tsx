@@ -87,13 +87,13 @@ const HomePage: React.FC = () => {
   }, [selectedVideo]);
 
   return (
-    <div className="p-10 bg-gray-50">
+    <div className="p-10 bg-background">
       {/* Hero Section - 3개 박스 */}
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
         {/* 상단 박스 (전체 너비) */}
         <div className="lg:col-span-2 relative h-[300px] rounded-xl overflow-hidden shadow-2xl">
           <video
-            src="https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/tomato_00467.mp4"
+            src="https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/tomato_00523.mp4"
             autoPlay
             muted
             loop
@@ -110,7 +110,7 @@ const HomePage: React.FC = () => {
         {/* 하단 왼쪽 박스 */}
         <div className="relative h-[250px] rounded-xl overflow-hidden shadow-2xl">
           <video
-            src="https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/tomato_00467.mp4"
+            src="https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/tomato_00582.mp4"
             autoPlay
             muted
             loop
@@ -144,17 +144,17 @@ const HomePage: React.FC = () => {
 
       {/* Works Grid */}
       <section>
-        <h3 className="text-3xl font-bold mb-8 text-black">
+        <h3 className="text-3xl font-bold mb-8 text-foreground">
           {t("explore.title")}
         </h3>
 
         {loading ? (
           <div className="text-center py-12">
-            <div className="text-lg text-gray-600">작품을 불러오는 중...</div>
+            <div className="text-lg text-muted-foreground">작품을 불러오는 중...</div>
           </div>
         ) : works.length === 0 ? (
           <div className="text-center py-12">
-            <div className="text-lg text-gray-600">등록된 작품이 없습니다.</div>
+            <div className="text-lg text-muted-foreground">등록된 작품이 없습니다.</div>
           </div>
         ) : (
           /* Masonry Grid */
@@ -178,7 +178,7 @@ const HomePage: React.FC = () => {
               return (
                 <div
                   key={work.id}
-                  className={`bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 group border border-gray-200 break-inside-avoid mb-4 cursor-pointer`}
+                  className={`bg-card rounded-xl overflow-hidden shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 group border border-border break-inside-avoid mb-4 cursor-pointer`}
                   onClick={() => hasVideo && openVideoModal(work)}
                   onMouseEnter={() => {
                     if (hasVideo && !hasImage) {
@@ -258,7 +258,7 @@ const HomePage: React.FC = () => {
                         </p>
                       )}
                       {work.user_info && (
-                        <p className="text-white/60 text-xs mt-1">
+                        <p className="text-muted-foreground text-xs mt-1">
                           by {work.user_info}
                         </p>
                       )}

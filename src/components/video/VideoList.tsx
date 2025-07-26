@@ -75,7 +75,7 @@ export function VideoList({
 
       {/* 더 이상 데이터가 없을 때 */}
       {!hasMore && taskList.length > 0 && (
-        <div className="text-center py-8 text-gray-500">
+        <div className="text-center py-8 text-muted-foreground">
           <p>모든 콘텐츠를 불러왔습니다.</p>
         </div>
       )}

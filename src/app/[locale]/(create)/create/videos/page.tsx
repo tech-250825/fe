@@ -458,7 +458,7 @@ export default function CreatePage() {
   if (!isLoggedIn) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500">로그인이 필요합니다.</p>
+        <p className="text-muted-foreground">로그인이 필요합니다.</p>
       </div>
     );
   }

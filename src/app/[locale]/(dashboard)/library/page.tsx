@@ -200,7 +200,7 @@
 //           <div className="flex flex-col sm:flex-row gap-4">
 //             <div className="flex-1">
 //               <div className="relative">
-//                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+//                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
 //                 <Input
 //                   placeholder="ID로 검색..."
 //                   value={searchTerm}
@@ -302,7 +302,7 @@
 //                         </div>
 //                       </div>
 //                     ) : (
-//                       <div className="aspect-video relative overflow-hidden bg-gray-100 cursor-pointer group hover:scale-[1.02] transition-all duration-300">
+//                       <div className="aspect-video relative overflow-hidden bg-secondary cursor-pointer group hover:scale-[1.02] transition-all duration-300">
 //                         <img
 //                           src={item.url}
 //                           alt={`Image ${item.id}`}
@@ -325,7 +325,7 @@
 //                 {sortedItems.map((item) => (
 //                   <div
 //                     key={item.id}
-//                     className="bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow"
+//                     className="bg-card rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow"
 //                   >
 //                     <div className="flex gap-4">
 //                       <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
@@ -345,14 +345,14 @@
 //                       </div>
 //                       <div className="flex-1">
 //                         <div className="flex items-start justify-between mb-2">
-//                           <h3 className="font-medium text-gray-900 line-clamp-1">
+//                           <h3 className="font-medium text-foreground line-clamp-1">
 //                             이미지 #{item.id}
 //                           </h3>
 //                           <Button variant="ghost" size="sm">
 //                             <MoreHorizontal className="w-4 h-4" />
 //                           </Button>
 //                         </div>
-//                         <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
+//                         <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
 //                           <Badge variant="outline" className="text-xs">
 //                             {isVideo(item.url) ? (
 //                               <>
@@ -590,22 +590,22 @@ export default function LibraryPage() {
   if (!isLoggedIn) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500">로그인이 필요합니다.</p>
+        <p className="text-muted-foreground">로그인이 필요합니다.</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* 헤더 */}
-      <div className="bg-white border-b sticky top-0 z-40">
+      <div className="bg-card border-b border-border sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">
+              <h1 className="text-2xl font-bold text-foreground">
                 내 라이브러리
               </h1>
-              <p className="text-gray-600">생성한 이미지와 영상을 관리하세요</p>
+              <p className="text-muted-foreground">생성한 이미지와 영상을 관리하세요</p>
             </div>
             <Badge variant="secondary" className="text-sm">
               총 {mediaItems.length}개
@@ -616,7 +616,7 @@ export default function LibraryPage() {
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                 <Input
                   placeholder="ID로 검색..."
                   value={searchTerm}
@@ -678,15 +678,15 @@ export default function LibraryPage() {
       <div className="max-w-7xl mx-auto px-1 py-1">
         {sortedItems.length === 0 && !loading ? (
           <div className="text-center py-12">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <ImageIcon className="w-8 h-8 text-gray-400" />
+            <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center mx-auto mb-4">
+              <ImageIcon className="w-8 h-8 text-muted-foreground" />
             </div>
-            <p className="text-gray-500 mb-2">
+            <p className="text-muted-foreground mb-2">
               {searchTerm
                 ? "검색 결과가 없습니다"
                 : "아직 생성된 콘텐츠가 없습니다"}
             </p>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-muted-foreground">
               새로운 이미지나 영상을 생성해보세요!
             </p>
           </div>
@@ -718,7 +718,7 @@ export default function LibraryPage() {
                         </div>
                       </div>
                     ) : (
-                      <div className="aspect-video relative overflow-hidden bg-gray-100 cursor-pointer group hover:scale-[1.02] transition-all duration-300">
+                      <div className="aspect-video relative overflow-hidden bg-secondary cursor-pointer group hover:scale-[1.02] transition-all duration-300">
                         <img
                           src={item.url}
                           alt={`Image ${item.id}`}
@@ -741,7 +741,7 @@ export default function LibraryPage() {
                 {sortedItems.map((item) => (
                   <div
                     key={item.id}
-                    className="bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow"
+                    className="bg-card rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow"
                   >
                     <div className="flex gap-4">
                       <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
@@ -761,14 +761,14 @@ export default function LibraryPage() {
                       </div>
                       <div className="flex-1">
                         <div className="flex items-start justify-between mb-2">
-                          <h3 className="font-medium text-gray-900 line-clamp-1">
+                          <h3 className="font-medium text-foreground line-clamp-1">
                             이미지 #{item.id}
                           </h3>
                           <Button variant="ghost" size="sm">
                             <MoreHorizontal className="w-4 h-4" />
                           </Button>
                         </div>
-                        <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
                           <Badge variant="outline" className="text-xs">
                             {isVideo(item.url) ? (
                               <>
@@ -809,7 +809,7 @@ export default function LibraryPage() {
             {/* 로딩 표시 */}
             {loading && (
               <div className="flex justify-center py-8">
-                <div className="flex items-center gap-2 text-gray-500">
+                <div className="flex items-center gap-2 text-muted-foreground">
                   <Loader2 className="w-5 h-5 animate-spin" />
                   <span>로딩 중...</span>
                 </div>
@@ -818,7 +818,7 @@ export default function LibraryPage() {
 
             {/* 더 이상 데이터가 없을 때 */}
             {!hasMore && sortedItems.length > 0 && (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-muted-foreground">
                 <p>모든 콘텐츠를 불러왔습니다.</p>
               </div>
             )}

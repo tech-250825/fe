@@ -254,7 +254,7 @@ export function VideoGenerationChatBar({
             onChange={(e) => setPrompt(e.target.value)}
             onKeyPress={handleKeyPress}
             className={cn(
-              "w-full h-14 pr-14 bg-white",
+              "w-full h-14 pr-14 bg-card border-border text-foreground",
               uploadedImage ? "pl-28" : "pl-14"
             )}
             disabled={isGenerating}

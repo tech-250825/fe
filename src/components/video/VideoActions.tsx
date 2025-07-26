@@ -22,7 +22,7 @@ export function VideoActions({
       <Button
         variant="secondary"
         size="sm"
-        className="rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700"
+        className="rounded-full bg-secondary hover:bg-secondary/80 text-secondary-foreground"
         onClick={onShowMore}
       >
         <RotateCcw className="w-4 h-4 mr-2" />
@@ -31,7 +31,7 @@ export function VideoActions({
       <Button
         variant="secondary"
         size="sm"
-        className="rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700"
+        className="rounded-full bg-secondary hover:bg-secondary/80 text-secondary-foreground"
         onClick={onBrainstorm}
       >
         <Sparkles className="w-4 h-4 mr-2" />
@@ -40,7 +40,7 @@ export function VideoActions({
       <Button
         variant="secondary"
         size="sm"
-        className="rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700"
+        className="rounded-full bg-secondary hover:bg-secondary/80 text-secondary-foreground"
         onClick={onReply}
       >
         💬 Reply

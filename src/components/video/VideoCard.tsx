@@ -32,7 +32,7 @@ export function VideoCard({
     <div className={`max-w-2xl mx-auto mb-25 ${className}`}>
       {/* 프롬프트 텍스트 */}
       <div className="mb-4">
-        <p className="text-gray-700 text-base leading-relaxed">
+        <p className="text-foreground text-base leading-relaxed">
           {item.task.prompt}
         </p>
       </div>

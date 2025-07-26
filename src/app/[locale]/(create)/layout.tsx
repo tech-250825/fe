@@ -123,12 +123,12 @@ export default function CreateLayout({
       onUpscaleComplete={handleUpscaleComplete}
     >
       <SidebarProvider>
-        <div className="min-h-screen w-full flex bg-gray-50">
+        <div className="min-h-screen w-full flex bg-background">
           <AppSidebar />
           <main className="flex-1 flex flex-col h-screen">
             {/* 모바일에서만 보이는 Sidebar Toggle */}
             <div className="md:hidden flex items-center p-2 border-b">
-              <SidebarTrigger className="text-white hover:bg-gray-800" />
+              <SidebarTrigger className="text-foreground hover:bg-secondary" />
             </div>
             {children}
           </main>

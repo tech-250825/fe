@@ -27,9 +27,9 @@ export default function DashboardLayout({
         <AppSidebar />
         <main className="flex-1">
           {/* 모바일에서만 보이는 헤더 */}
-          <div className="md:hidden flex items-center gap-2 p-4 border-b bg-white">
+          <div className="md:hidden flex items-center gap-2 p-4 border-b bg-card">
             <SidebarTrigger />
-            <h1 className="text-lg font-semibold">{getPageTitle()}</h1>
+            <h1 className="text-lg font-semibold text-foreground">{getPageTitle()}</h1>
           </div>
           <div className="flex-1 overflow-y-auto">{children}</div>
         </main>
