@@ -14,7 +14,6 @@ import {
 } from "@/services/types/video.types";
 import { ChatInput } from "@/components/input/ChatInput";
 import { VideoGenerationParams } from "@/services/types/input.types";
-import { VideoGenerationUI } from "@/components/VideoGenerationUI";
 import type { VideoOptions, GenerationMode } from "@/lib/types";
 import { VideoGenerationChatBar } from "@/components/VideoGenerationChatBar";
 
