@@ -46,6 +46,13 @@ export function VideoCard({
         </p>
       </div>
 
+      {/* 액션 버튼들 */}
+      <VideoActions
+        onCopyPrompt={onCopyPrompt}
+        onDownload={onDownload}
+        onDelete={onDelete}
+        className="mb-4"
+      />
 
       {/* 비디오/상태 표시 */}
       <VideoStatusDisplay
