@@ -9,7 +9,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import VideoPlayerV2 from "./video-player-v2";
-import { X, Download, Share2, RefreshCw, Heart, Copy } from "lucide-react";
+import { X, Copy } from "lucide-react";
 import { toast } from "sonner";
 
 export interface VideoResult {
@@ -36,16 +36,6 @@ export default function VideoResultModal({
     toast.success("Prompt copied to clipboard!");
   };
 
-  const handleDownload = () => {
-    // Create a temporary anchor element to trigger download
-    const link = document.createElement('a');
-    link.href = videoResult.src;
-    link.download = `video-${Date.now()}.mp4`; // Generate filename with timestamp
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    toast.success("Download started!");
-  };
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -79,22 +69,25 @@ export default function VideoResultModal({
                     Prompt
                   </h3>
                 </div>
-                <div className="bg-neutral-800 rounded-lg p-4 relative">
+                <div className="bg-neutral-800 rounded-lg p-4 mb-3">
                   <p className="text-sm text-neutral-300 leading-relaxed text-center">
                     {videoResult.prompt}
                   </p>
+                </div>
+                <div className="flex justify-center">
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
-                        variant="ghost"
-                        size="icon"
-                        className="absolute top-2 right-2 w-8 h-8 text-neutral-400 hover:text-white"
+                        variant="secondary"
+                        size="sm"
+                        className="bg-neutral-700 hover:bg-neutral-600 text-neutral-200"
                         onClick={handleCopyPrompt}
                       >
-                        <Copy className="w-4 h-4" />
+                        <Copy className="w-4 h-4 mr-2" />
+                        Copy Prompt
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent>Copy Prompt</TooltipContent>
+                    <TooltipContent>Copy prompt text to clipboard</TooltipContent>
                   </Tooltip>
                 </div>
               </div>
@@ -119,43 +112,6 @@ export default function VideoResultModal({
                 </div>
               </div>
 
-              {/* Actions Section */}
-              <div className="pt-4 border-t border-neutral-800">
-                <h3 className="text-lg font-semibold text-neutral-200 mb-3">
-                  Actions
-                </h3>
-                <div className="grid grid-cols-2 gap-3">
-                  <Button
-                    variant="secondary"
-                    className="bg-neutral-800 hover:bg-neutral-700"
-                    onClick={handleDownload}
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    Download
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    className="bg-neutral-800 hover:bg-neutral-700"
-                  >
-                    <Share2 className="w-4 h-4 mr-2" />
-                    Share
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    className="bg-neutral-800 hover:bg-neutral-700"
-                  >
-                    <RefreshCw className="w-4 h-4 mr-2" />
-                    Recreate
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    className="bg-neutral-800 hover:bg-neutral-700"
-                  >
-                    <Heart className="w-4 h-4 mr-2" />
-                    Save
-                  </Button>
-                </div>
-              </div>
             </div>
           </div>
 
