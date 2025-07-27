@@ -615,10 +615,41 @@ export default function CreatePage() {
     }
   };
 
-  const handleDelete = (item: TaskItem) => {
-    console.log("Delete task:", item.task.id);
-    // TODO: Implement delete API call
-    // TODO: Add confirmation dialog
+  const handleDelete = async (item: TaskItem) => {
+    // Confirmation dialog
+    const shortPrompt = item.task.prompt.length > 50 ? item.task.prompt.substring(0, 50) + '...' : item.task.prompt;
+    if (!confirm("정말로 이 영상을 삭제하시겠습니까?\n\n" + shortPrompt)) {
+      return;
+    }
+
+    try {
+      console.log("Deleting task:", item.task.id);
+      
+      const response = await api.delete(`${config.apiUrl}/api/videos/${item.task.id}`);
+      
+      if (response.ok) {
+        // Remove from local state immediately
+        setTaskList((prev) => prev.filter((task) => task.task.id !== item.task.id));
+        
+        toast.success("영상이 삭제되었습니다.");
+        console.log("✅ Successfully deleted task:", item.task.id);
+        
+        // Refresh the list to ensure consistency
+        fetchTaskList(true);
+      } else {
+        throw new Error(`Delete failed: ${response.status}`);
+      }
+    } catch (error) {
+      console.error("❌ Delete failed:", error);
+      
+      // Check if it's a constraint violation error
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      if (errorMessage.includes('constraint') || errorMessage.includes('foreign key')) {
+        toast.error("연관된 데이터가 있어 삭제할 수 없습니다. 관리자에게 문의하세요.");
+      } else {
+        toast.error("삭제에 실패했습니다. 다시 시도해주세요.");
+      }
+    }
   };
 
   const handleEnhancePrompt = async (prompt: string, selections: VideoOptions): Promise<string> => {
