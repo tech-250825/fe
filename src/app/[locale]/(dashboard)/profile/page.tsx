@@ -21,11 +21,13 @@ import {
   Activity,
   Package,
   Mail,
+  UserX,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { config } from "@/config";
+import { api } from "@/lib/auth/apiClient";
 
 // 백엔드 응답 구조
 interface BackendResponse<T> {
@@ -102,6 +104,29 @@ const ProfilePage: React.FC = () => {
 
   const handleBuyCredits = () => {
     toast.info("크레딧 구매 기능은 준비 중입니다.");
+  };
+
+  const handleWithdraw = async () => {
+    const confirmed = window.confirm(
+      "정말로 회원 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없으며, 모든 데이터가 삭제됩니다."
+    );
+    
+    if (!confirmed) return;
+
+    try {
+      const response = await api.delete(`${config.apiUrl}/api/user/withdraw`);
+
+      if (response.ok) {
+        toast.success("회원 탈퇴가 완료되었습니다.");
+        // Clean up and redirect
+        handleLogout();
+      } else {
+        throw new Error("회원 탈퇴에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("Withdraw error:", error);
+      toast.error("회원 탈퇴 중 오류가 발생했습니다.");
+    }
   };
 
   if (loading) {
@@ -365,6 +390,30 @@ const ProfilePage: React.FC = () => {
                     className="text-red-600 hover:text-red-700"
                   >
                     로그아웃
+                  </Button>
+                </div>
+              </div>
+
+              <div className="flex flex-col items-start justify-between gap-3 border-b py-3 last:border-0 sm:flex-row sm:items-center">
+                <div className="flex items-center gap-3">
+                  <div className="bg-red-50 rounded-md p-2">
+                    <UserX className="text-red-500 size-4" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-red-600">회원 탈퇴</p>
+                    <p className="text-muted-foreground text-sm">
+                      계정과 모든 데이터를 영구 삭제
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={handleWithdraw}
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    회원 탈퇴
                   </Button>
                 </div>
               </div>
