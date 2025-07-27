@@ -2,6 +2,7 @@ import React from "react";
 import { TaskItem } from "@/services/types/video.types";
 import { VideoActions } from "./VideoActions";
 import { VideoStatusDisplay } from "./VideoStatusDisplay";
+import { VideoParameters } from "./VideoParameters";
 
 interface VideoCardProps {
   item: TaskItem;
@@ -30,6 +31,12 @@ export function VideoCard({
 
   return (
     <div className={`max-w-2xl mx-auto mb-25 ${className}`}>
+      {/* 비디오 파라미터 */}
+      <VideoParameters 
+        lora={item.task.lora}
+        taskId={item.task.id}
+      />
+
       {/* 프롬프트 텍스트 */}
       <div className="mb-4">
         <p className="text-foreground text-base leading-relaxed">

@@ -7,7 +7,7 @@ interface VideoGenerationScreenProps {
   lora?: string;
 }
 
-export function VideoGenerationScreen({ taskId, lora }: VideoGenerationScreenProps) {
+export function VideoGenerationScreen({ }: VideoGenerationScreenProps) {
 
   return (
     <div className="w-full aspect-video bg-black flex items-center justify-center p-8 rounded-2xl">
