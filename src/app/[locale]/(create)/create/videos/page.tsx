@@ -294,13 +294,16 @@ export default function CreatePage() {
   ) => {
     setIsGenerating(true);
 
+    // Get lora model with fallback
+    const selectedLoraModel = options.style || options.character;
+    
     const tempId = Date.now();
     const optimisticTask = {
       type: "video",
       task: {
         id: tempId,
         prompt: prompt,
-        lora: (options.style || options.character)?.modelName,
+        lora: selectedLoraModel?.modelName || "studio_ghibli_wan14b_t2v_v01.safetensors",
         status: "IN_PROGRESS",
         runpodId: null,
         createdAt: new Date().toISOString(),
@@ -355,13 +358,16 @@ export default function CreatePage() {
       const frames =
         options.duration === 2 ? 41 : options.duration === 4 ? 81 : 161;
 
+      // Get lora ID with fallback to default (1 is Studio Ghibli based on API response)
+      const loraId = selectedLoraModel?.id || 1; // Default to Studio Ghibli (id: 1)
+
       if (mode === "i2v" && uploadedImageFile) {
         const formData = new FormData();
         formData.append("image", uploadedImageFile);
         formData.append(
           "request",
           JSON.stringify({
-            lora: "adapter_model.safetensors",
+            loraId: loraId,
             prompt: prompt,
             width: width,
             height: height,
@@ -380,7 +386,7 @@ export default function CreatePage() {
           credentials: "include" as RequestCredentials,
           body: JSON.stringify({
             prompt: prompt,
-            lora: (options.style || options.character)?.modelName,
+            loraId: loraId,
             width: width,
             height: height,
             numFrames: frames,

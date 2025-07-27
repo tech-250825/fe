@@ -1,4 +1,5 @@
 export interface LoraModel {
+  id: number;
   image: string | null;
   mediaType: string;
   modelName: string;
