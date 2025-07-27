@@ -17,6 +17,7 @@ import { VideoGenerationParams } from "@/services/types/input.types";
 import type { VideoOptions, GenerationMode } from "@/lib/types";
 import { VideoGenerationChatBar } from "@/components/VideoGenerationChatBar";
 import { api } from "@/lib/auth/apiClient";
+import { toast } from "sonner";
 
 export default function CreatePage() {
   const router = useRouter();
@@ -549,10 +550,15 @@ export default function CreatePage() {
     router.push(`/create/videos?taskId=${clickedItem.task.id}`);
   };
 
-  const handleCopyPrompt = (item: TaskItem) => {
-    navigator.clipboard.writeText(item.task.prompt);
-    console.log("Copied prompt for task:", item.task.id);
-    // TODO: Add toast notification
+  const handleCopyPrompt = async (item: TaskItem) => {
+    try {
+      await navigator.clipboard.writeText(item.task.prompt);
+      console.log("Copied prompt:", item.task.prompt);
+      toast.success("Prompt copied to clipboard!");
+    } catch (error) {
+      console.error("Failed to copy:", error);
+      toast.error("Failed to copy prompt");
+    }
   };
 
   const handleDownload = async (item: TaskItem) => {
