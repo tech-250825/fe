@@ -35,6 +35,9 @@ export function VideoCard({
       <VideoParameters 
         lora={item.task.lora}
         taskId={item.task.id}
+        width={item.task.width}
+        height={item.task.height}
+        numFrames={item.task.numFrames}
       />
 
       {/* 프롬프트 텍스트 */}

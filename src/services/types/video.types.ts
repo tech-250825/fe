@@ -4,6 +4,10 @@ export interface TaskItem {
     id: number;
     prompt: string;
     lora: string;
+    imageUrl: string | null;
+    height: number;
+    width: number;
+    numFrames: number;
     status: string;
     runpodId: string | null;
     createdAt: string;

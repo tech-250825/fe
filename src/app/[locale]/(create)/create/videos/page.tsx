@@ -257,6 +257,59 @@ export default function CreatePage() {
     }
   }, []);
 
+  // 비디오 정보 계산 유틸리티 함수들
+  const calculateAspectRatio = (width: number, height: number): string => {
+    const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b));
+    const divisor = gcd(width, height);
+    const ratioWidth = width / divisor;
+    const ratioHeight = height / divisor;
+    
+    // 일반적인 비율들 체크
+    if (ratioWidth === ratioHeight) return "1:1";
+    if (ratioWidth === 16 && ratioHeight === 9) return "16:9";
+    if (ratioWidth === 9 && ratioHeight === 16) return "9:16";
+    if (ratioWidth === 4 && ratioHeight === 3) return "4:3";
+    if (ratioWidth === 3 && ratioHeight === 4) return "3:4";
+    
+    // 그 외의 경우 계산된 비율 반환
+    return `${ratioWidth}:${ratioHeight}`;
+  };
+
+  const calculateDuration = (numFrames: number): string => {
+    // 일반적으로 25 FPS 기준으로 계산 (백엔드 설정에 따라 다를 수 있음)
+    // 41 frames = ~2s, 81 frames = ~4s, 161 frames = ~8s 패턴으로 보임
+    if (numFrames <= 41) return "2s";
+    if (numFrames <= 81) return "4s";
+    if (numFrames <= 161) return "8s";
+    
+    // 더 정확한 계산이 필요한 경우
+    const fps = 20; // 추정 FPS (실제 백엔드 설정 확인 필요)
+    const seconds = Math.round(numFrames / fps);
+    return `${seconds}s`;
+  };
+
+  const getResolutionLabel = (width: number, height: number): string => {
+    const minDimension = Math.min(width, height);
+    if (minDimension >= 720) return "720p";
+    if (minDimension >= 480) return "480p";
+    return `${width}x${height}`;
+  };
+
+  // aspect ratio에 따른 width, height 계산 함수
+  const getVideoDimensions = (aspectRatio: string, quality: string) => {
+    const isHD = quality === "720p";
+    switch (aspectRatio) {
+      case "1:1":
+        return { width: isHD ? 720 : 480, height: isHD ? 720 : 480 };
+      case "16:9":
+        return { width: isHD ? 1280 : 854, height: isHD ? 720 : 480 };
+      case "9:16":
+        return { width: isHD ? 720 : 480, height: isHD ? 1280 : 854 };
+      default:
+        return { width: isHD ? 1280 : 854, height: isHD ? 720 : 480 };
+    }
+  };
+
   // 이미지 크기를 가져오는 유틸리티 함수
   const getImageDimensions = (file: File): Promise<{ width: number; height: number }> => {
     return new Promise((resolve) => {
@@ -298,12 +351,36 @@ export default function CreatePage() {
     const selectedLoraModel = options.style || options.character;
     
     const tempId = Date.now();
-    const optimisticTask = {
+    // Calculate dimensions for optimistic task
+    let tempWidth: number, tempHeight: number, tempFrames: number;
+    
+    if (mode === "i2v" && uploadedImageFile) {
+      const imageDimensions = await getImageDimensions(uploadedImageFile);
+      const scaledDimensions = calculateScaledDimensions(
+        imageDimensions.width,
+        imageDimensions.height,
+        options.quality
+      );
+      tempWidth = scaledDimensions.width;
+      tempHeight = scaledDimensions.height;
+    } else {
+      const dimensions = getVideoDimensions(options.aspectRatio, options.quality);
+      tempWidth = dimensions.width;
+      tempHeight = dimensions.height;
+    }
+    
+    tempFrames = options.duration === 2 ? 41 : options.duration === 4 ? 81 : 161;
+
+    const optimisticTask: TaskItem = {
       type: "video",
       task: {
         id: tempId,
         prompt: prompt,
         lora: selectedLoraModel?.modelName || "studio_ghibli_wan14b_t2v_v01.safetensors",
+        imageUrl: null,
+        height: tempHeight,
+        width: tempWidth,
+        numFrames: tempFrames,
         status: "IN_PROGRESS",
         runpodId: null,
         createdAt: new Date().toISOString(),
@@ -318,20 +395,6 @@ export default function CreatePage() {
         mode === "t2v" ? "/api/videos/create/t2v" : "/api/videos/create/i2v";
       let requestOptions;
 
-      // aspect ratio에 따른 width, height 계산 (t2v용)
-      const getVideoDimensions = (aspectRatio: string, quality: string) => {
-        const isHD = quality === "720p";
-        switch (aspectRatio) {
-          case "1:1":
-            return { width: isHD ? 720 : 480, height: isHD ? 720 : 480 };
-          case "16:9":
-            return { width: isHD ? 1280 : 854, height: isHD ? 720 : 480 };
-          case "9:16":
-            return { width: isHD ? 720 : 480, height: isHD ? 1280 : 854 };
-          default:
-            return { width: isHD ? 1280 : 854, height: isHD ? 720 : 480 };
-        }
-      };
 
       let width: number, height: number;
       
@@ -425,10 +488,6 @@ export default function CreatePage() {
     }
   };
 
-  const handleTabChange = (tab: "STYLE" | "CHARACTER") => {
-    const currentModels = tab === "STYLE" ? styleModels : characterModels;
-    setAvailableModels(currentModels);
-  };
 
   // 초기 데이터 로드
   useEffect(() => {
@@ -575,26 +634,42 @@ export default function CreatePage() {
         onEnhancePrompt={handleEnhancePrompt}
       />
       {/* ✅ URL 기반 모달 */}
-      {selectedTask && (
-        <VideoResultModal
-          isOpen={true} // 항상 true (selectedTask가 있을 때만 렌더링되므로)
-          onClose={handleCloseModal} // URL에서 taskId 제거하는 함수
-          videoResult={{
-            src: selectedTask.image?.url || "",
-            prompt: selectedTask.task.prompt,
-            parameters: {
-              "Aspect Ratio": selectedAspectRatio,
-              Duration: selectedFrames === 81 ? "4s" : "8s",
-              Style: selectedTask.task.lora,
-              Resolution: selectedResolution,
-              "Task ID": selectedTask.task.id.toString(),
-              "Created At": new Date(
-                selectedTask.task.createdAt
-              ).toLocaleDateString(),
-            },
-          }}
-        />
-      )}
+      {selectedTask && (() => {
+        // 디버깅을 위한 콘솔 로그
+        console.log("🎬 Selected Task Data:", selectedTask);
+        console.log("📏 Task width:", selectedTask.task.width);
+        console.log("📏 Task height:", selectedTask.task.height);
+        console.log("⏱️ Task numFrames:", selectedTask.task.numFrames);
+        
+        const aspectRatio = calculateAspectRatio(selectedTask.task.width, selectedTask.task.height);
+        const duration = calculateDuration(selectedTask.task.numFrames);
+        const resolution = getResolutionLabel(selectedTask.task.width, selectedTask.task.height);
+        
+        console.log("🎯 Calculated aspect ratio:", aspectRatio);
+        console.log("🎯 Calculated duration:", duration);
+        console.log("🎯 Calculated resolution:", resolution);
+        
+        return (
+          <VideoResultModal
+            isOpen={true}
+            onClose={handleCloseModal}
+            videoResult={{
+              src: selectedTask.image?.url || "",
+              prompt: selectedTask.task.prompt,
+              parameters: {
+                "Aspect Ratio": aspectRatio,
+                Duration: duration,
+                Style: selectedTask.task.lora,
+                Resolution: resolution,
+                "Task ID": selectedTask.task.id.toString(),
+                "Created At": new Date(
+                  selectedTask.task.createdAt
+                ).toLocaleDateString(),
+              },
+            }}
+          />
+        );
+      })()}
     </>
   );
 }
