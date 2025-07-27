@@ -1012,13 +1012,16 @@ export function AppSidebar() {
               </div>
               <SidebarMenuButton asChild className="w-full">
                 {/* ✅ Link 컴포넌트로 변경 */}
-                <Link
-                  href="/login"
-                  className="flex items-center justify-center bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90"
+                <button
+                  onClick={() => {
+                    const currentUrl = window.location.href;
+                    window.location.href = `/login?redirect=${encodeURIComponent(currentUrl)}`;
+                  }}
+                  className="flex items-center justify-center bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90 w-full px-3 py-2 rounded-md text-sm font-medium transition-colors"
                 >
                   <LogIn className="w-4 h-4 mr-2" />
                   <span>{t("user.login")}</span>
-                </Link>
+                </button>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>

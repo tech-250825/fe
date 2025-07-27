@@ -30,8 +30,15 @@ export function LoginForm({
                 className="w-full h-12 text-base"
                 variant="outline"
                 onClick={() => {
+                  // Get redirect URL from query params or use current URL
+                  const urlParams = new URLSearchParams(window.location.search);
+                  const redirectUrl = urlParams.get('redirect') || window.location.origin + '/home';
+                  
+                  // Encode the redirect URL
+                  const encodedRedirect = encodeURIComponent(redirectUrl);
+                  
                   window.location.assign(
-                    `${config.apiUrl}/oauth2/authorization/google`,
+                    `${config.apiUrl}/oauth2/authorization/google?redirect_uri=${encodedRedirect}`,
                   );
                 }}
               >
