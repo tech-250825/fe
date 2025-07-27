@@ -15,6 +15,7 @@ import { toast } from "sonner";
 export interface VideoResult {
   src: string;
   prompt: string;
+  inputImageUrl?: string;
   parameters: {
     [key: string]: string;
   };
@@ -62,6 +63,7 @@ export default function VideoResultModal({
 
             {/* Right Side: Details Panel */}
             <div className="w-full md:w-1/3 p-6 flex flex-col space-y-6 overflow-y-auto relative">
+
               {/* Prompt Section - Centered */}
               <div className="text-center">
                 <div className="flex justify-center items-center mb-4">
@@ -98,6 +100,22 @@ export default function VideoResultModal({
                   Parameters
                 </h3>
                 <div className="flex flex-wrap gap-2 justify-center">
+                  {/* Input Image (if exists) */}
+                  {videoResult.inputImageUrl && (
+                    <div className="bg-neutral-800 rounded-full px-4 py-2 border border-neutral-700 hover:border-neutral-600 transition-colors flex items-center gap-2">
+                      <img 
+                        src={videoResult.inputImageUrl} 
+                        alt="Input image"
+                        className="w-6 h-6 object-cover rounded-full"
+                        onError={(e) => {
+                          console.error("Failed to load input image:", videoResult.inputImageUrl);
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                      <span className="text-xs text-neutral-400">Input Image</span>
+                    </div>
+                  )}
+                  
                   {Object.entries(videoResult.parameters).map(
                     ([key, value]) => (
                       <div 

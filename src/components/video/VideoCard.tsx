@@ -36,6 +36,7 @@ export function VideoCard({
         width={item.task.width}
         height={item.task.height}
         numFrames={item.task.numFrames}
+        inputImageUrl={item.task.imageUrl || undefined}
       />
 
       {/* 프롬프트 텍스트 */}

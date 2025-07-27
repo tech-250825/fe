@@ -8,10 +8,11 @@ interface VideoParametersProps {
   width?: number;
   height?: number;
   numFrames?: number;
+  inputImageUrl?: string;
   className?: string;
 }
 
-export function VideoParameters({ lora, taskId, width, height, numFrames, className = "" }: VideoParametersProps) {
+export function VideoParameters({ lora, taskId, width, height, numFrames, inputImageUrl, className = "" }: VideoParametersProps) {
   const getStyleName = (lora: string) => {
     if (!lora) return "Default";
     // Extract style name from lora filename
@@ -53,6 +54,21 @@ export function VideoParameters({ lora, taskId, width, height, numFrames, classN
 
   return (
     <div className={`flex flex-wrap items-center gap-2 mb-3 ${className}`}>
+      {/* Input Image (if exists) */}
+      {inputImageUrl && (
+        <div className="inline-block">
+          <img 
+            src={inputImageUrl} 
+            alt="Input image"
+            className="w-8 h-8 object-cover rounded border border-border"
+            onError={(e) => {
+              console.error("Failed to load input image:", inputImageUrl);
+              e.currentTarget.style.display = 'none';
+            }}
+          />
+        </div>
+      )}
+
       {/* Aspect Ratio */}
       <Badge variant="outline" className="flex items-center gap-1 text-xs">
         <Maximize2 className="w-3 h-3" />

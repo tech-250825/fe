@@ -728,6 +728,7 @@ export default function CreatePage() {
             videoResult={{
               src: selectedTask.image?.url || "",
               prompt: selectedTask.task.prompt,
+              inputImageUrl: selectedTask.task.imageUrl || undefined,
               parameters: {
                 "Aspect Ratio": aspectRatio,
                 Duration: duration,
