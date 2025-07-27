@@ -821,21 +821,21 @@ export function AppSidebar() {
 
   // 도구 메뉴 아이템들 (번역 적용)
   const toolItems = [
-    {
-      title: t("tools.createImages"),
-      url: "/create/images",
-      icon: ImageIcon,
-    },
+    // {
+    //   title: t("tools.createImages"),
+    //   url: "/create/images",
+    //   icon: ImageIcon,
+    // },
     {
       title: t("tools.createVideos"),
       url: "/create/videos",
       icon: Video,
     },
-    {
-      title: t("tools.trainCharacters"),
-      url: "/create/characters",
-      icon: User,
-    },
+    // {
+    //   title: t("tools.trainCharacters"),
+    //   url: "/create/characters",
+    //   icon: User,
+    // },
   ];
 
   // 사용자 이니셜 생성 함수
