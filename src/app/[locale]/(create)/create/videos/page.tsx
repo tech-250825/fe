@@ -16,6 +16,7 @@ import { ChatInput } from "@/components/input/ChatInput";
 import { VideoGenerationParams } from "@/services/types/input.types";
 import type { VideoOptions, GenerationMode } from "@/lib/types";
 import { VideoGenerationChatBar } from "@/components/VideoGenerationChatBar";
+import { api } from "@/lib/auth/apiClient";
 
 export default function CreatePage() {
   const router = useRouter();
@@ -60,9 +61,8 @@ export default function CreatePage() {
   const fetchAvailableModels = async () => {
     try {
       // STYLE 모델 조회
-      const styleResponse = await fetch(
-        `${config.apiUrl}/api/lora?mediaType=VIDEO&styleType=STYLE`,
-        { credentials: "include" }
+      const styleResponse = await api.get(
+        `${config.apiUrl}/api/lora?mediaType=VIDEO&styleType=STYLE`
       );
 
       if (styleResponse.ok) {
@@ -77,9 +77,8 @@ export default function CreatePage() {
       }
 
       // CHARACTER 모델 조회
-      const characterResponse = await fetch(
-        `${config.apiUrl}/api/lora?mediaType=VIDEO&styleType=CHARACTER`,
-        { credentials: "include" }
+      const characterResponse = await api.get(
+        `${config.apiUrl}/api/lora?mediaType=VIDEO&styleType=CHARACTER`
       );
 
       if (characterResponse.ok) {
@@ -176,7 +175,7 @@ export default function CreatePage() {
       const url = `${config.apiUrl}/api/videos/task?${params}`;
       console.log("📡 API 요청 URL:", url);
 
-      const res = await fetch(url, { credentials: "include" });
+      const res = await api.get(url);
 
       if (!res.ok) {
         throw new Error(`HTTP ${res.status}: ${res.statusText}`);
@@ -389,10 +388,9 @@ export default function CreatePage() {
         };
       }
 
-      const response = await fetch(
-        `${config.apiUrl}${endpoint}`,
-        requestOptions
-      );
+      const response = mode === "i2v" && uploadedImageFile
+        ? await api.postForm(`${config.apiUrl}${endpoint}`, requestOptions.body as FormData)
+        : await api.post(`${config.apiUrl}${endpoint}`, JSON.parse(requestOptions.body as string));
 
       if (response.ok) {
         const backendResponse: BackendResponse<any> = await response.json();

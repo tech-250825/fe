@@ -2,6 +2,7 @@
 
 import { config } from "@/config";
 import { useState, useEffect } from "react";
+import { tokenManager } from "@/lib/auth/tokenManager";
 
 // 백엔드 응답 구조에 맞게 수정
 interface BackendResponse<T> {
@@ -67,6 +68,9 @@ export const useAuth = () => {
         credentials: "include",
       });
 
+      // Clean up token manager
+      tokenManager.cleanup();
+
       // 상태 초기화 및 페이지 이동
       setIsLoggedIn(false);
       setUserName("");
@@ -79,14 +83,27 @@ export const useAuth = () => {
   };
 
   // 프로필 정보 가져오기 - 백엔드 응답 구조에 맞게 수정
-  const fetchProfile = async () => {
+  const fetchProfile = async (retryWithRefresh = true) => {
     try {
       setIsLoading(true);
       const res = await fetch(`${config.apiUrl}/api/user/profile`, {
         credentials: "include",
       });
 
-      if (!res.ok) throw new Error("Not logged in");
+      if (!res.ok) {
+        // If 401 and we haven't tried refresh yet, attempt token refresh
+        if (res.status === 401 && retryWithRefresh) {
+          console.log("🔄 Access token expired, attempting refresh...");
+          const refreshSuccess = await tokenManager.refreshToken();
+          
+          if (refreshSuccess) {
+            console.log("✅ Token refreshed, retrying profile fetch...");
+            // Retry the request with new token
+            return await fetchProfile(false); // Prevent infinite recursion
+          }
+        }
+        throw new Error("Not logged in");
+      }
 
       // 백엔드 응답 구조에 맞게 수정
       const response: BackendResponse<UserProfile> = await res.json();
@@ -102,6 +119,9 @@ export const useAuth = () => {
       setUserName(displayName);
       setMemberId(userData.id.toString());
       setUserProfile(userData);
+
+      // Start token management after successful login
+      tokenManager.initialize();
     } catch (err) {
       console.warn("User not logged in:", err);
       setIsLoggedIn(false);
