@@ -394,8 +394,6 @@ export default function CreatePage() {
     try {
       const endpoint =
         mode === "t2v" ? "/api/videos/create/t2v" : "/api/videos/create/i2v";
-      let requestOptions;
-
 
       let width: number, height: number;
       
@@ -425,6 +423,8 @@ export default function CreatePage() {
       // Get lora ID with fallback to default (1 is Studio Ghibli based on API response)
       const loraId = selectedLoraModel?.id || 1; // Default to Studio Ghibli (id: 1)
 
+      let response: Response;
+
       if (mode === "i2v" && uploadedImageFile) {
         const formData = new FormData();
         formData.append("image", uploadedImageFile);
@@ -438,29 +438,19 @@ export default function CreatePage() {
             numFrames: frames,
           })
         );
-        requestOptions = {
-          method: "POST",
-          credentials: "include" as RequestCredentials,
-          body: formData,
-        };
+        
+        response = await api.postForm(`${config.apiUrl}${endpoint}`, formData);
       } else {
-        requestOptions = {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include" as RequestCredentials,
-          body: JSON.stringify({
-            prompt: prompt,
-            loraId: loraId,
-            width: width,
-            height: height,
-            numFrames: frames,
-          }),
+        const requestData = {
+          prompt: prompt,
+          loraId: loraId,
+          width: width,
+          height: height,
+          numFrames: frames,
         };
+        
+        response = await api.post(`${config.apiUrl}${endpoint}`, requestData);
       }
-
-      const response = mode === "i2v" && uploadedImageFile
-        ? await api.postForm(`${config.apiUrl}${endpoint}`, requestOptions.body as FormData)
-        : await api.post(`${config.apiUrl}${endpoint}`, JSON.parse(requestOptions.body as string));
 
       if (response.ok) {
         const backendResponse: BackendResponse<any> = await response.json();
