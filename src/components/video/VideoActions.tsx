@@ -1,20 +1,18 @@
 import React from "react";
-import { RotateCcw, MoreHorizontal, Sparkles } from "lucide-react";
+import { Copy, Download, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface VideoActionsProps {
-  onShowMore?: () => void;
-  onBrainstorm?: () => void;
-  onReply?: () => void;
-  onMore?: () => void;
+  onCopyPrompt?: () => void;
+  onDownload?: () => void;
+  onDelete?: () => void;
   className?: string;
 }
 
 export function VideoActions({
-  onShowMore,
-  onBrainstorm,
-  onReply,
-  onMore,
+  onCopyPrompt,
+  onDownload,
+  onDelete,
   className = "",
 }: VideoActionsProps) {
   return (
@@ -23,35 +21,28 @@ export function VideoActions({
         variant="secondary"
         size="sm"
         className="rounded-full bg-secondary hover:bg-secondary/80 text-secondary-foreground"
-        onClick={onShowMore}
+        onClick={onCopyPrompt}
       >
-        <RotateCcw className="w-4 h-4 mr-2" />
-        Show More
+        <Copy className="w-4 h-4 mr-2" />
+        Copy Prompt
       </Button>
       <Button
         variant="secondary"
         size="sm"
         className="rounded-full bg-secondary hover:bg-secondary/80 text-secondary-foreground"
-        onClick={onBrainstorm}
+        onClick={onDownload}
       >
-        <Sparkles className="w-4 h-4 mr-2" />
-        Brainstorm
+        <Download className="w-4 h-4 mr-2" />
+        Download
       </Button>
       <Button
-        variant="secondary"
-        size="sm"
-        className="rounded-full bg-secondary hover:bg-secondary/80 text-secondary-foreground"
-        onClick={onReply}
-      >
-        💬 Reply
-      </Button>
-      <Button
-        variant="ghost"
+        variant="destructive"
         size="sm"
         className="rounded-full"
-        onClick={onMore}
+        onClick={onDelete}
       >
-        <MoreHorizontal className="w-4 h-4" />
+        <Trash2 className="w-4 h-4 mr-2" />
+        Delete
       </Button>
     </div>
   );

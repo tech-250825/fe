@@ -7,20 +7,18 @@ import { VideoParameters } from "./VideoParameters";
 interface VideoCardProps {
   item: TaskItem;
   onClick: (item: TaskItem) => void;
-  onShowMore?: () => void;
-  onBrainstorm?: () => void;
-  onReply?: () => void;
-  onMore?: () => void;
+  onCopyPrompt?: () => void;
+  onDownload?: () => void;
+  onDelete?: () => void;
   className?: string;
 }
 
 export function VideoCard({
   item,
   onClick,
-  onShowMore,
-  onBrainstorm,
-  onReply,
-  onMore,
+  onCopyPrompt,
+  onDownload,
+  onDelete,
   className = "",
 }: VideoCardProps) {
   const handleVideoClick = () => {
@@ -49,10 +47,9 @@ export function VideoCard({
 
       {/* 액션 버튼들 */}
       <VideoActions
-        onShowMore={onShowMore}
-        onBrainstorm={onBrainstorm}
-        onReply={onReply}
-        onMore={onMore}
+        onCopyPrompt={onCopyPrompt}
+        onDownload={onDownload}
+        onDelete={onDelete}
         className="mb-4"
       />
 

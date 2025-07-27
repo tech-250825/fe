@@ -9,10 +9,9 @@ interface VideoListProps {
   loading: boolean;
   hasMore: boolean;
   onVideoClick: (item: TaskItem) => void;
-  onShowMore?: (item: TaskItem) => void;
-  onBrainstorm?: (item: TaskItem) => void;
-  onReply?: (item: TaskItem) => void;
-  onMore?: (item: TaskItem) => void;
+  onCopyPrompt?: (item: TaskItem) => void;
+  onDownload?: (item: TaskItem) => void;
+  onDelete?: (item: TaskItem) => void;
   className?: string;
 }
 
@@ -21,10 +20,9 @@ export function VideoList({
   loading,
   hasMore,
   onVideoClick,
-  onShowMore,
-  onBrainstorm,
-  onReply,
-  onMore,
+  onCopyPrompt,
+  onDownload,
+  onDelete,
   className = "",
 }: VideoListProps) {
   const listRef = useRef(null);
@@ -58,10 +56,9 @@ export function VideoList({
             key={item.task.id}
             item={item}
             onClick={onVideoClick}
-            onShowMore={() => onShowMore?.(item)}
-            onBrainstorm={() => onBrainstorm?.(item)}
-            onReply={() => onReply?.(item)}
-            onMore={() => onMore?.(item)}
+            onCopyPrompt={() => onCopyPrompt?.(item)}
+            onDownload={() => onDownload?.(item)}
+            onDelete={() => onDelete?.(item)}
           />
         ))}
       </div>

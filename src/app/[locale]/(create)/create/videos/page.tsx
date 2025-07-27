@@ -549,24 +549,29 @@ export default function CreatePage() {
     router.push(`/create/videos?taskId=${clickedItem.task.id}`);
   };
 
-  const handleShowMore = (item: TaskItem) => {
-    console.log("Show more for:", item.task.id);
-    // Show more 로직 구현
+  const handleCopyPrompt = (item: TaskItem) => {
+    navigator.clipboard.writeText(item.task.prompt);
+    console.log("Copied prompt for task:", item.task.id);
+    // TODO: Add toast notification
   };
 
-  const handleBrainstorm = (item: TaskItem) => {
-    console.log("Brainstorm for:", item.task.id);
-    // Brainstorm 로직 구현
+  const handleDownload = (item: TaskItem) => {
+    if (item.image?.url) {
+      const link = document.createElement('a');
+      link.href = item.image.url;
+      link.download = `video-${item.task.id}.mp4`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      console.log("Downloaded video for task:", item.task.id);
+      // TODO: Add toast notification
+    }
   };
 
-  const handleReply = (item: TaskItem) => {
-    console.log("Reply to:", item.task.id);
-    // Reply 로직 구현
-  };
-
-  const handleMore = (item: TaskItem) => {
-    console.log("More options for:", item.task.id);
-    // More options 로직 구현
+  const handleDelete = (item: TaskItem) => {
+    console.log("Delete task:", item.task.id);
+    // TODO: Implement delete API call
+    // TODO: Add confirmation dialog
   };
 
   const handleEnhancePrompt = async (prompt: string, selections: VideoOptions): Promise<string> => {
@@ -620,10 +625,9 @@ export default function CreatePage() {
         loading={loading}
         hasMore={hasMore}
         onVideoClick={handleMediaClick}
-        onShowMore={handleShowMore}
-        onBrainstorm={handleBrainstorm}
-        onReply={handleReply}
-        onMore={handleMore}
+        onCopyPrompt={handleCopyPrompt}
+        onDownload={handleDownload}
+        onDelete={handleDelete}
       />
       <VideoGenerationChatBar
         onSubmit={handleVideoGeneration}
