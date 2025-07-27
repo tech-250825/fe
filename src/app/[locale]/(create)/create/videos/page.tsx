@@ -510,6 +510,37 @@ export default function CreatePage() {
     // More options 로직 구현
   };
 
+  const handleEnhancePrompt = async (prompt: string, selections: VideoOptions): Promise<string> => {
+    console.log("Enhancing prompt:", prompt);
+    
+    try {
+      // Get the selected lora model ID
+      const selectedLoraModel = selections.style || selections.character;
+      const loraId = selectedLoraModel?.id || 1; // Default to Studio Ghibli (id: 1)
+      
+      console.log("Using lora ID:", loraId, "for prompt:", prompt);
+      
+      const response = await api.post(`${config.apiUrl}/api/lora`, {
+        loraId: loraId,
+        prompt: prompt
+      });
+      
+      if (response.ok) {
+        const backendResponse: BackendResponse<string> = await response.json();
+        console.log("✅ Prompt enhanced successfully!", backendResponse);
+        
+        // Return the enhanced prompt from the response
+        return backendResponse.data || prompt; // Fallback to original prompt if data is null
+      } else {
+        console.error("❌ API request failed:", response.statusText);
+        throw new Error(`Failed to enhance prompt: ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error("❌ Network error:", error);
+      throw new Error("Failed to enhance prompt");
+    }
+  };
+
   const handleCloseModal = () => {
     // URL에서 taskId 제거
     router.push("/create/videos");
@@ -541,6 +572,7 @@ export default function CreatePage() {
         availableModels={availableModels}
         styleModels={styleModels}
         characterModels={characterModels}
+        onEnhancePrompt={handleEnhancePrompt}
       />
       {/* ✅ URL 기반 모달 */}
       {selectedTask && (

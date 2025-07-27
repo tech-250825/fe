@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import type { VideoOptions, GenerationMode } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { Settings2, Send, X, ImageIcon } from "lucide-react";
+import { Settings2, Send, X, ImageIcon, Sparkles } from "lucide-react";
 
 const defaultOptions: VideoOptions = {
   style: null,
@@ -29,6 +29,7 @@ interface ChatInputUIProps {
   availableModels: any[];
   styleModels: any[];
   characterModels: any[];
+  onEnhancePrompt?: (prompt: string, selections: VideoOptions) => Promise<string>;
 }
 
 export function VideoGenerationChatBar({
@@ -37,6 +38,7 @@ export function VideoGenerationChatBar({
   availableModels,
   styleModels,
   characterModels,
+  onEnhancePrompt,
 }: ChatInputUIProps) {
   const [mode, setMode] = useState<GenerationMode>("t2v");
   const [prompt, setPrompt] = useState("");
@@ -45,6 +47,7 @@ export function VideoGenerationChatBar({
   const [selections, setSelections] = useState<VideoOptions>(defaultOptions);
   const [isDragging, setIsDragging] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEnhancing, setIsEnhancing] = useState(false);
 
   const handleImageUpload = useCallback((file: File) => {
     if (file && file.type.startsWith("image/")) {
@@ -120,6 +123,20 @@ export function VideoGenerationChatBar({
   const handleSubmit = () => {
     if (prompt.trim() && !isGenerating) {
       onSubmit(prompt, mode, selections, uploadedImageFile || undefined);
+    }
+  };
+
+  const handleEnhancePrompt = async () => {
+    if (prompt.trim() && onEnhancePrompt && !isEnhancing) {
+      setIsEnhancing(true);
+      try {
+        const enhancedPrompt = await onEnhancePrompt(prompt, selections);
+        setPrompt(enhancedPrompt);
+      } catch (error) {
+        console.error("Failed to enhance prompt:", error);
+      } finally {
+        setIsEnhancing(false);
+      }
     }
   };
 
@@ -241,6 +258,18 @@ export function VideoGenerationChatBar({
               <Settings2 className="h-5 w-5" />
               <span className="sr-only">Open settings</span>
             </Button>
+            {onEnhancePrompt && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleEnhancePrompt}
+                disabled={!prompt.trim() || isGenerating || isEnhancing}
+                className="hover:bg-primary/10 hover:text-primary"
+              >
+                <Sparkles className={`h-5 w-5 ${isEnhancing ? 'animate-spin' : ''}`} />
+                <span className="sr-only">Enhance prompt</span>
+              </Button>
+            )}
           </div>
           <Input
             type="text"
@@ -254,7 +283,9 @@ export function VideoGenerationChatBar({
             onKeyPress={handleKeyPress}
             className={cn(
               "w-full h-14 pr-14 bg-card border-border text-foreground",
-              uploadedImage ? "pl-28" : "pl-14"
+              uploadedImage 
+                ? onEnhancePrompt ? "pl-40" : "pl-28"
+                : onEnhancePrompt ? "pl-28" : "pl-14"
             )}
             disabled={isGenerating}
           />
