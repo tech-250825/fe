@@ -555,16 +555,57 @@ export default function CreatePage() {
     // TODO: Add toast notification
   };
 
-  const handleDownload = (item: TaskItem) => {
-    if (item.image?.url) {
+  const handleDownload = async (item: TaskItem) => {
+    if (!item.image?.url) return;
+
+    try {
+      console.log("Starting download for task:", item.task.id);
+      
+      // Try to fetch the video and force download
+      const response = await fetch(item.image.url, {
+        method: 'GET',
+        headers: {
+          'Accept': 'video/mp4',
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch video: ${response.status}`);
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      
       const link = document.createElement('a');
-      link.href = item.image.url;
+      link.href = url;
       link.download = `video-${item.task.id}.mp4`;
+      link.style.display = 'none';
+      
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      console.log("Downloaded video for task:", item.task.id);
+      
+      // Clean up the object URL
+      window.URL.revokeObjectURL(url);
+      
+      console.log("✅ Downloaded video for task:", item.task.id);
       // TODO: Add toast notification
+      
+    } catch (error) {
+      console.error("❌ Download failed:", error);
+      
+      // Fallback to simple link approach if fetch fails
+      console.log("🔄 Trying fallback download method...");
+      const link = document.createElement('a');
+      link.href = item.image.url;
+      link.download = `video-${item.task.id}.mp4`;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // TODO: Show error toast and suggest right-click save
     }
   };
 
