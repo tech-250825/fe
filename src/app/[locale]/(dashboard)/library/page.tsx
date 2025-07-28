@@ -13,7 +13,6 @@ import {
   Loader2,
   Video,
   Image as ImageIcon,
-  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,6 +26,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { ModernVideoCard } from "@/components/ModernVideoCard";
 import { config } from "@/config";
+import VideoPopup from "@/components/VideoPopup";
 
 // 백엔드 응답에 맞게 수정된 MediaItem
 interface MediaItem {
@@ -57,7 +57,8 @@ export default function LibraryPage() {
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [filterType, setFilterType] = useState("all");
-  const [selectedVideo, setSelectedVideo] = useState<MediaItem | null>(null);
+  const [isVideoPopupOpen, setIsVideoPopupOpen] = useState(false);
+  const [currentVideo, setCurrentVideo] = useState("");
 
   const nextCursorRef = useRef<string | null>(null);
 
@@ -129,36 +130,19 @@ export default function LibraryPage() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [handleScroll]);
 
-  // 비디오 모달 열기
-  const openVideoModal = (item: MediaItem) => {
+  // 비디오 팝업 열기
+  const openVideoPopup = (item: MediaItem) => {
     if (isVideo(item.url)) {
-      setSelectedVideo(item);
+      setCurrentVideo(item.url);
+      setIsVideoPopupOpen(true);
     }
   };
 
-  // 비디오 모달 닫기
-  const closeVideoModal = () => {
-    setSelectedVideo(null);
+  // 비디오 팝업 닫기
+  const closeVideoPopup = () => {
+    setIsVideoPopupOpen(false);
+    setCurrentVideo("");
   };
-
-  // ESC 키로 모달 닫기
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        closeVideoModal();
-      }
-    };
-
-    if (selectedVideo) {
-      document.addEventListener("keydown", handleEscape);
-      document.body.style.overflow = "hidden"; // 스크롤 방지
-    }
-
-    return () => {
-      document.removeEventListener("keydown", handleEscape);
-      document.body.style.overflow = "unset";
-    };
-  }, [selectedVideo]);
 
   // 필터링된 아이템들
   const filteredItems = mediaItems.filter((item) => {
@@ -271,7 +255,7 @@ export default function LibraryPage() {
                     {isVideo(item.url) ? (
                       <div 
                         className="relative overflow-hidden bg-black rounded-lg cursor-pointer group hover:scale-[1.02] transition-all duration-300"
-                        onClick={() => openVideoModal(item)}
+                        onClick={() => openVideoPopup(item)}
                       >
                         <video
                           src={item.url}
@@ -400,39 +384,12 @@ export default function LibraryPage() {
         )}
       </div>
 
-      {/* 비디오 모달 */}
-      {selectedVideo && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="relative max-w-4xl w-full max-h-[90vh] bg-black rounded-lg overflow-hidden">
-            {/* 닫기 버튼 */}
-            <button
-              onClick={closeVideoModal}
-              className="absolute top-4 right-4 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 transition-colors"
-            >
-              <X className="w-6 h-6" />
-            </button>
-
-            {/* 비디오 플레이어 */}
-            <video
-              src={selectedVideo.url}
-              controls
-              autoPlay
-              className="w-full h-auto max-h-[80vh]"
-            />
-
-            {/* 비디오 정보 */}
-            <div className="p-6 text-white">
-              <h3 className="text-xl font-bold mb-2">Video #{selectedVideo.id}</h3>
-              <p className="text-gray-300 mb-2">
-                생성일: {formatDate(selectedVideo.createdAt)}
-              </p>
-              <p className="text-gray-400 text-sm">
-                Index: {selectedVideo.index}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* 비디오 팝업 */}
+      <VideoPopup
+        isOpen={isVideoPopupOpen}
+        onClose={closeVideoPopup}
+        videoSrc={currentVideo}
+      />
     </div>
   );
 }
