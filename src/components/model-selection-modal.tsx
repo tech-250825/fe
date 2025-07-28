@@ -18,6 +18,7 @@ import { Label } from "@/components/ui/label";
 import type { VideoOptions, GenerationMode } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { CheckCircle2, UploadCloud, SwitchCamera, X } from "lucide-react";
+import { toast } from "sonner";
 
 interface ModelSelectionModalProps {
   isOpen: boolean;
@@ -72,6 +73,7 @@ export function ModelSelectionModal({
   const [tempOptions, setTempOptions] = useState<VideoOptions>(options);
   const [tempImageFile, setTempImageFile] = useState<File | null>(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+  const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -107,16 +109,43 @@ export function ModelSelectionModal({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setTempImageFile(file);
-      
-      // Create preview URL for the new file
-      if (imagePreviewUrl) {
-        URL.revokeObjectURL(imagePreviewUrl);
-      }
-      
-      const url = URL.createObjectURL(file);
-      setImagePreviewUrl(url);
+      processFile(file);
     }
+  };
+
+  const processFile = (file: File) => {
+    // Define accepted image types
+    const acceptedTypes = [
+      'image/jpeg',
+      'image/jpg', 
+      'image/png',
+      'image/webp',
+      'image/gif'
+    ];
+
+    // Check if file is an accepted image type
+    if (!acceptedTypes.includes(file.type.toLowerCase())) {
+      toast.error(`Unsupported file type. Please upload JPG, PNG, WebP, or GIF images only.`);
+      return;
+    }
+
+    // Check file size (10MB limit)
+    const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+    if (file.size > maxSize) {
+      const fileSizeMB = (file.size / 1024 / 1024).toFixed(2);
+      toast.error(`File too large (${fileSizeMB}MB). Please upload an image smaller than 10MB.`);
+      return;
+    }
+
+    setTempImageFile(file);
+    
+    // Create preview URL for the new file
+    if (imagePreviewUrl) {
+      URL.revokeObjectURL(imagePreviewUrl);
+    }
+    
+    const url = URL.createObjectURL(file);
+    setImagePreviewUrl(url);
   };
 
   const handleRemoveImage = () => {
@@ -127,6 +156,31 @@ export function ModelSelectionModal({
     }
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
+    }
+  };
+
+  // Drag and drop handlers
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      const file = files[0];
+      processFile(file);
     }
   };
 
@@ -355,15 +409,26 @@ export function ModelSelectionModal({
           <div className="py-4 space-y-6">
             {!tempImageFile ? (
               <div
-                className="flex flex-col items-center justify-center w-full p-6 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50"
+                className={cn(
+                  "flex flex-col items-center justify-center w-full p-6 border-2 border-dashed rounded-lg cursor-pointer transition-colors",
+                  isDragOver
+                    ? "border-primary bg-primary/10"
+                    : "border-muted-foreground/25 hover:bg-muted/50"
+                )}
                 onClick={() => fileInputRef.current?.click()}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
               >
-                <UploadCloud className="w-10 h-10 text-muted-foreground" />
+                <UploadCloud className={cn(
+                  "w-10 h-10 transition-colors",
+                  isDragOver ? "text-primary" : "text-muted-foreground"
+                )} />
                 <p className="mt-2 text-sm font-semibold">
-                  Click to upload an image
+                  {isDragOver ? "Drop image here" : "Click to upload or drag & drop"}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  PNG, JPG, GIF (Max 10MB)
+                  JPG, PNG, WebP, GIF (Max 10MB)
                 </p>
               </div>
             ) : (
@@ -399,16 +464,28 @@ export function ModelSelectionModal({
                   </p>
                 </div>
                 
-                {/* Change image button */}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full mt-2"
-                  onClick={() => fileInputRef.current?.click()}
+                {/* Change image button with drag and drop */}
+                <div
+                  className={cn(
+                    "mt-2 rounded-lg border-2 border-dashed transition-colors",
+                    isDragOver
+                      ? "border-primary bg-primary/10"
+                      : "border-transparent"
+                  )}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
                 >
-                  <UploadCloud className="w-4 h-4 mr-2" />
-                  Change Image
-                </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <UploadCloud className="w-4 h-4 mr-2" />
+                    {isDragOver ? "Drop to change image" : "Change Image or Drag & Drop"}
+                  </Button>
+                </div>
               </div>
             )}
             
