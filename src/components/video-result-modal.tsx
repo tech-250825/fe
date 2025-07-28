@@ -11,6 +11,7 @@ import {
 import VideoPlayerV2 from "./video-player-v2";
 import { X, Copy } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 export interface VideoResult {
   src: string;
@@ -32,9 +33,11 @@ export default function VideoResultModal({
   onClose,
   videoResult,
 }: VideoResultModalProps) {
+  const t = useTranslations("Common");
+  
   const handleCopyPrompt = () => {
     navigator.clipboard.writeText(videoResult.prompt);
-    toast.success("Prompt copied to clipboard!");
+    toast.success(t("toasts.promptCopied"));
   };
 
 

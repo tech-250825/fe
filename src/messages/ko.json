@@ -74,7 +74,8 @@
   "Sidebar": {
     "navigation": {
       "home": "홈",
-      "profile": "프로필"
+      "profile": "프로필",
+      "library": "라이브러리"
     },
     "tools": {
       "createImages": "이미지 생성",
@@ -90,7 +91,10 @@
       "notLoggedIn": "로그인되지 않음",
       "login": "로그인",
       "logout": "로그아웃",
-      "settings": "설정"
+      "settings": "설정",
+      "language": "언어",
+      "lightMode": "라이트 모드",
+      "darkMode": "다크 모드"
     }
   },
   "Dashboard": {
@@ -106,11 +110,21 @@
       "createAnimation": "애니메이션 만들기",
       "createImages": "이미지 만들기"
     },
+    "hero": {
+      "consistentCharacter": "일관된 캐릭터 애니메이션",
+      "unifiedStyle": "통일된 스타일",
+      "continuousStories": "연속된 스토리"
+    },
     "explore": {
       "title": "애니메이션 탐색하기",
       "videoThumbnail": "비디오 썸네일 {number}",
       "animationTitle": "멋진 애니메이션 {number}",
-      "aiGenerated": "AI 생성"
+      "aiGenerated": "AI 생성",
+      "loading": "작품을 불러오는 중...",
+      "noWorks": "등록된 작품이 없습니다.",
+      "clickToPlay": "클릭하여 재생",
+      "by": "작성자",
+      "author": "작성자"
     }
   },
   "CreateImages": {
@@ -453,6 +467,18 @@
       "languageChanged": "언어가 성공적으로 변경되었습니다",
       "loggedOut": "성공적으로 로그아웃되었습니다",
       "editProfile": "프로필 편집 기능은 곧 출시됩니다"
+    }
+  },
+  "Common": {
+    "toasts": {
+      "promptCopied": "프롬프트가 클립보드에 복사되었습니다!",
+      "linkCopied": "링크가 복사되었습니다!",
+      "downloadStarted": "다운로드가 시작되었습니다!",
+      "downloadFailed": "다운로드에 실패했습니다.",
+      "invalidFileType": "이미지 파일을 업로드해주세요 (JPG, PNG, GIF, WebP)",
+      "fileTooLarge": "파일이 너무 큽니다 ({size}MB). 10MB 미만의 이미지를 업로드해주세요.",
+      "unsupportedFileType": "지원하지 않는 파일 형식입니다. JPG, PNG, WebP, GIF 이미지만 업로드해주세요.",
+      "profileLoadFailed": "프로필 정보를 불러오는데 실패했습니다."
     }
   }
 }

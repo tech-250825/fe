@@ -807,17 +807,17 @@ export function AppSidebar() {
   // 네비게이션 메뉴 아이템들
   const navigationItems = [
     {
-      title: "Home",
+      title: t("navigation.home"),
       url: "/home",
       icon: Home,
     },
     {
-      title: "Profile",
+      title: t("navigation.profile"),
       url: "/profile",
       icon: User,
     },
     {
-      title: "Library",
+      title: t("navigation.library"),
       url: "/library",
       icon: Library,
     },
@@ -970,7 +970,7 @@ export function AppSidebar() {
                   <DropdownMenuSub>
                     <DropdownMenuSubTrigger>
                       <Languages className="w-4 h-4 mr-2" />
-                      <span>Language</span>
+                      <span>{t("user.language")}</span>
                     </DropdownMenuSubTrigger>
                     <DropdownMenuSubContent>
                       <div className="min-w-[120px]">
@@ -992,7 +992,7 @@ export function AppSidebar() {
                     ) : (
                       <Moon className="w-4 h-4 mr-2" />
                     )}
-                    <span>{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>
+                    <span>{theme === "dark" ? t("user.lightMode") : t("user.darkMode")}</span>
                   </DropdownMenuItem>
 
                   <DropdownMenuItem

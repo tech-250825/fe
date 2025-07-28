@@ -102,7 +102,7 @@ const HomePage: React.FC = () => {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-8">
             <h2 className="text-4xl lg:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
-              Consistent Character Animation
+              {t("hero.consistentCharacter")}
             </h2>
           </div>
         </div>
@@ -119,7 +119,7 @@ const HomePage: React.FC = () => {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
             <h3 className="text-2xl lg:text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
-              Unified Style
+              {t("hero.unifiedStyle")}
             </h3>
           </div>
         </div>
@@ -136,7 +136,7 @@ const HomePage: React.FC = () => {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
             <h3 className="text-2xl lg:text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
-              Continuous Stories
+              {t("hero.continuousStories")}
             </h3>
           </div>
         </div>
@@ -150,11 +150,11 @@ const HomePage: React.FC = () => {
 
         {loading ? (
           <div className="text-center py-12">
-            <div className="text-lg text-muted-foreground">작품을 불러오는 중...</div>
+            <div className="text-lg text-muted-foreground">{t("explore.loading")}</div>
           </div>
         ) : works.length === 0 ? (
           <div className="text-center py-12">
-            <div className="text-lg text-muted-foreground">등록된 작품이 없습니다.</div>
+            <div className="text-lg text-muted-foreground">{t("explore.noWorks")}</div>
           </div>
         ) : (
           /* Masonry Grid */
@@ -230,7 +230,7 @@ const HomePage: React.FC = () => {
                         <div className="text-center">
                           <Play className="w-12 h-12 text-white mx-auto mb-2" />
                           <div className="text-white text-sm">
-                            클릭하여 재생
+                            {t("explore.clickToPlay")}
                           </div>
                         </div>
                       ) : (
@@ -240,7 +240,7 @@ const HomePage: React.FC = () => {
                           </div>
                           {work.user_info && (
                             <div className="text-xs mt-1">
-                              by {work.user_info}
+                              {t("explore.by")} {work.user_info}
                             </div>
                           )}
                         </div>
@@ -259,7 +259,7 @@ const HomePage: React.FC = () => {
                       )}
                       {work.user_info && (
                         <p className="text-muted-foreground text-xs mt-1">
-                          by {work.user_info}
+                          {t("explore.by")} {work.user_info}
                         </p>
                       )}
                     </div>
@@ -301,7 +301,7 @@ const HomePage: React.FC = () => {
               )}
               {selectedVideo.user_info && (
                 <p className="text-gray-400 text-sm">
-                  작성자: {selectedVideo.user_info}
+                  {t("explore.author")}: {selectedVideo.user_info}
                 </p>
               )}
             </div>

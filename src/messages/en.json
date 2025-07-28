@@ -76,17 +76,28 @@
       "createAnimation": "Create Animation",
       "createImages": "Create Images"
     },
+    "hero": {
+      "consistentCharacter": "Consistent Character Animation",
+      "unifiedStyle": "Unified Style",
+      "continuousStories": "Continuous Stories"
+    },
     "explore": {
       "title": "Explore Animations",
       "videoThumbnail": "Video Thumbnail {number}",
       "animationTitle": "Awesome Animation {number}",
-      "aiGenerated": "AI Generated"
+      "aiGenerated": "AI Generated",
+      "loading": "Loading works...",
+      "noWorks": "No works available.",
+      "clickToPlay": "Click to play",
+      "by": "by",
+      "author": "Author"
     }
   },
   "Sidebar": {
     "navigation": {
       "home": "Home",
-      "profile": "Profile"
+      "profile": "Profile",
+      "library": "Library"
     },
     "tools": {
       "createImages": "Create Images",
@@ -102,7 +113,10 @@
       "notLoggedIn": "Not logged in",
       "login": "Login",
       "logout": "Logout",
-      "settings": "Settings"
+      "settings": "Settings",
+      "language": "Language",
+      "lightMode": "Light Mode",
+      "darkMode": "Dark Mode"
     }
   },
   "Dashboard": {
@@ -453,6 +467,18 @@
       "languageChanged": "Language changed successfully",
       "loggedOut": "Logged out successfully",
       "editProfile": "Edit profile feature coming soon"
+    }
+  },
+  "Common": {
+    "toasts": {
+      "promptCopied": "Prompt copied to clipboard!",
+      "linkCopied": "Link copied to clipboard!",
+      "downloadStarted": "Download started!",
+      "downloadFailed": "Download failed.",
+      "invalidFileType": "Please upload an image file (JPG, PNG, GIF, WebP)",
+      "fileTooLarge": "File too large ({size}MB). Please upload an image smaller than 10MB.",
+      "unsupportedFileType": "Unsupported file type. Please upload JPG, PNG, WebP, or GIF images only.",
+      "profileLoadFailed": "Failed to load profile information."
     }
   }
 }
