@@ -658,16 +658,22 @@ export default function CreatePage() {
     console.log("Enhancing prompt:", prompt);
     
     try {
-      // Get the selected lora model ID
+      // Get the selected lora model
       const selectedLoraModel = selections.style || selections.character;
-      const loraId = selectedLoraModel?.id || 1; // Default to Studio Ghibli (id: 1)
       
-      console.log("Using lora ID:", loraId, "for prompt:", prompt);
-      
-      const response = await api.post(`${config.apiUrl}/api/lora`, {
-        loraId: loraId,
+      // Build request payload - only include loraId if a lora model is selected
+      const requestPayload: any = {
         prompt: prompt
-      });
+      };
+      
+      if (selectedLoraModel?.id) {
+        requestPayload.loraId = selectedLoraModel.id;
+        console.log("Using lora ID:", selectedLoraModel.id, "for prompt:", prompt);
+      } else {
+        console.log("No lora model selected, enhancing prompt without loraId");
+      }
+      
+      const response = await api.post(`${config.apiUrl}/api/lora`, requestPayload);
       
       if (response.ok) {
         const backendResponse: BackendResponse<string> = await response.json();
