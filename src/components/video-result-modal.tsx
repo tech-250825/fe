@@ -41,7 +41,7 @@ export default function VideoResultModal({
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent
-        className="!max-w-none !w-screen !h-screen bg-neutral-900 border-neutral-800 p-0 text-white overflow-hidden !fixed !inset-0 !translate-x-0 !translate-y-0 !top-0 !left-0 !transform-none"
+        className="!max-w-none !w-screen !h-screen bg-background border-border p-0 text-foreground overflow-hidden !fixed !inset-0 !translate-x-0 !translate-y-0 !top-0 !left-0 !transform-none"
         showCloseButton={false}
         style={{
           maxWidth: "100vw",
@@ -67,12 +67,12 @@ export default function VideoResultModal({
               {/* Prompt Section - Centered */}
               <div className="text-center">
                 <div className="flex justify-center items-center mb-4">
-                  <h3 className="text-lg font-semibold text-neutral-200">
+                  <h3 className="text-lg font-semibold text-foreground">
                     Prompt
                   </h3>
                 </div>
-                <div className="bg-neutral-800 rounded-lg p-4 mb-3">
-                  <p className="text-sm text-neutral-300 leading-relaxed text-center">
+                <div className="bg-card rounded-lg p-4 mb-3 border border-border">
+                  <p className="text-sm text-muted-foreground leading-relaxed text-center">
                     {videoResult.prompt}
                   </p>
                 </div>
@@ -82,7 +82,6 @@ export default function VideoResultModal({
                       <Button
                         variant="secondary"
                         size="sm"
-                        className="bg-neutral-700 hover:bg-neutral-600 text-neutral-200"
                         onClick={handleCopyPrompt}
                       >
                         <Copy className="w-4 h-4 mr-2" />
@@ -96,13 +95,13 @@ export default function VideoResultModal({
 
               {/* Parameters Section - Button Style */}
               <div>
-                <h3 className="text-lg font-semibold text-neutral-200 mb-3 text-center">
+                <h3 className="text-lg font-semibold text-foreground mb-3 text-center">
                   Parameters
                 </h3>
                 <div className="flex flex-wrap gap-2 justify-center">
                   {/* Input Image (if exists) */}
                   {videoResult.inputImageUrl && (
-                    <div className="bg-neutral-800 rounded-full px-4 py-2 border border-neutral-700 hover:border-neutral-600 transition-colors flex items-center gap-2">
+                    <div className="bg-card rounded-full px-4 py-2 border border-border hover:border-ring transition-colors flex items-center gap-2">
                       <img 
                         src={videoResult.inputImageUrl} 
                         alt="Input image"
@@ -112,7 +111,7 @@ export default function VideoResultModal({
                           e.currentTarget.style.display = 'none';
                         }}
                       />
-                      <span className="text-xs text-neutral-400">Input Image</span>
+                      <span className="text-xs text-muted-foreground">Input Image</span>
                     </div>
                   )}
                   
@@ -120,10 +119,10 @@ export default function VideoResultModal({
                     ([key, value]) => (
                       <div 
                         key={key}
-                        className="bg-neutral-800 rounded-full px-4 py-2 border border-neutral-700 hover:border-neutral-600 transition-colors"
+                        className="bg-card rounded-full px-4 py-2 border border-border hover:border-ring transition-colors"
                       >
-                        <span className="text-xs text-neutral-400 mr-1">{key}:</span>
-                        <span className="text-xs text-neutral-200 font-medium">{value}</span>
+                        <span className="text-xs text-muted-foreground mr-1">{key}:</span>
+                        <span className="text-xs text-foreground font-medium">{value}</span>
                       </div>
                     ),
                   )}
@@ -136,7 +135,7 @@ export default function VideoResultModal({
           <DialogClose asChild>
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 z-50 rounded-full p-2 bg-black/70 text-neutral-400 hover:text-white hover:bg-black/90 transition-colors focus:outline-none focus:ring-2 focus:ring-white"
+              className="absolute top-4 right-4 z-50 rounded-full p-2 bg-background/70 text-muted-foreground hover:text-foreground hover:bg-background/90 transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
             >
               <X className="w-5 h-5" />
             </button>
