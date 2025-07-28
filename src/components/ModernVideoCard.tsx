@@ -337,6 +337,7 @@ const CinematicVideoCard: React.FC<VideoCardProps> = ({
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [aspectRatio, setAspectRatio] = useState<number | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const handleMouseEnter = () => {
@@ -355,23 +356,52 @@ const CinematicVideoCard: React.FC<VideoCardProps> = ({
     }
   };
 
+  const handleLoadedMetadata = () => {
+    if (videoRef.current) {
+      const ratio = videoRef.current.videoWidth / videoRef.current.videoHeight;
+      setAspectRatio(ratio);
+    }
+  };
+
+  // Calculate dynamic width based on aspect ratio
+  const getCardStyles = () => {
+    if (!aspectRatio) return { width: '320px', height: '320px' }; // Default square
+    
+    const baseHeight = 320; // Fixed height in pixels
+    const calculatedWidth = baseHeight * aspectRatio;
+    
+    // Set min/max widths to prevent extreme sizes
+    const minWidth = 200;
+    const maxWidth = 500;
+    const finalWidth = Math.max(minWidth, Math.min(maxWidth, calculatedWidth));
+    
+    return {
+      width: `${finalWidth}px`,
+      height: `${baseHeight}px`
+    };
+  };
+
+  const cardStyles = getCardStyles();
+
   return (
     <div
       className={`relative overflow-hidden rounded-xl bg-black shadow-lg transition-all duration-300 cursor-pointer ${
         isHovered ? "scale-105 shadow-2xl" : "scale-100"
       }`}
+      style={cardStyles}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {/* Fixed height container for all aspect ratios */}
-      <div className="relative h-80 flex items-center justify-center">
+      {/* Dynamic container based on video aspect ratio */}
+      <div className="relative w-full h-full flex items-center justify-center">
         <video
           ref={videoRef}
           src={videoUrl}
-          className="max-w-full max-h-full object-contain"
+          className="w-full h-full object-cover"
           muted
           loop
           playsInline
+          onLoadedMetadata={handleLoadedMetadata}
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
         />

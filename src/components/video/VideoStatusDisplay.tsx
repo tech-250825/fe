@@ -33,7 +33,7 @@ export function VideoStatusDisplay({
   if (status === "COMPLETED" && videoUrl) {
     return (
       <div
-        className={`relative rounded-2xl overflow-hidden shadow-lg cursor-pointer group ${className}`}
+        className={`flex justify-center relative cursor-pointer ${className}`}
         onClick={onClick}
       >
         <ModernVideoCard
@@ -44,8 +44,6 @@ export function VideoStatusDisplay({
           isNew={true}
           variant="cinematic"
         />
-        {/* 호버 효과 */}
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none" />
       </div>
     );
   }
