@@ -116,12 +116,24 @@ export default function VideoPlayerV2({ src, autoplay = false }: VideoPlayerProp
   }, []);
 
   const handleDownload = () => {
-    const a = document.createElement("a");
-    a.href = src;
-    a.download = "video.mp4";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    try {
+      // Use the download API route with the video URL
+      const filename = "video.mp4";
+      const downloadApiUrl = `/api/download?url=${encodeURIComponent(src)}&filename=${encodeURIComponent(filename)}`;
+      
+      const link = document.createElement('a');
+      link.href = downloadApiUrl;
+      link.download = filename;
+      link.style.display = 'none';
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      console.log("✅ Download initiated via API route");
+    } catch (error) {
+      console.error("❌ Download failed:", error);
+    }
   };
 
   const formatTime = (timeInSeconds: number) => {

@@ -571,51 +571,25 @@ export default function CreatePage() {
     try {
       console.log("Starting download for task:", item.task.id);
       
-      // Try to fetch the video and force download
-      const response = await fetch(item.image.url, {
-        method: 'GET',
-        headers: {
-          'Accept': 'video/mp4',
-        },
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch video: ${response.status}`);
-      }
-      
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
+      // Use the download API route with the video URL
+      const filename = `video-${item.task.id}.mp4`;
+      const downloadApiUrl = `/api/download?url=${encodeURIComponent(item.image.url)}&filename=${encodeURIComponent(filename)}`;
       
       const link = document.createElement('a');
-      link.href = url;
-      link.download = `video-${item.task.id}.mp4`;
+      link.href = downloadApiUrl;
+      link.download = filename;
       link.style.display = 'none';
       
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       
-      // Clean up the object URL
-      window.URL.revokeObjectURL(url);
-      
-      console.log("✅ Downloaded video for task:", item.task.id);
-      // TODO: Add toast notification
+      console.log("✅ Download initiated for task:", item.task.id);
+      toast.success("Download started!");
       
     } catch (error) {
       console.error("❌ Download failed:", error);
-      
-      // Fallback to simple link approach if fetch fails
-      console.log("🔄 Trying fallback download method...");
-      const link = document.createElement('a');
-      link.href = item.image.url;
-      link.download = `video-${item.task.id}.mp4`;
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      // TODO: Show error toast and suggest right-click save
+      toast.error("Download failed. Please try again.");
     }
   };
 

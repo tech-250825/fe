@@ -70,11 +70,25 @@ export const ModernVideoCard: React.FC<VideoCardProps> = ({
   };
 
   const handleDownload = () => {
-    const link = document.createElement("a");
-    link.href = videoUrl;
-    link.download = `generated-video-${taskId}.mp4`;
-    link.click();
-    toast.success("다운로드가 시작되었습니다!");
+    try {
+      // Use the download API route with the video URL
+      const filename = `generated-video-${taskId}.mp4`;
+      const downloadApiUrl = `/api/download?url=${encodeURIComponent(videoUrl)}&filename=${encodeURIComponent(filename)}`;
+      
+      const link = document.createElement('a');
+      link.href = downloadApiUrl;
+      link.download = filename;
+      link.style.display = 'none';
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast.success("다운로드가 시작되었습니다!");
+    } catch (error) {
+      console.error("❌ Download failed:", error);
+      toast.error("다운로드에 실패했습니다.");
+    }
   };
 
   const handleShare = () => {
@@ -226,15 +240,6 @@ export const ModernVideoCard: React.FC<VideoCardProps> = ({
             </div>
 
             <div className="flex items-center space-x-2">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={handleDownload}
-                className="text-gray-600 hover:text-gray-800"
-              >
-                <Download className="w-4 h-4 mr-1" />
-                다운로드
-              </Button>
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -403,6 +408,31 @@ const InstagramVideoCard: React.FC<VideoCardProps> = ({
     }
   };
 
+  const handleInstagramDownload = () => {
+    console.log("🔍 Instagram download button clicked!"); // Debug log
+    try {
+      // Use the download API route with the video URL
+      const filename = `instagram-video-${taskId}.mp4`;
+      const downloadApiUrl = `/api/download?url=${encodeURIComponent(videoUrl)}&filename=${encodeURIComponent(filename)}`;
+      
+      console.log("📍 Download URL:", downloadApiUrl); // Debug log
+      
+      const link = document.createElement('a');
+      link.href = downloadApiUrl;
+      link.download = filename;
+      link.style.display = 'none';
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast.success("다운로드가 시작되었습니다!");
+    } catch (error) {
+      console.error("❌ Download failed:", error);
+      toast.error("다운로드에 실패했습니다.");
+    }
+  };
+
   return (
     <Card className="max-w-sm mx-auto overflow-hidden border-0 shadow-lg">
       <CardContent className="p-0">
@@ -466,9 +496,6 @@ const InstagramVideoCard: React.FC<VideoCardProps> = ({
                 <Share2 className="w-6 h-6 text-gray-700" />
               </Button>
             </div>
-            <Button size="sm" variant="ghost" className="p-0 h-auto">
-              <Download className="w-6 h-6 text-gray-700" />
-            </Button>
           </div>
 
           <p className="text-sm text-gray-900">
