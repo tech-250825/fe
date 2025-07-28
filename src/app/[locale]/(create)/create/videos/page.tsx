@@ -159,7 +159,7 @@ export default function CreatePage() {
     try {
       console.log("🔄 Task list 새로고침 중...");
 
-      const size = reset ? "3" : "2";
+      const size = reset ? "8" : "6";
       const params = new URLSearchParams({ size });
 
       const currentCursor = nextCursorRef.current;
@@ -468,12 +468,24 @@ export default function CreatePage() {
         }, 30000);
       } else {
         console.error("❌ API 요청 실패:", response.statusText);
+        
+        // Handle different error status codes
+        if (response.status === 500) {
+          toast.error("Server error occurred while generating video. Please try again later.");
+        } else if (response.status === 400) {
+          toast.error("Invalid request. Please check your settings and try again.");
+        } else if (response.status === 401) {
+          toast.error("Authentication failed. Please log in again.");
+        } else {
+          toast.error(`Video generation failed (Error ${response.status}). Please try again.`);
+        }
+        
         setTaskList((prev) => prev.filter((task) => task.task.id !== tempId));
         setIsGenerating(false);
       }
     } catch (e) {
       console.error("❌ 네트워크 에러:", e);
-      alert("요청 실패");
+      toast.error("Network error occurred. Please check your connection and try again.");
       setTaskList((prev) => prev.filter((task) => task.task.id !== tempId));
       setIsGenerating(false);
     }
