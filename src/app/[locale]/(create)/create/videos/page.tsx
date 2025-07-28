@@ -459,15 +459,15 @@ export default function CreatePage() {
         // Unlock the input immediately after successful submission
         setIsGenerating(false);
 
-        const checkInterval = setInterval(() => {
-          console.log("🔄 상태 확인을 위해 fetchTaskList 호출");
-          fetchTaskList(true);
-        }, 5000);
+        // const checkInterval = setInterval(() => {
+        //   console.log("🔄 상태 확인을 위해 fetchTaskList 호출");
+        //   fetchTaskList(true);
+        // }, 5000);
 
-        setTimeout(() => {
-          clearInterval(checkInterval);
-          console.log("⏰ 주기적 확인 중단");
-        }, 30000);
+        // setTimeout(() => {
+        //   clearInterval(checkInterval);
+        //   console.log("⏰ 주기적 확인 중단");
+        // }, 30000);
       } else {
         console.error("❌ API 요청 실패:", response.statusText);
         
