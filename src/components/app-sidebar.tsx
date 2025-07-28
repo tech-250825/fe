@@ -759,6 +759,8 @@ import {
   Library,
   Languages, // 언어 아이콘 추가
   ChevronRight, // 중첩 메뉴용 화살표
+  Sun,
+  Moon,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -791,10 +793,12 @@ import { useTranslations } from "next-intl";
 import Link from "next/link"; // ✅ Next.js Link 컴포넌트 추가
 import LocaleSwitcherDropdown from "@/components/LocaleSwitcher"; // 언어 스위처 추가
 import { useState } from "react"; // 드롭다운 상태 관리용
+import { useTheme } from "@/contexts/ThemeContext"; // 테마 컨텍스트 추가
 
 export function AppSidebar() {
   const t = useTranslations("Sidebar");
   const { isLoggedIn, userName, isLoading, handleLogout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
 
   // 드롭다운 열림/닫힘 상태 관리
@@ -980,6 +984,16 @@ export function AppSidebar() {
                       </div>
                     </DropdownMenuSubContent>
                   </DropdownMenuSub>
+
+                  {/* 테마 토글 메뉴 */}
+                  <DropdownMenuItem onClick={toggleTheme}>
+                    {theme === "dark" ? (
+                      <Sun className="w-4 h-4 mr-2" />
+                    ) : (
+                      <Moon className="w-4 h-4 mr-2" />
+                    )}
+                    <span>{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>
+                  </DropdownMenuItem>
 
                   <DropdownMenuItem
                     onClick={handleLogout}
