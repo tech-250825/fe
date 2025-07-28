@@ -9,15 +9,13 @@ import {
   MoreHorizontal,
   Grid3X3,
   List,
-  Search,
   Filter,
   Loader2,
-  Calendar,
   Video,
   Image as ImageIcon,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -58,9 +56,8 @@ export default function LibraryPage() {
   const [hasMore, setHasMore] = useState(true);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("newest");
   const [filterType, setFilterType] = useState("all");
+  const [selectedVideo, setSelectedVideo] = useState<MediaItem | null>(null);
 
   const nextCursorRef = useRef<string | null>(null);
 
@@ -132,36 +129,49 @@ export default function LibraryPage() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [handleScroll]);
 
-  // 검색 및 필터링된 아이템들 - url 기반으로만 검색 (prompt 필드가 없음)
+  // 비디오 모달 열기
+  const openVideoModal = (item: MediaItem) => {
+    if (isVideo(item.url)) {
+      setSelectedVideo(item);
+    }
+  };
+
+  // 비디오 모달 닫기
+  const closeVideoModal = () => {
+    setSelectedVideo(null);
+  };
+
+  // ESC 키로 모달 닫기
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        closeVideoModal();
+      }
+    };
+
+    if (selectedVideo) {
+      document.addEventListener("keydown", handleEscape);
+      document.body.style.overflow = "hidden"; // 스크롤 방지
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow = "unset";
+    };
+  }, [selectedVideo]);
+
+  // 필터링된 아이템들
   const filteredItems = mediaItems.filter((item) => {
-    // prompt가 없으므로 URL이나 ID로 검색하거나 검색 기능을 제거
-    const matchesSearch =
-      searchTerm === "" || item.id.toString().includes(searchTerm);
     const matchesFilter =
       filterType === "all" ||
       (filterType === "video" && item.url.includes(".mp4")) ||
       (filterType === "image" && !item.url.includes(".mp4"));
 
-    return matchesSearch && matchesFilter;
+    return matchesFilter;
   });
 
-  // 정렬
-  const sortedItems = [...filteredItems].sort((a, b) => {
-    switch (sortBy) {
-      case "newest":
-        return (
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-      case "oldest":
-        return (
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-        );
-      case "index":
-        return b.index - a.index;
-      default:
-        return 0;
-    }
-  });
+  // API에서 이미 ID 순서로 정렬되어 오므로 클라이언트 정렬 불필요
+  const sortedItems = filteredItems;
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("ko-KR", {
@@ -198,20 +208,8 @@ export default function LibraryPage() {
             </Badge>
           </div>
 
-          {/* 검색 및 필터 */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                <Input
-                  placeholder="ID로 검색..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </div>
-
+          {/* 필터 */}
+          <div className="flex justify-end">
             <div className="flex gap-2">
               <Select value={filterType} onValueChange={setFilterType}>
                 <SelectTrigger className="w-32">
@@ -225,17 +223,6 @@ export default function LibraryPage() {
                 </SelectContent>
               </Select>
 
-              <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-32">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="newest">최신순</SelectItem>
-                  <SelectItem value="oldest">오래된순</SelectItem>
-                  <SelectItem value="index">인덱스순</SelectItem>
-                </SelectContent>
-              </Select>
 
               <div className="flex border rounded-lg">
                 <Button
@@ -268,9 +255,7 @@ export default function LibraryPage() {
               <ImageIcon className="w-8 h-8 text-muted-foreground" />
             </div>
             <p className="text-muted-foreground mb-2">
-              {searchTerm
-                ? "검색 결과가 없습니다"
-                : "아직 생성된 콘텐츠가 없습니다"}
+              아직 생성된 콘텐츠가 없습니다
             </p>
             <p className="text-sm text-muted-foreground">
               새로운 이미지나 영상을 생성해보세요!
@@ -280,14 +265,17 @@ export default function LibraryPage() {
           <>
             {/* 그리드 뷰 */}
             {viewMode === "grid" && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-1">
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                 {sortedItems.map((item) => (
                   <div key={item.id} className="group">
                     {isVideo(item.url) ? (
-                      <div className="aspect-video relative overflow-hidden bg-black cursor-pointer group hover:scale-[1.02] transition-all duration-300">
+                      <div 
+                        className="relative overflow-hidden bg-black rounded-lg cursor-pointer group hover:scale-[1.02] transition-all duration-300"
+                        onClick={() => openVideoModal(item)}
+                      >
                         <video
                           src={item.url}
-                          className="w-full h-full object-cover"
+                          className="w-full h-auto object-contain"
                           muted
                           loop
                           playsInline
@@ -304,11 +292,11 @@ export default function LibraryPage() {
                         </div>
                       </div>
                     ) : (
-                      <div className="aspect-video relative overflow-hidden bg-secondary cursor-pointer group hover:scale-[1.02] transition-all duration-300">
+                      <div className="relative overflow-hidden bg-secondary rounded-lg cursor-pointer group hover:scale-[1.02] transition-all duration-300">
                         <img
                           src={item.url}
                           alt={`Image ${item.id}`}
-                          className="w-full h-full object-cover"
+                          className="w-full h-auto object-contain"
                         />
                         {/* ID 표시 */}
                         <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
@@ -411,6 +399,40 @@ export default function LibraryPage() {
           </>
         )}
       </div>
+
+      {/* 비디오 모달 */}
+      {selectedVideo && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="relative max-w-4xl w-full max-h-[90vh] bg-black rounded-lg overflow-hidden">
+            {/* 닫기 버튼 */}
+            <button
+              onClick={closeVideoModal}
+              className="absolute top-4 right-4 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+
+            {/* 비디오 플레이어 */}
+            <video
+              src={selectedVideo.url}
+              controls
+              autoPlay
+              className="w-full h-auto max-h-[80vh]"
+            />
+
+            {/* 비디오 정보 */}
+            <div className="p-6 text-white">
+              <h3 className="text-xl font-bold mb-2">Video #{selectedVideo.id}</h3>
+              <p className="text-gray-300 mb-2">
+                생성일: {formatDate(selectedVideo.createdAt)}
+              </p>
+              <p className="text-gray-400 text-sm">
+                Index: {selectedVideo.index}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
