@@ -127,6 +127,8 @@ export function VideoGenerationChatBar({
   const handleSubmit = () => {
     if (prompt.trim() && !isGenerating) {
       onSubmit(prompt, mode, selections, uploadedImageFile || undefined);
+      // Clear the prompt after successful submission
+      setPrompt("");
     }
   };
 

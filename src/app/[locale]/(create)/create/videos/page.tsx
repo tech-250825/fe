@@ -456,6 +456,9 @@ export default function CreatePage() {
         const backendResponse: BackendResponse<any> = await response.json();
         console.log("✅ 비디오 생성 요청 성공!", backendResponse);
 
+        // Unlock the input immediately after successful submission
+        setIsGenerating(false);
+
         const checkInterval = setInterval(() => {
           console.log("🔄 상태 확인을 위해 fetchTaskList 호출");
           fetchTaskList(true);
@@ -463,7 +466,6 @@ export default function CreatePage() {
 
         setTimeout(() => {
           clearInterval(checkInterval);
-          setIsGenerating(false);
           console.log("⏰ 주기적 확인 중단");
         }, 30000);
       } else {
