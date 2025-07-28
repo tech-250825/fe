@@ -17,7 +17,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import type { VideoOptions, GenerationMode } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { CheckCircle2, UploadCloud, SwitchCamera } from "lucide-react";
+import { CheckCircle2, UploadCloud, SwitchCamera, X } from "lucide-react";
 
 interface ModelSelectionModalProps {
   isOpen: boolean;
@@ -71,12 +71,26 @@ export function ModelSelectionModal({
   const [tempMode, setTempMode] = useState<GenerationMode>(mode);
   const [tempOptions, setTempOptions] = useState<VideoOptions>(options);
   const [tempImageFile, setTempImageFile] = useState<File | null>(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setTempMode(mode);
     setTempOptions(options);
     setTempImageFile(uploadedImageFile);
+    
+    // Create preview URL for uploaded image
+    if (uploadedImageFile) {
+      const url = URL.createObjectURL(uploadedImageFile);
+      setImagePreviewUrl(url);
+      
+      // Cleanup function to revoke the URL when component unmounts or image changes
+      return () => {
+        URL.revokeObjectURL(url);
+      };
+    } else {
+      setImagePreviewUrl(null);
+    }
   }, [isOpen, mode, options, uploadedImageFile]);
 
   const handleSave = () => {
@@ -94,6 +108,25 @@ export function ModelSelectionModal({
     const file = e.target.files?.[0];
     if (file) {
       setTempImageFile(file);
+      
+      // Create preview URL for the new file
+      if (imagePreviewUrl) {
+        URL.revokeObjectURL(imagePreviewUrl);
+      }
+      
+      const url = URL.createObjectURL(file);
+      setImagePreviewUrl(url);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setTempImageFile(null);
+    if (imagePreviewUrl) {
+      URL.revokeObjectURL(imagePreviewUrl);
+      setImagePreviewUrl(null);
+    }
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
@@ -320,27 +353,65 @@ export function ModelSelectionModal({
           </>
         ) : (
           <div className="py-4 space-y-6">
-            <div
-              className="flex flex-col items-center justify-center w-full p-6 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <UploadCloud className="w-10 h-10 text-muted-foreground" />
-              <p className="mt-2 text-sm font-semibold">
-                {tempImageFile
-                  ? tempImageFile.name
-                  : "Click to upload an image"}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {tempImageFile
-                  ? `${(tempImageFile.size / 1024).toFixed(2)} KB`
-                  : "PNG, JPG, GIF"}
-              </p>
-              {tempImageFile && (
-                <Button variant="link" size="sm" className="mt-1 -mb-2">
+            {!tempImageFile ? (
+              <div
+                className="flex flex-col items-center justify-center w-full p-6 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <UploadCloud className="w-10 h-10 text-muted-foreground" />
+                <p className="mt-2 text-sm font-semibold">
+                  Click to upload an image
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  PNG, JPG, GIF (Max 10MB)
+                </p>
+              </div>
+            ) : (
+              <div className="relative">
+                {/* Image Preview */}
+                <div className="relative w-full rounded-lg overflow-hidden border-2 border-muted">
+                  {imagePreviewUrl && (
+                    <img
+                      src={imagePreviewUrl}
+                      alt="Upload preview"
+                      className="w-full h-48 object-contain bg-muted"
+                    />
+                  )}
+                  
+                  {/* Remove button */}
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    className="absolute top-2 right-2 h-8 w-8 p-0"
+                    onClick={handleRemoveImage}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+                
+                {/* File info */}
+                <div className="mt-3 p-3 bg-muted rounded-lg">
+                  <p className="text-sm font-medium truncate">
+                    {tempImageFile.name}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {(tempImageFile.size / 1024 / 1024).toFixed(2)} MB
+                  </p>
+                </div>
+                
+                {/* Change image button */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full mt-2"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <UploadCloud className="w-4 h-4 mr-2" />
                   Change Image
                 </Button>
-              )}
-            </div>
+              </div>
+            )}
+            
             <input
               type="file"
               ref={fileInputRef}
