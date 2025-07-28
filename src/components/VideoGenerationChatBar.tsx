@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import type { VideoOptions, GenerationMode } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Settings2, Send, X, ImageIcon, Sparkles } from "lucide-react";
+import { toast } from "sonner";
 
 const defaultOptions: VideoOptions = {
   style: null,
@@ -64,6 +65,9 @@ export function VideoGenerationChatBar({
         }));
       };
       reader.readAsDataURL(file);
+    } else {
+      // Show error toast for non-image files
+      toast.error("Please upload an image file (JPG, PNG, GIF, WebP)");
     }
   }, []);
 
