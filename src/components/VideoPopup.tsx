@@ -40,6 +40,10 @@ function VideoPopup({ isOpen, onClose, videoSrc }: VideoPopupProps) {
         setVideoDimensions({ width: videoWidth, height: videoHeight })
         setDuration(video.duration)
         setIsLoading(false)
+        // 자동재생 시작
+        video.play().catch((error) => {
+          console.log("Autoplay failed:", error);
+        });
       }
 
       const handleTimeUpdate = () => {

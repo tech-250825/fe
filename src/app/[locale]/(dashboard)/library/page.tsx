@@ -266,14 +266,7 @@ export default function LibraryPage() {
                           onMouseEnter={(e) => e.currentTarget.play()}
                           onMouseLeave={(e) => e.currentTarget.pause()}
                         />
-                        {/* 비디오 시간 표시 */}
-                        <div className="absolute top-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                          00:06
-                        </div>
-                        {/* ID 표시 */}
-                        <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                          #{item.id}
-                        </div>
+                        
                       </div>
                     ) : (
                       <div className="relative overflow-hidden bg-secondary rounded-lg cursor-pointer group hover:scale-[1.02] transition-all duration-300">
@@ -282,10 +275,6 @@ export default function LibraryPage() {
                           alt={`Image ${item.id}`}
                           className="w-full h-auto object-contain"
                         />
-                        {/* ID 표시 */}
-                        <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                          #{item.id}
-                        </div>
                       </div>
                     )}
                   </div>
@@ -320,7 +309,7 @@ export default function LibraryPage() {
                       <div className="flex-1">
                         <div className="flex items-start justify-between mb-2">
                           <h3 className="font-medium text-foreground line-clamp-1">
-                            이미지 #{item.id}
+이미지
                           </h3>
                           <Button variant="ghost" size="sm">
                             <MoreHorizontal className="w-4 h-4" />
@@ -341,7 +330,6 @@ export default function LibraryPage() {
                             )}
                           </Badge>
                           <span>{formatDate(item.createdAt)}</span>
-                          <span>Index: {item.index}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <Button variant="ghost" size="sm">
