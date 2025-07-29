@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Play, X } from "lucide-react";
 import { useTranslations } from "next-intl";
+import VideoPopup from "@/components/VideoPopup";
 
 interface Work {
   id: number;
@@ -19,6 +20,8 @@ const HomePage: React.FC = () => {
   const [works, setWorks] = useState<Work[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedVideo, setSelectedVideo] = useState<Work | null>(null);
+  const [isVideoPopupOpen, setIsVideoPopupOpen] = useState(false);
+  const [currentVideoUrl, setCurrentVideoUrl] = useState("");
 
   // 번역된 배너 텍스트
   const bannerTexts = [t("banner.createAnimation"), t("banner.createImages")];
@@ -55,14 +58,28 @@ const HomePage: React.FC = () => {
     fetchWorks();
   }, []);
 
-  // 비디오 모달 열기
+  // VideoPopup 열기
+  const openVideoPopup = (work: Work) => {
+    if (work.video_url) {
+      setCurrentVideoUrl(work.video_url);
+      setIsVideoPopupOpen(true);
+    }
+  };
+
+  // 기존 모달 열기 (호환성 유지)
   const openVideoModal = (work: Work) => {
     if (work.video_url) {
       setSelectedVideo(work);
     }
   };
 
-  // 비디오 모달 닫기
+  // VideoPopup 닫기
+  const closeVideoPopup = () => {
+    setIsVideoPopupOpen(false);
+    setCurrentVideoUrl("");
+  };
+
+  // 기존 모달 닫기 (호환성 유지)
   const closeVideoModal = () => {
     setSelectedVideo(null);
   };
@@ -179,7 +196,7 @@ const HomePage: React.FC = () => {
                 <div
                   key={work.id}
                   className={`bg-card rounded-xl overflow-hidden shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 group border border-border break-inside-avoid mb-4 cursor-pointer`}
-                  onClick={() => hasVideo && openVideoModal(work)}
+                  onClick={() => hasVideo && openVideoPopup(work)}
                   onMouseEnter={() => {
                     if (hasVideo && !hasImage) {
                       const video = document.getElementById(
@@ -226,43 +243,13 @@ const HomePage: React.FC = () => {
 
                     {/* 호버 오버레이 */}
                     <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      {hasVideo ? (
-                        <div className="text-center">
-                          <Play className="w-12 h-12 text-white mx-auto mb-2" />
-                          <div className="text-white text-sm">
-                            {t("explore.clickToPlay")}
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="text-white text-center p-2">
-                          <div className="text-sm font-semibold">
-                            {work.title}
-                          </div>
-                          {work.user_info && (
-                            <div className="text-xs mt-1">
-                              {t("explore.by")} {work.user_info}
-                            </div>
-                          )}
+                      {hasVideo && (
+                        <div className="text-white text-sm font-medium">
+                          Click to play
                         </div>
                       )}
                     </div>
 
-                    {/* 하단 정보 */}
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                      <h4 className="text-white text-sm font-semibold truncate">
-                        {work.title}
-                      </h4>
-                      {work.description && (
-                        <p className="text-white/80 text-xs mt-1 line-clamp-2">
-                          {work.description}
-                        </p>
-                      )}
-                      {work.user_info && (
-                        <p className="text-muted-foreground text-xs mt-1">
-                          {t("explore.by")} {work.user_info}
-                        </p>
-                      )}
-                    </div>
                   </div>
                 </div>
               );
@@ -271,43 +258,12 @@ const HomePage: React.FC = () => {
         )}
       </section>
 
-      {/* 비디오 모달 */}
-      {selectedVideo && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="relative max-w-4xl w-full max-h-[90vh] bg-black rounded-lg overflow-hidden">
-            {/* 닫기 버튼 */}
-            <button
-              onClick={closeVideoModal}
-              className="absolute top-4 right-4 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 transition-colors"
-            >
-              <X className="w-6 h-6" />
-            </button>
-
-            {/* 비디오 플레이어 */}
-            <video
-              src={selectedVideo.video_url}
-              controls
-              autoPlay
-              className="w-full h-auto max-h-[80vh]"
-            />
-
-            {/* 비디오 정보 */}
-            <div className="p-6 text-white">
-              <h3 className="text-xl font-bold mb-2">{selectedVideo.title}</h3>
-              {selectedVideo.description && (
-                <p className="text-gray-300 mb-2">
-                  {selectedVideo.description}
-                </p>
-              )}
-              {selectedVideo.user_info && (
-                <p className="text-gray-400 text-sm">
-                  {t("explore.author")}: {selectedVideo.user_info}
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      {/* VideoPopup */}
+      <VideoPopup
+        isOpen={isVideoPopupOpen}
+        onClose={closeVideoPopup}
+        videoSrc={currentVideoUrl}
+      />
     </div>
   );
 };
