@@ -1,6 +1,7 @@
 "use client";
 
 import { Video } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface VideoGenerationScreenProps {
   taskId?: number;
@@ -8,6 +9,7 @@ interface VideoGenerationScreenProps {
 }
 
 export function VideoGenerationScreen({ }: VideoGenerationScreenProps) {
+  const t = useTranslations("VideoCreation");
 
   return (
     <div className="w-full aspect-video bg-black flex items-center justify-center p-8 rounded-2xl">
@@ -25,14 +27,14 @@ export function VideoGenerationScreen({ }: VideoGenerationScreenProps) {
         {/* Generating Text */}
         <div className="text-center space-y-2">
           <h2 className="text-2xl font-semibold text-white">
-            Generating
+            {t("generation.generating")}
             <span className="inline-flex ml-1">
               <span className="animate-pulse delay-0 text-blue-400">.</span>
               <span className="animate-pulse delay-150 text-blue-400">.</span>
               <span className="animate-pulse delay-300 text-blue-400">.</span>
             </span>
           </h2>
-          <p className="text-gray-400">Creating your video content</p>
+          <p className="text-gray-400">{t("generation.creatingContent")}</p>
         </div>
 
         {/* Spinner */}
@@ -58,11 +60,11 @@ export function VideoGenerationScreen({ }: VideoGenerationScreenProps) {
         <div className="flex justify-between text-xs text-gray-400 px-4">
           <span className="flex items-center gap-1">
             <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></div>
-            Processing frames
+            {t("generation.processingFrames")}
           </span>
           <span className="flex items-center gap-1">
             <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse delay-75"></div>
-            Rendering video
+            {t("generation.renderingVideo")}
           </span>
         </div>
 

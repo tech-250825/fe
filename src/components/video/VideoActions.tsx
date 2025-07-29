@@ -7,6 +7,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useTranslations } from "next-intl";
 
 interface VideoActionsProps {
   onCopyPrompt?: () => void;
@@ -21,6 +22,8 @@ export function VideoActions({
   onDelete,
   className = "",
 }: VideoActionsProps) {
+  const t = useTranslations("VideoCreation");
+  
   return (
     <TooltipProvider>
       <div className={`flex items-center gap-3 ${className}`}>
@@ -33,10 +36,10 @@ export function VideoActions({
               onClick={onCopyPrompt}
             >
               <Copy className="w-4 h-4 mr-2" />
-              Copy Prompt
+              {t("actions.copyPrompt.title")}
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Copy prompt text to clipboard</TooltipContent>
+          <TooltipContent>{t("actions.copyPrompt.tooltip")}</TooltipContent>
         </Tooltip>
 
         <Tooltip>
@@ -48,10 +51,10 @@ export function VideoActions({
               onClick={onDownload}
             >
               <Download className="w-4 h-4 mr-2" />
-              Download
+              {t("actions.download.title")}
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Download video file</TooltipContent>
+          <TooltipContent>{t("actions.download.tooltip")}</TooltipContent>
         </Tooltip>
 
         <Tooltip>
@@ -63,10 +66,10 @@ export function VideoActions({
               onClick={onDelete}
             >
               <Trash2 className="w-4 h-4 mr-2" />
-              Delete
+              {t("actions.delete.title")}
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Delete this video</TooltipContent>
+          <TooltipContent>{t("actions.delete.tooltip")}</TooltipContent>
         </Tooltip>
       </div>
     </TooltipProvider>

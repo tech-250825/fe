@@ -10,6 +10,7 @@ import type { VideoOptions, GenerationMode } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Settings2, Send, X, ImageIcon, Sparkles } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 const defaultOptions: VideoOptions = {
   style: null,
@@ -41,6 +42,7 @@ export function VideoGenerationChatBar({
   characterModels,
   onEnhancePrompt,
 }: ChatInputUIProps) {
+  const t = useTranslations("VideoCreation");
   const [mode, setMode] = useState<GenerationMode>("t2v");
   const [prompt, setPrompt] = useState("");
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
@@ -77,7 +79,7 @@ export function VideoGenerationChatBar({
       reader.readAsDataURL(file);
     } else {
       // Show error toast for non-image files
-      toast.error("Please upload an image file (JPG, PNG, GIF, WebP)");
+      toast.error(t("chatBar.uploadError"));
     }
   }, []);
 
@@ -284,17 +286,13 @@ export function VideoGenerationChatBar({
                 className="hover:bg-primary/10 hover:text-primary"
               >
                 <Sparkles className={`h-5 w-5 ${isEnhancing ? 'animate-spin' : ''}`} />
-                <span className="sr-only">Enhance prompt</span>
+                <span className="sr-only">{t("chatBar.enhance")}</span>
               </Button>
             )}
           </div>
           <Input
             type="text"
-            placeholder={
-              mode === "t2v"
-                ? "A cinematic shot of a raccoon driving a sports car..."
-                : "Animate the character waving..."
-            }
+            placeholder={t("chatBar.promptPlaceholder")}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             onKeyPress={handleKeyPress}
@@ -314,7 +312,7 @@ export function VideoGenerationChatBar({
             disabled={isGenerating || !prompt.trim()}
           >
             <Send className="h-5 w-5" />
-            <span className="sr-only">Generate video</span>
+            <span className="sr-only">{isGenerating ? t("chatBar.generating") : t("chatBar.generate")}</span>
           </Button>
         </div>
       </div>

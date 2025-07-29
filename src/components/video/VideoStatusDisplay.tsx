@@ -2,6 +2,7 @@ import React from "react";
 import { ModernVideoCard } from "@/components/ModernVideoCard";
 import { VideoGenerationScreen } from "./VideoGenerationScreen";
 import { VideoGenerationError } from "./VideoGenerationError";
+import { useTranslations } from "next-intl";
 
 interface VideoStatusDisplayProps {
   status: string;
@@ -24,6 +25,7 @@ export function VideoStatusDisplay({
   onClick,
   className = "",
 }: VideoStatusDisplayProps) {
+  const t = useTranslations("VideoCreation");
   if (status === "IN_PROGRESS") {
     return (
       <VideoGenerationScreen taskId={taskId} lora={lora} />
@@ -58,7 +60,7 @@ export function VideoStatusDisplay({
   return (
     <div className={`text-red-500 p-4 bg-red-50 rounded-2xl ${className}`}>
       <p>❌ 상태: {status}</p>
-      <p className="text-xs mt-1">예상하지 못한 상태입니다.</p>
+      <p className="text-xs mt-1">{t("error.unexpectedStatus")}</p>
       <p className="text-xs mt-1">Task ID: {taskId}</p>
     </div>
   );

@@ -3,6 +3,7 @@ import { TaskItem } from "@/services/types/video.types";
 import { VideoCard } from "./VideoCard";
 import { EmptyState } from "../common/EmptyState";
 import { LoadingSpinner } from "../common/LoadingSpinner";
+import { useTranslations } from "next-intl";
 
 interface VideoListProps {
   taskList: TaskItem[];
@@ -25,6 +26,7 @@ export function VideoList({
   onDelete,
   className = "",
 }: VideoListProps) {
+  const t = useTranslations("VideoCreation");
   const listRef = useRef(null);
 
   // 빈 상태 렌더링
@@ -32,8 +34,8 @@ export function VideoList({
     return (
       <div className={`w-full p-6 space-y-6 pb-32 pt-40 ${className}`}>
         <EmptyState
-          title="아직 생성된 영상이 없습니다."
-          description="아래에서 프롬프트를 입력해 영상을 생성해보세요!"
+          title={t("list.empty.title")}
+          description={t("list.empty.description")}
         />
       </div>
     );
@@ -66,14 +68,14 @@ export function VideoList({
       {/* 로딩 표시 */}
       {loading && (
         <div className="flex justify-center py-8">
-          <LoadingSpinner text="더 불러오는 중..." />
+          <LoadingSpinner text={t("list.loading")} />
         </div>
       )}
 
       {/* 더 이상 데이터가 없을 때 */}
       {!hasMore && taskList.length > 0 && (
         <div className="text-center py-8 text-muted-foreground">
-          <p>모든 콘텐츠를 불러왔습니다.</p>
+          <p>{t("list.allLoaded")}</p>
         </div>
       )}
     </>

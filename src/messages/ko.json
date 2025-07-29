@@ -513,5 +513,91 @@
     "errors": {
       "loadFailed": "미디어 로드 실패"
     }
+  },
+  "VideoCreation": {
+    "title": "비디오 생성",
+    "subtitle": "새로운 비디오를 생성해보세요",
+    "loginRequired": "로그인이 필요합니다.",
+    "list": {
+      "empty": {
+        "title": "아직 생성된 영상이 없습니다.",
+        "description": "아래에서 프롬프트를 입력해 영상을 생성해보세요!"
+      },
+      "loading": "더 불러오는 중...",
+      "allLoaded": "모든 콘텐츠를 불러왔습니다."
+    },
+    "actions": {
+      "copyPrompt": {
+        "title": "프롬프트 복사",
+        "tooltip": "프롬프트 텍스트를 클립보드에 복사"
+      },
+      "download": {
+        "title": "다운로드",
+        "tooltip": "비디오 파일 다운로드"
+      },
+      "delete": {
+        "title": "삭제",
+        "tooltip": "이 비디오 삭제"
+      }
+    },
+    "generation": {
+      "generating": "생성 중",
+      "creatingContent": "비디오 콘텐츠를 생성하고 있습니다",
+      "processingFrames": "프레임 처리 중",
+      "renderingVideo": "비디오 렌더링 중"
+    },
+    "error": {
+      "title": "문제가 발생했습니다",
+      "description": "예상치 못한 오류로 인해 생성에 실패했습니다",
+      "tryAgain": "잠시 후 다시 시도해주세요",
+      "generationFailed": "생성 실패",
+      "unexpectedStatus": "예상하지 못한 상태입니다."
+    },
+    "chatBar": {
+      "uploadError": "이미지 파일을 업로드해주세요 (JPG, PNG, GIF, WebP)",
+      "promptPlaceholder": "생성할 비디오를 설명하세요...",
+      "enhance": "프롬프트 개선",
+      "enhancing": "개선 중...",
+      "generate": "생성",
+      "generating": "생성 중...",
+      "mode": {
+        "textToVideo": "텍스트에서 비디오로",
+        "imageToVideo": "이미지에서 비디오로"
+      },
+      "settings": {
+        "style": "스타일",
+        "character": "캐릭터",
+        "aspectRatio": "비율",
+        "duration": "재생 시간",
+        "quality": "품질",
+        "uploadImage": "이미지 업로드",
+        "removeImage": "이미지 제거"
+      }
+    },
+    "parameters": {
+      "aspectRatio": "비율",
+      "duration": "재생 시간",
+      "style": "스타일",
+      "resolution": "해상도",
+      "taskId": "작업 ID",
+      "createdAt": "생성일"
+    },
+    "toast": {
+      "promptCopied": "프롬프트가 클립보드에 복사되었습니다!",
+      "downloadStarted": "다운로드가 시작되었습니다!",
+      "downloadFailed": "다운로드에 실패했습니다. 다시 시도해주세요.",
+      "copyFailed": "프롬프트 복사에 실패했습니다",
+      "generationSuccess": "비디오 생성 요청이 성공했습니다!",
+      "serverError": "비디오 생성 중 서버 오류가 발생했습니다. 나중에 다시 시도해주세요.",
+      "invalidRequest": "잘못된 요청입니다. 설정을 확인하고 다시 시도해주세요.",
+      "authFailed": "인증에 실패했습니다. 다시 로그인해주세요.",
+      "networkError": "네트워크 오류가 발생했습니다. 연결을 확인하고 다시 시도해주세요."
+    },
+    "delete": {
+      "confirm": "정말로 이 영상을 삭제하시겠습니까?",
+      "success": "영상이 삭제되었습니다.",
+      "constraintError": "연관된 데이터가 있어 삭제할 수 없습니다. 관리자에게 문의하세요.",
+      "failed": "삭제에 실패했습니다. 다시 시도해주세요."
+    }
   }
 }

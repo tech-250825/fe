@@ -19,6 +19,7 @@ import type { VideoOptions, GenerationMode } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { CheckCircle2, UploadCloud, SwitchCamera, X } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 interface ModelSelectionModalProps {
   isOpen: boolean;
@@ -69,6 +70,7 @@ export function ModelSelectionModal({
   styleModels, // 추가
   characterModels, // 추가
 }: ModelSelectionModalProps) {
+  const t = useTranslations("VideoCreation");
   const [tempMode, setTempMode] = useState<GenerationMode>(mode);
   const [tempOptions, setTempOptions] = useState<VideoOptions>(options);
   const [tempImageFile, setTempImageFile] = useState<File | null>(null);
@@ -224,7 +226,7 @@ export function ModelSelectionModal({
       )}
     >
       {isT2V && (
-        <OptionGroup title="Aspect Ratio">
+        <OptionGroup title={t("chatBar.settings.aspectRatio")}>
           <RadioGroup
             value={tempOptions.aspectRatio}
             onValueChange={(value) =>
@@ -254,7 +256,7 @@ export function ModelSelectionModal({
           </RadioGroup>
         </OptionGroup>
       )}
-      <OptionGroup title="Duration (s)">
+      <OptionGroup title={t("chatBar.settings.duration")}>
         <RadioGroup
           value={String(tempOptions.duration)}
           onValueChange={(value) =>
@@ -283,7 +285,7 @@ export function ModelSelectionModal({
           ))}
         </RadioGroup>
       </OptionGroup>
-      <OptionGroup title="Quality">
+      <OptionGroup title={t("chatBar.settings.quality")}>
         <RadioGroup
           value={tempOptions.quality}
           onValueChange={(value) =>
@@ -323,13 +325,13 @@ export function ModelSelectionModal({
                   value="style"
                   className={cn(tempOptions.style?.name && "text-primary")}
                 >
-                  Style
+                  {t("chatBar.settings.style")}
                 </TabsTrigger>
                 <TabsTrigger
                   value="character"
                   className={cn(tempOptions.character?.name && "text-primary")}
                 >
-                  Character
+                  {t("chatBar.settings.character")}
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="style">

@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { AlertTriangle, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface VideoGenerationErrorProps {
   taskId?: number;
 }
 
 export function VideoGenerationError({ taskId }: VideoGenerationErrorProps) {
+  const t = useTranslations("VideoCreation");
   const [shake, setShake] = useState(false);
 
   useEffect(() => {
@@ -38,12 +40,12 @@ export function VideoGenerationError({ taskId }: VideoGenerationErrorProps) {
         {/* Error Messages */}
         <div className="text-center space-y-4">
           <div className={`space-y-2 ${shake ? "animate-shake" : ""}`}>
-            <h2 className="text-2xl font-semibold text-white">Something went wrong</h2>
-            <p className="text-red-400 font-medium">Generation failed due to an unexpected error</p>
+            <h2 className="text-2xl font-semibold text-white">{t("error.title")}</h2>
+            <p className="text-red-400 font-medium">{t("error.description")}</p>
           </div>
 
           <div className="pt-2">
-            <p className="text-gray-400 text-sm">Please try again in a moment</p>
+            <p className="text-gray-400 text-sm">{t("error.tryAgain")}</p>
           </div>
         </div>
 
@@ -58,7 +60,7 @@ export function VideoGenerationError({ taskId }: VideoGenerationErrorProps) {
         <div className="flex justify-center">
           <div className="flex items-center gap-2 text-red-400 text-sm">
             <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
-            Generation Failed
+            {t("error.generationFailed")}
           </div>
         </div>
 
