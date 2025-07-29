@@ -426,47 +426,53 @@
     }
   },
   "Profile": {
-    "title": "프로필",
-    "subtitle": "계정 및 설정 관리",
-    "sections": {
-      "profileInfo": "프로필 정보",
-      "quickActions": "빠른 작업",
-      "settings": "설정"
+    "title": "사용자 프로필",
+    "subtitle": "계정 정보와 활동 내역을 확인하세요",
+    "user": {
+      "activeUser": "활성 사용자",
+      "userId": "사용자 ID",
+      "joinedDate": "가입일"
     },
-    "info": {
-      "joined": "가입일",
-      "plan": "플랜"
+    "credit": {
+      "title": "보유 크레딧",
+      "description": "이미지 생성에 사용 가능",
+      "purchase": "크레딧 구매",
+      "purchaseDescription": "더 많은 이미지를 생성하기 위해 크레딧을 구매하세요"
     },
-    "stats": {
-      "imagesGenerated": "생성된 이미지",
-      "creditsUsed": "사용한 크레딧",
-      "creditsRemaining": "남은 크레딧"
-    },
-    "actions": {
-      "downloadAll": "모든 이미지 다운로드",
-      "myGallery": "내 갤러리",
-      "buyCredits": "크레딧 구매",
-      "logout": "로그아웃"
-    },
-    "settings": {
-      "language": "언어 및 지역",
-      "selectLanguage": "언어 선택",
-      "appearance": "모양",
-      "darkMode": "다크 모드",
-      "notifications": "알림",
-      "pushNotifications": "푸시 알림",
-      "emailNotifications": "이메일 알림",
-      "privacy": "개인정보 보호 및 보안",
-      "privacyPolicy": "개인정보 처리방침",
-      "termsOfService": "서비스 약관"
-    },
-    "buttons": {
-      "edit": "프로필 편집"
+    "account": {
+      "title": "계정 관리",
+      "allSettings": "모든 설정",
+      "accountType": {
+        "title": "계정 유형",
+        "description": "일반 사용자 계정",
+        "badge": "일반"
+      },
+      "email": {
+        "title": "이메일",
+        "badge": "인증됨"
+      },
+      "joinDate": {
+        "title": "가입일",
+        "badge": "활성"
+      },
+      "logout": {
+        "title": "로그아웃",
+        "description": "계정에서 안전하게 로그아웃",
+        "button": "로그아웃"
+      },
+      "withdraw": {
+        "title": "회원 탈퇴",
+        "description": "계정과 모든 데이터를 영구 삭제",
+        "button": "회원 탈퇴",
+        "confirm": "정말로 회원 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없으며, 모든 데이터가 삭제됩니다."
+      }
     },
     "messages": {
-      "languageChanged": "언어가 성공적으로 변경되었습니다",
-      "loggedOut": "성공적으로 로그아웃되었습니다",
-      "editProfile": "프로필 편집 기능은 곧 출시됩니다"
+      "fetchError": "프로필 정보를 불러오는데 실패했습니다.",
+      "noProfile": "프로필을 불러올 수 없습니다.",
+      "creditsPending": "크레딧 구매 기능은 준비 중입니다.",
+      "withdrawSuccess": "회원 탈퇴가 완료되었습니다.",
+      "withdrawError": "회원 탈퇴 중 오류가 발생했습니다."
     }
   },
   "Common": {
@@ -479,6 +485,33 @@
       "fileTooLarge": "파일이 너무 큽니다 ({size}MB). 10MB 미만의 이미지를 업로드해주세요.",
       "unsupportedFileType": "지원하지 않는 파일 형식입니다. JPG, PNG, WebP, GIF 이미지만 업로드해주세요.",
       "profileLoadFailed": "프로필 정보를 불러오는데 실패했습니다."
+    }
+  },
+  "Library": {
+    "title": "내 라이브러리",
+    "subtitle": "생성한 이미지와 영상을 관리하세요",
+    "stats": {
+      "total": "총 {count}개"
+    },
+    "filters": {
+      "all": "전체",
+      "video": "영상",
+      "image": "이미지"
+    },
+    "empty": {
+      "title": "아직 생성된 콘텐츠가 없습니다",
+      "subtitle": "새로운 이미지나 영상을 생성해보세요!"
+    },
+    "actions": {
+      "like": "좋아요",
+      "share": "공유",
+      "download": "다운로드"
+    },
+    "loading": "로딩 중...",
+    "allLoaded": "모든 콘텐츠를 불러왔습니다.",
+    "loginRequired": "로그인이 필요합니다.",
+    "errors": {
+      "loadFailed": "미디어 로드 실패"
     }
   }
 }

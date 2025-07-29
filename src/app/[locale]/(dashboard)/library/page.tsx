@@ -27,6 +27,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { ModernVideoCard } from "@/components/ModernVideoCard";
 import { config } from "@/config";
 import VideoPopup from "@/components/VideoPopup";
+import { useTranslations } from "next-intl";
 
 // 백엔드 응답에 맞게 수정된 MediaItem
 interface MediaItem {
@@ -49,6 +50,7 @@ interface BackendResponse {
 }
 
 export default function LibraryPage() {
+  const t = useTranslations("Library");
   const { isLoggedIn, userName } = useAuth();
 
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
@@ -98,7 +100,7 @@ export default function LibraryPage() {
         nextCursorRef.current = data.nextPageCursor;
         setHasMore(!!data.nextPageCursor);
       } catch (error) {
-        console.error("❌ 미디어 로드 실패:", error);
+        console.error("❌ " + t("errors.loadFailed") + ":", error);
       } finally {
         setLoading(false);
       }
@@ -170,7 +172,7 @@ export default function LibraryPage() {
   if (!isLoggedIn) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground">로그인이 필요합니다.</p>
+        <p className="text-muted-foreground">{t("loginRequired")}</p>
       </div>
     );
   }
@@ -183,12 +185,12 @@ export default function LibraryPage() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h1 className="text-2xl font-bold text-foreground">
-                내 라이브러리
+                {t("title")}
               </h1>
-              <p className="text-muted-foreground">생성한 이미지와 영상을 관리하세요</p>
+              <p className="text-muted-foreground">{t("subtitle")}</p>
             </div>
             <Badge variant="secondary" className="text-sm">
-              총 {mediaItems.length}개
+              {t("stats.total", { count: mediaItems.length })}
             </Badge>
           </div>
 
@@ -201,9 +203,9 @@ export default function LibraryPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">전체</SelectItem>
-                  <SelectItem value="video">영상</SelectItem>
-                  <SelectItem value="image">이미지</SelectItem>
+                  <SelectItem value="all">{t("filters.all")}</SelectItem>
+                  <SelectItem value="video">{t("filters.video")}</SelectItem>
+                  <SelectItem value="image">{t("filters.image")}</SelectItem>
                 </SelectContent>
               </Select>
 
@@ -239,10 +241,10 @@ export default function LibraryPage() {
               <ImageIcon className="w-8 h-8 text-muted-foreground" />
             </div>
             <p className="text-muted-foreground mb-2">
-              아직 생성된 콘텐츠가 없습니다
+              {t("empty.title")}
             </p>
             <p className="text-sm text-muted-foreground">
-              새로운 이미지나 영상을 생성해보세요!
+              {t("empty.subtitle")}
             </p>
           </div>
         ) : (
@@ -309,7 +311,7 @@ export default function LibraryPage() {
                       <div className="flex-1">
                         <div className="flex items-start justify-between mb-2">
                           <h3 className="font-medium text-foreground line-clamp-1">
-이미지
+                            {isVideo(item.url) ? t("filters.video") : t("filters.image")}
                           </h3>
                           <Button variant="ghost" size="sm">
                             <MoreHorizontal className="w-4 h-4" />
@@ -320,12 +322,12 @@ export default function LibraryPage() {
                             {isVideo(item.url) ? (
                               <>
                                 <Video className="w-3 h-3 mr-1" />
-                                영상
+                                {t("filters.video")}
                               </>
                             ) : (
                               <>
                                 <ImageIcon className="w-3 h-3 mr-1" />
-                                이미지
+                                {t("filters.image")}
                               </>
                             )}
                           </Badge>
@@ -334,15 +336,15 @@ export default function LibraryPage() {
                         <div className="flex items-center gap-2">
                           <Button variant="ghost" size="sm">
                             <Heart className="w-4 h-4 mr-1" />
-                            좋아요
+                            {t("actions.like")}
                           </Button>
                           <Button variant="ghost" size="sm">
                             <Share2 className="w-4 h-4 mr-1" />
-                            공유
+                            {t("actions.share")}
                           </Button>
                           <Button variant="ghost" size="sm">
                             <Download className="w-4 h-4 mr-1" />
-                            다운로드
+                            {t("actions.download")}
                           </Button>
                         </div>
                       </div>
@@ -357,7 +359,7 @@ export default function LibraryPage() {
               <div className="flex justify-center py-8">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  <span>로딩 중...</span>
+                  <span>{t("loading")}</span>
                 </div>
               </div>
             )}
@@ -365,7 +367,7 @@ export default function LibraryPage() {
             {/* 더 이상 데이터가 없을 때 */}
             {!hasMore && sortedItems.length > 0 && (
               <div className="text-center py-8 text-muted-foreground">
-                <p>모든 콘텐츠를 불러왔습니다.</p>
+                <p>{t("allLoaded")}</p>
               </div>
             )}
           </>

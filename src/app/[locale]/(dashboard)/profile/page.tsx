@@ -11,6 +11,7 @@ import { User, Calendar, Zap, Mail, LogOut, Settings, Crown, Activity, Package, 
 import { toast } from "sonner"
 import { useAuth } from "@/hooks/useAuth"
 import { config } from "@/config"
+import { useTranslations } from "next-intl"
 
 // Backend response structure
 interface BackendResponse<T> {
@@ -29,13 +30,14 @@ interface UserProfile {
 }
 
 const ProfilePage: React.FC = () => {
+  const t = useTranslations("Profile")
   const { handleLogout: authLogout } = useAuth()
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
 
   // Extract username from email
   const getUserNameFromEmail = (email: string) => {
-    return email ? email.split("@")[0] : "사용자"
+    return email ? email.split("@")[0] : "User"
   }
 
   // Extract initials from email
@@ -61,7 +63,7 @@ const ProfilePage: React.FC = () => {
       setProfile(backendResponse.data)
     } catch (error) {
       console.error("Profile fetch error:", error)
-      toast.error("프로필 정보를 불러오는데 실패했습니다.")
+      toast.error(t("messages.fetchError"))
     } finally {
       setLoading(false)
     }
@@ -72,7 +74,7 @@ const ProfilePage: React.FC = () => {
   }, [])
 
   const handleBuyCredits = () => {
-    toast.info("크레딧 구매 기능은 준비 중입니다.")
+    toast.info(t("messages.creditsPending"))
   }
 
   const handleLogout = () => {
@@ -81,7 +83,7 @@ const ProfilePage: React.FC = () => {
 
   const handleWithdraw = async () => {
     const confirmed = window.confirm(
-      "정말로 회원 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없으며, 모든 데이터가 삭제됩니다.",
+      t("account.withdraw.confirm"),
     )
     if (!confirmed) return
 
@@ -95,11 +97,11 @@ const ProfilePage: React.FC = () => {
         throw new Error("Failed to withdraw")
       }
 
-      toast.success("회원 탈퇴가 완료되었습니다.")
+      toast.success(t("messages.withdrawSuccess"))
       handleLogout()
     } catch (error) {
       console.error("Withdraw error:", error)
-      toast.error("회원 탈퇴 중 오류가 발생했습니다.")
+      toast.error(t("messages.withdrawError"))
     }
   }
 
@@ -110,7 +112,7 @@ const ProfilePage: React.FC = () => {
   if (!profile) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500">프로필을 불러올 수 없습니다.</p>
+        <p className="text-gray-500">{t("messages.noProfile")}</p>
       </div>
     )
   }
@@ -121,8 +123,8 @@ const ProfilePage: React.FC = () => {
         {/* Header */}
         <div className="mb-8 flex flex-col items-start justify-between gap-4 sm:flex-row">
           <div>
-            <h1 className="text-2xl font-semibold">사용자 프로필</h1>
-            <p className="text-muted-foreground text-sm">계정 정보와 활동 내역을 확인하세요</p>
+            <h1 className="text-2xl font-semibold">{t("title")}</h1>
+            <p className="text-muted-foreground text-sm">{t("subtitle")}</p>
           </div>
         </div>
 
@@ -144,7 +146,7 @@ const ProfilePage: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <User className="text-primary size-5" />
                     <h2 className="text-lg font-semibold">{getUserNameFromEmail(profile.email)}</h2>
-                    <Badge>활성 사용자</Badge>
+                    <Badge>{t("user.activeUser")}</Badge>
                   </div>
                   <div className="mt-1 space-y-1">
                     <div className="flex items-center gap-2">
@@ -152,7 +154,7 @@ const ProfilePage: React.FC = () => {
                       <p className="text-muted-foreground text-sm">{profile.email}</p>
                     </div>
                     <p className="text-muted-foreground text-sm">
-                      사용자 ID: {profile.id} • 가입일: {new Date().toLocaleDateString()}
+                      {t("user.userId")}: {profile.id} • {t("user.joinedDate")}: {new Date().toLocaleDateString()}
                     </p>
                   </div>
                 </div>
@@ -168,10 +170,10 @@ const ProfilePage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium">보유 크레딧</span>
+                    <span className="text-sm font-medium">{t("credit.title")}</span>
                   </div>
                   <div className="mt-2">
-                    <div className="text-xl font-bold text-yellow-600">{profile.credit.toLocaleString()}</div>
+                    <div className="text-xl font-bold text-blue-600">{profile.credit.toLocaleString()}</div>
 
                   </div>
                 </div>
@@ -185,17 +187,17 @@ const ProfilePage: React.FC = () => {
           <CardContent className="p-6">
             <div className="flex flex-col items-start justify-between gap-4 sm:flex-row">
               <div className="space-y-1">
-                <h2 className="text-lg font-semibold">크레딧 구매</h2>
+                <h2 className="text-lg font-semibold">{t("credit.purchase")}</h2>
                 <div className="flex items-center gap-2">
                   <CreditCard className="text-muted-foreground size-4" />
                   <span className="text-muted-foreground text-sm">
-                    더 많은 이미지를 생성하기 위해 크레딧을 구매하세요
+                    {t("credit.purchaseDescription")}
                   </span>
                 </div>
               </div>
-              <Button onClick={handleBuyCredits} className="bg-yellow-600 hover:bg-yellow-700">
+              <Button onClick={handleBuyCredits} className="bg-blue-600 hover:bg-blue-700">
                 <CreditCard className="mr-2 size-4" />
-                크레딧 구매
+                {t("credit.purchase")}
               </Button>
             </div>
           </CardContent>
@@ -205,7 +207,7 @@ const ProfilePage: React.FC = () => {
         <Card className="p-0">
           <CardContent className="p-6">
             <div className="mb-6 flex flex-col items-start justify-between gap-3 sm:flex-row">
-              <h2 className="text-lg font-semibold">계정 관리</h2>
+              <h2 className="text-lg font-semibold">{t("account.title")}</h2>
 
             </div>
             <div className="space-y-4">
@@ -215,12 +217,12 @@ const ProfilePage: React.FC = () => {
                     <Crown className="text-muted-foreground size-4" />
                   </div>
                   <div>
-                    <p className="font-medium">계정 유형</p>
-                    <p className="text-muted-foreground text-sm">일반 사용자 계정</p>
+                    <p className="font-medium">{t("account.accountType.title")}</p>
+                    <p className="text-muted-foreground text-sm">{t("account.accountType.description")}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <Badge variant="outline">일반</Badge>
+                  <Badge variant="outline">{t("account.accountType.badge")}</Badge>
                   <Button variant="ghost" size="sm">
                     <Package className="size-4" />
                   </Button>
@@ -233,12 +235,12 @@ const ProfilePage: React.FC = () => {
                     <Mail className="text-muted-foreground size-4" />
                   </div>
                   <div>
-                    <p className="font-medium">이메일</p>
+                    <p className="font-medium">{t("account.email.title")}</p>
                     <p className="text-muted-foreground text-sm">{profile.email}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <Badge variant="outline">인증됨</Badge>
+                  <Badge variant="outline">{t("account.email.badge")}</Badge>
                   <Button variant="ghost" size="sm">
                     <Activity className="size-4" />
                   </Button>
@@ -251,12 +253,12 @@ const ProfilePage: React.FC = () => {
                     <Calendar className="text-muted-foreground size-4" />
                   </div>
                   <div>
-                    <p className="font-medium">가입일</p>
+                    <p className="font-medium">{t("account.joinDate.title")}</p>
                     <p className="text-muted-foreground text-sm">{new Date().toLocaleDateString()}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <Badge variant="outline">활성</Badge>
+                  <Badge variant="outline">{t("account.joinDate.badge")}</Badge>
                   <Button variant="ghost" size="sm">
                     <Activity className="size-4" />
                   </Button>
@@ -269,8 +271,8 @@ const ProfilePage: React.FC = () => {
                     <LogOut className="text-muted-foreground size-4" />
                   </div>
                   <div>
-                    <p className="font-medium">로그아웃</p>
-                    <p className="text-muted-foreground text-sm">계정에서 안전하게 로그아웃</p>
+                    <p className="font-medium">{t("account.logout.title")}</p>
+                    <p className="text-muted-foreground text-sm">{t("account.logout.description")}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -280,7 +282,7 @@ const ProfilePage: React.FC = () => {
                     onClick={handleLogout}
                     className="text-red-600 hover:text-red-700 bg-transparent"
                   >
-                    로그아웃
+                    {t("account.logout.button")}
                   </Button>
                 </div>
               </div>
@@ -291,8 +293,8 @@ const ProfilePage: React.FC = () => {
                     <UserX className="text-red-500 size-4" />
                   </div>
                   <div>
-                    <p className="font-medium text-red-600">회원 탈퇴</p>
-                    <p className="text-muted-foreground text-sm">계정과 모든 데이터를 영구 삭제</p>
+                    <p className="font-medium text-red-600">{t("account.withdraw.title")}</p>
+                    <p className="text-muted-foreground text-sm">{t("account.withdraw.description")}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -302,7 +304,7 @@ const ProfilePage: React.FC = () => {
                     onClick={handleWithdraw}
                     className="bg-red-600 hover:bg-red-700"
                   >
-                    회원 탈퇴
+                    {t("account.withdraw.button")}
                   </Button>
                 </div>
               </div>

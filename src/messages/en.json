@@ -426,47 +426,53 @@
     }
   },
   "Profile": {
-    "title": "Profile",
-    "subtitle": "Manage your account and preferences",
-    "sections": {
-      "profileInfo": "Profile Information",
-      "quickActions": "Quick Actions",
-      "settings": "Settings"
+    "title": "User Profile",
+    "subtitle": "Check your account information and activity history",
+    "user": {
+      "activeUser": "Active User",
+      "userId": "User ID",
+      "joinedDate": "Joined Date"
     },
-    "info": {
-      "joined": "Joined",
-      "plan": "Plan"
+    "credit": {
+      "title": "Credits Balance",
+      "description": "Available for image generation",
+      "purchase": "Buy Credits",
+      "purchaseDescription": "Purchase credits to generate more images"
     },
-    "stats": {
-      "imagesGenerated": "Images Generated",
-      "creditsUsed": "Credits Used",
-      "creditsRemaining": "Credits Remaining"
-    },
-    "actions": {
-      "downloadAll": "Download All Images",
-      "myGallery": "My Gallery",
-      "buyCredits": "Buy Credits",
-      "logout": "Logout"
-    },
-    "settings": {
-      "language": "Language & Region",
-      "selectLanguage": "Select Language",
-      "appearance": "Appearance",
-      "darkMode": "Dark Mode",
-      "notifications": "Notifications",
-      "pushNotifications": "Push Notifications",
-      "emailNotifications": "Email Notifications",
-      "privacy": "Privacy & Security",
-      "privacyPolicy": "Privacy Policy",
-      "termsOfService": "Terms of Service"
-    },
-    "buttons": {
-      "edit": "Edit Profile"
+    "account": {
+      "title": "Account Management",
+      "allSettings": "All Settings",
+      "accountType": {
+        "title": "Account Type",
+        "description": "Standard user account",
+        "badge": "Standard"
+      },
+      "email": {
+        "title": "Email",
+        "badge": "Verified"
+      },
+      "joinDate": {
+        "title": "Join Date",
+        "badge": "Active"
+      },
+      "logout": {
+        "title": "Logout",
+        "description": "Safely logout from your account",
+        "button": "Logout"
+      },
+      "withdraw": {
+        "title": "Account Deletion",
+        "description": "Permanently delete account and all data",
+        "button": "Delete Account",
+        "confirm": "Are you sure you want to delete your account? This action cannot be undone and all data will be permanently deleted."
+      }
     },
     "messages": {
-      "languageChanged": "Language changed successfully",
-      "loggedOut": "Logged out successfully",
-      "editProfile": "Edit profile feature coming soon"
+      "fetchError": "Failed to load profile information.",
+      "noProfile": "Unable to load profile.",
+      "creditsPending": "Credit purchase feature is coming soon.",
+      "withdrawSuccess": "Account deletion completed.",
+      "withdrawError": "An error occurred during account deletion."
     }
   },
   "Common": {
@@ -479,6 +485,33 @@
       "fileTooLarge": "File too large ({size}MB). Please upload an image smaller than 10MB.",
       "unsupportedFileType": "Unsupported file type. Please upload JPG, PNG, WebP, or GIF images only.",
       "profileLoadFailed": "Failed to load profile information."
+    }
+  },
+  "Library": {
+    "title": "My Library",
+    "subtitle": "Manage your created images and videos",
+    "stats": {
+      "total": "Total {count} items"
+    },
+    "filters": {
+      "all": "All",
+      "video": "Videos",
+      "image": "Images"
+    },
+    "empty": {
+      "title": "No content created yet",
+      "subtitle": "Try creating new images or videos!"
+    },
+    "actions": {
+      "like": "Like",
+      "share": "Share",
+      "download": "Download"
+    },
+    "loading": "Loading...",
+    "allLoaded": "All content has been loaded.",
+    "loginRequired": "Login required.",
+    "errors": {
+      "loadFailed": "Failed to load media"
     }
   }
 }
