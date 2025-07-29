@@ -106,9 +106,9 @@ const HomePage: React.FC = () => {
   return (
     <div className="p-10 bg-background">
       {/* Hero Section - 3개 박스 */}
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
+      <section className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 md:gap-6 mb-8 md:mb-10 lg:mb-12">
         {/* 상단 박스 (전체 너비) */}
-        <div className="lg:col-span-2 relative h-[300px] rounded-xl overflow-hidden shadow-2xl">
+        <div className="md:col-span-2 relative aspect-[16/9] rounded-xl overflow-hidden shadow-2xl">
           <video
             src="https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/tomato_00523.mp4"
             autoPlay
@@ -117,15 +117,15 @@ const HomePage: React.FC = () => {
             playsInline
             className="absolute inset-0 w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-8">
-            <h2 className="text-4xl lg:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4 md:p-6 lg:p-8">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
               {t("hero.consistentCharacter")}
             </h2>
           </div>
         </div>
 
         {/* 하단 왼쪽 박스 */}
-        <div className="relative h-[250px] rounded-xl overflow-hidden shadow-2xl">
+        <div className="relative aspect-[16/9] rounded-xl overflow-hidden shadow-2xl">
           <video
             src="https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/tomato_00582.mp4"
             autoPlay
@@ -134,15 +134,15 @@ const HomePage: React.FC = () => {
             playsInline
             className="absolute inset-0 w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
-            <h3 className="text-2xl lg:text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4 md:p-6">
+            <h3 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
               {t("hero.unifiedStyle")}
             </h3>
           </div>
         </div>
 
         {/* 하단 오른쪽 박스 */}
-        <div className="relative h-[250px] rounded-xl overflow-hidden shadow-2xl">
+        <div className="relative aspect-[16/9] rounded-xl overflow-hidden shadow-2xl">
           <video
             src="https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/tomato_00467.mp4"
             autoPlay
@@ -151,8 +151,8 @@ const HomePage: React.FC = () => {
             playsInline
             className="absolute inset-0 w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
-            <h3 className="text-2xl lg:text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4 md:p-6">
+            <h3 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
               {t("hero.continuousStories")}
             </h3>
           </div>
