@@ -377,7 +377,7 @@ export default function CreatePage() {
       task: {
         id: tempId,
         prompt: prompt,
-        lora: selectedLoraModel?.modelName || "studio_ghibli_wan14b_t2v_v01.safetensors",
+        lora: selectedLoraModel?.name || "studio ghibli style",
         imageUrl: null,
         height: tempHeight,
         width: tempWidth,

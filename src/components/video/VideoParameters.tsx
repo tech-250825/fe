@@ -89,12 +89,6 @@ export function VideoParameters({ lora, taskId, width, height, numFrames, inputI
         </Badge>
       )}
 
-      {/* Task ID (optional, for debugging) */}
-      {taskId && (
-        <Badge variant="outline" className="text-xs opacity-60">
-          #{taskId}
-        </Badge>
-      )}
     </div>
   );
 }

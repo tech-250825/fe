@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { ModelSelectionModal } from "@/components/model-selection-modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -49,6 +49,16 @@ export function VideoGenerationChatBar({
   const [isDragging, setIsDragging] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEnhancing, setIsEnhancing] = useState(false);
+
+  // Set first style model as default when styleModels are loaded
+  useEffect(() => {
+    if (styleModels.length > 0 && !selections.style) {
+      setSelections(prev => ({
+        ...prev,
+        style: styleModels[0]
+      }));
+    }
+  }, [styleModels, selections.style]);
 
   const handleImageUpload = useCallback((file: File) => {
     if (file && file.type.startsWith("image/")) {
@@ -156,6 +166,7 @@ export function VideoGenerationChatBar({
   const selectionBadges = useMemo(() => {
     const badges = [];
     if (mode === "t2v") {
+      // Always show lora badge (style or character)
       if (selections.style) {
         badges.push(
           <Badge
