@@ -924,8 +924,23 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      {/* 사이드바 푸터 - 사용자 프로필 */}
+      {/* 사이드바 푸터 - 테마 체인저와 사용자 프로필 */}
       <SidebarFooter>
+        {/* 테마 체인저 */}
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton onClick={toggleTheme} className="w-full">
+              {theme === "dark" ? (
+                <Sun className="w-4 h-4" />
+              ) : (
+                <Moon className="w-4 h-4" />
+              )}
+              <span>{theme === "dark" ? t("user.lightMode") : t("user.darkMode")}</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+        
+        <SidebarSeparator />
         {isLoading ? (
           <div className="flex items-center space-x-3 px-4 py-2">
             <Skeleton className="w-8 h-8 rounded-full" />
@@ -985,15 +1000,6 @@ export function AppSidebar() {
                     </DropdownMenuSubContent>
                   </DropdownMenuSub>
 
-                  {/* 테마 토글 메뉴 */}
-                  <DropdownMenuItem onClick={toggleTheme}>
-                    {theme === "dark" ? (
-                      <Sun className="w-4 h-4 mr-2" />
-                    ) : (
-                      <Moon className="w-4 h-4 mr-2" />
-                    )}
-                    <span>{theme === "dark" ? t("user.lightMode") : t("user.darkMode")}</span>
-                  </DropdownMenuItem>
 
                   <DropdownMenuItem
                     onClick={handleLogout}
