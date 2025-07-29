@@ -18,8 +18,10 @@ import type { VideoOptions, GenerationMode } from "@/lib/types";
 import { VideoGenerationChatBar } from "@/components/VideoGenerationChatBar";
 import { api } from "@/lib/auth/apiClient";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 export default function CreatePage() {
+  const t = useTranslations("VideoCreation");
   const router = useRouter();
   const searchParams = useSearchParams();
   const taskId = searchParams.get("taskId"); // URL에서 taskId 읽기
@@ -249,7 +251,7 @@ export default function CreatePage() {
       // 마지막 업데이트 시간 설정
       setLastFetchTime(new Date().toLocaleTimeString());
     } catch (error) {
-      console.error("❌ Task list fetch failed:", error);
+      console.error("❌ " + t("error.title") + ":", error);
       setHasMore(false);
       hasMoreRef.current = false;
     } finally {
@@ -473,11 +475,11 @@ export default function CreatePage() {
         
         // Handle different error status codes
         if (response.status === 500) {
-          toast.error("Server error occurred while generating video. Please try again later.");
+          toast.error(t("toast.serverError"));
         } else if (response.status === 400) {
-          toast.error("Invalid request. Please check your settings and try again.");
+          toast.error(t("toast.invalidRequest"));
         } else if (response.status === 401) {
-          toast.error("Authentication failed. Please log in again.");
+          toast.error(t("toast.authFailed"));
         } else {
           toast.error(`Video generation failed (Error ${response.status}). Please try again.`);
         }
@@ -487,7 +489,7 @@ export default function CreatePage() {
       }
     } catch (e) {
       console.error("❌ 네트워크 에러:", e);
-      toast.error("Network error occurred. Please check your connection and try again.");
+      toast.error(t("toast.networkError"));
       setTaskList((prev) => prev.filter((task) => task.task.id !== tempId));
       setIsGenerating(false);
     }
@@ -558,10 +560,10 @@ export default function CreatePage() {
     try {
       await navigator.clipboard.writeText(item.task.prompt);
       console.log("Copied prompt:", item.task.prompt);
-      toast.success("Prompt copied to clipboard!");
+      toast.success(t("toast.promptCopied"));
     } catch (error) {
       console.error("Failed to copy:", error);
-      toast.error("Failed to copy prompt");
+      toast.error(t("toast.copyFailed"));
     }
   };
 
@@ -585,18 +587,18 @@ export default function CreatePage() {
       document.body.removeChild(link);
       
       console.log("✅ Download initiated for task:", item.task.id);
-      toast.success("Download started!");
+      toast.success(t("toast.downloadStarted"));
       
     } catch (error) {
       console.error("❌ Download failed:", error);
-      toast.error("Download failed. Please try again.");
+      toast.error(t("toast.downloadFailed"));
     }
   };
 
   const handleDelete = async (item: TaskItem) => {
     // Confirmation dialog
     const shortPrompt = item.task.prompt.length > 50 ? item.task.prompt.substring(0, 50) + '...' : item.task.prompt;
-    if (!confirm("정말로 이 영상을 삭제하시겠습니까?\n\n" + shortPrompt)) {
+    if (!confirm(t("delete.confirm") + "\n\n" + shortPrompt)) {
       return;
     }
 
@@ -609,7 +611,7 @@ export default function CreatePage() {
         // Remove from local state immediately
         setTaskList((prev) => prev.filter((task) => task.task.id !== item.task.id));
         
-        toast.success("영상이 삭제되었습니다.");
+        toast.success(t("delete.success"));
         console.log("✅ Successfully deleted task:", item.task.id);
         
         // Refresh the list to ensure consistency
@@ -623,9 +625,9 @@ export default function CreatePage() {
       // Check if it's a constraint violation error
       const errorMessage = error instanceof Error ? error.message : String(error);
       if (errorMessage.includes('constraint') || errorMessage.includes('foreign key')) {
-        toast.error("연관된 데이터가 있어 삭제할 수 없습니다. 관리자에게 문의하세요.");
+        toast.error(t("delete.constraintError"));
       } else {
-        toast.error("삭제에 실패했습니다. 다시 시도해주세요.");
+        toast.error(t("delete.failed"));
       }
     }
   };
@@ -675,7 +677,7 @@ export default function CreatePage() {
   if (!isLoggedIn) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground">로그인이 필요합니다.</p>
+        <p className="text-muted-foreground">{t("loginRequired")}</p>
       </div>
     );
   }
