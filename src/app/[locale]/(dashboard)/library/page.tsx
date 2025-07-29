@@ -384,7 +384,6 @@ export default function LibraryPage() {
         )}
       </div>
 
-      {/* 비디오 팝업 */}
       <VideoPopup
         isOpen={isVideoPopupOpen}
         onClose={closeVideoPopup}

@@ -5,6 +5,7 @@ import type React from "react"
 import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { X, Play, Pause, Maximize, Download } from "lucide-react"
+import { toast } from "sonner"
 
 interface VideoPopupProps {
   isOpen: boolean
@@ -22,6 +23,13 @@ function VideoPopup({ isOpen, onClose, videoSrc }: VideoPopupProps) {
   const [duration, setDuration] = useState(0)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [showControls, setShowControls] = useState(true)
+
+  // Debug: VideoSrc 확인
+  useEffect(() => {
+    if (isOpen) {
+      console.log("🎬 VideoPopup opened with videoSrc:", videoSrc);
+    }
+  }, [isOpen, videoSrc])
 
   useEffect(() => {
     if (isOpen && videoRef.current) {
@@ -151,12 +159,24 @@ function VideoPopup({ isOpen, onClose, videoSrc }: VideoPopupProps) {
   }
 
   const handleDownload = () => {
-    const link = document.createElement("a")
-    link.href = videoSrc
-    link.download = "video.mp4"
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    try {
+      // Use the download API route with the video URL
+      const filename = "video.mp4";
+      const downloadApiUrl = `/api/download?url=${encodeURIComponent(videoSrc)}&filename=${encodeURIComponent(filename)}`;
+      
+      const link = document.createElement('a');
+      link.href = downloadApiUrl;
+      link.download = filename;
+      link.style.display = 'none';
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      console.log("✅ Download initiated via API route");
+    } catch (error) {
+      console.error("❌ Download failed:", error);
+    }
   }
 
   const formatTime = (time: number) => {
