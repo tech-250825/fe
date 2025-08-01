@@ -24,7 +24,8 @@ export function ImageActions({
 }: ImageActionsProps) {
   const t = useTranslations("VideoCreation");
 
-  const isCompleted = item.task.status === "COMPLETED" && item.image?.url;
+  const isCompleted = item.task.status === "COMPLETED" && 
+    (item.image?.url || (item.images && item.images.length > 0));
 
   return (
     <div className={`flex items-center gap-2 ${className}`}>
