@@ -43,7 +43,7 @@ export function ImageList({
   }
 
   return (
-    <div className="w-full space-y-8 pb-32">
+    <div className="w-full space-y-8 pb-32 pt-40">
       {taskList.map((item) => (
         <div key={item.task.id} className="max-w-2xl mx-auto">
           {/* Image Parameters */}
