@@ -15,6 +15,7 @@ import {
 import { ChatInput } from "@/components/input/ChatInput";
 import { VideoGenerationParams } from "@/services/types/input.types";
 import type { VideoOptions, GenerationMode } from "@/lib/types";
+import { getResolutionProfile } from "@/lib/types";
 import { VideoGenerationChatBar } from "@/components/VideoGenerationChatBar";
 import { api } from "@/lib/auth/apiClient";
 import { toast } from "sonner";
@@ -353,7 +354,7 @@ export default function CreatePage() {
     const selectedLoraModel = options.style || options.character;
     
     const tempId = Date.now();
-    // Calculate dimensions for optimistic task
+    // Calculate dimensions for optimistic task display
     let tempWidth: number, tempHeight: number, tempFrames: number;
     
     if (mode === "i2v" && uploadedImageFile) {
@@ -366,6 +367,7 @@ export default function CreatePage() {
       tempWidth = scaledDimensions.width;
       tempHeight = scaledDimensions.height;
     } else {
+      // For T2V optimistic display, still calculate dimensions for UI
       const dimensions = getVideoDimensions(options.aspectRatio, options.quality);
       tempWidth = dimensions.width;
       tempHeight = dimensions.height;
@@ -396,9 +398,9 @@ export default function CreatePage() {
       const endpoint =
         mode === "t2v" ? "/api/videos/create/t2v" : "/api/videos/create/i2v";
 
-      let width: number, height: number;
+      // Only calculate width/height for I2V mode
+      let width: number = 0, height: number = 0;
       
-      // i2v의 경우 업로드된 이미지 크기를 기반으로 계산
       if (mode === "i2v" && uploadedImageFile) {
         const imageDimensions = await getImageDimensions(uploadedImageFile);
         const scaledDimensions = calculateScaledDimensions(
@@ -411,11 +413,6 @@ export default function CreatePage() {
         
         console.log(`📏 Original image: ${imageDimensions.width}x${imageDimensions.height}`);
         console.log(`📏 Scaled for ${options.quality}: ${width}x${height}`);
-      } else {
-        // t2v의 경우 기존 로직 사용
-        const dimensions = getVideoDimensions(options.aspectRatio, options.quality);
-        width = dimensions.width;
-        height = dimensions.height;
       }
 
       const frames =
@@ -427,6 +424,9 @@ export default function CreatePage() {
       let response: Response;
 
       if (mode === "i2v" && uploadedImageFile) {
+        // I2V case - use both resolutionProfile and actual width/height
+        const resolutionProfile = options.quality === "720p" ? "I2V_HD" : "I2V_SD";
+        
         const formData = new FormData();
         formData.append("image", uploadedImageFile);
         formData.append(
@@ -434,21 +434,35 @@ export default function CreatePage() {
           JSON.stringify({
             loraId: loraId,
             prompt: prompt,
+            resolutionProfile: resolutionProfile,
             width: width,
             height: height,
             numFrames: frames,
           })
         );
         
+        console.log("📦 I2V Request payload with resolutionProfile:", {
+          loraId,
+          prompt,
+          resolutionProfile,
+          width,
+          height,
+          numFrames: frames
+        });
+        
         response = await api.postForm(`${config.apiUrl}${endpoint}`, formData);
       } else {
+        // T2V case - use resolutionProfile instead of width/height
+        const resolutionProfile = getResolutionProfile(options.aspectRatio, options.quality);
+        
         const requestData = {
           prompt: prompt,
           loraId: loraId,
-          width: width,
-          height: height,
+          resolutionProfile: resolutionProfile,
           numFrames: frames,
         };
+        
+        console.log("📦 T2V Request payload with resolutionProfile:", requestData);
         
         response = await api.post(`${config.apiUrl}${endpoint}`, requestData);
       }
