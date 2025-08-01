@@ -15,7 +15,7 @@ import {
 import { ChatInput } from "@/components/input/ChatInput";
 import { VideoGenerationParams } from "@/services/types/input.types";
 import type { VideoOptions, GenerationMode } from "@/lib/types";
-import { getResolutionProfile } from "@/lib/types";
+import { getResolutionProfile, getI2VResolutionProfile } from "@/lib/types";
 import { VideoGenerationChatBar } from "@/components/VideoGenerationChatBar";
 import { api } from "@/lib/auth/apiClient";
 import { toast } from "sonner";
@@ -398,22 +398,7 @@ export default function CreatePage() {
       const endpoint =
         mode === "t2v" ? "/api/videos/create/t2v" : "/api/videos/create/i2v";
 
-      // Only calculate width/height for I2V mode
-      let width: number = 0, height: number = 0;
-      
-      if (mode === "i2v" && uploadedImageFile) {
-        const imageDimensions = await getImageDimensions(uploadedImageFile);
-        const scaledDimensions = calculateScaledDimensions(
-          imageDimensions.width,
-          imageDimensions.height,
-          options.quality
-        );
-        width = scaledDimensions.width;
-        height = scaledDimensions.height;
-        
-        console.log(`📏 Original image: ${imageDimensions.width}x${imageDimensions.height}`);
-        console.log(`📏 Scaled for ${options.quality}: ${width}x${height}`);
-      }
+      // Width/height no longer needed for API payload
 
       const frames =
         options.duration === 4 ? 81 : 101;
@@ -424,8 +409,16 @@ export default function CreatePage() {
       let response: Response;
 
       if (mode === "i2v" && uploadedImageFile) {
-        // I2V case - use both resolutionProfile and actual width/height
-        const resolutionProfile = options.quality === "720p" ? "I2V_HD" : "I2V_SD";
+        // I2V case - get actual image dimensions and calculate resolutionProfile
+        const imageDimensions = await getImageDimensions(uploadedImageFile);
+        const resolutionProfile = getI2VResolutionProfile(
+          imageDimensions.width,
+          imageDimensions.height,
+          options.quality
+        );
+        
+        console.log(`📏 I2V Image dimensions: ${imageDimensions.width}x${imageDimensions.height}`);
+        console.log(`📏 I2V Resolution profile: ${resolutionProfile}`);
         
         const formData = new FormData();
         formData.append("image", uploadedImageFile);
@@ -435,18 +428,14 @@ export default function CreatePage() {
             loraId: loraId,
             prompt: prompt,
             resolutionProfile: resolutionProfile,
-            width: width,
-            height: height,
             numFrames: frames,
           })
         );
         
-        console.log("📦 I2V Request payload with resolutionProfile:", {
+        console.log("📦 I2V Request payload with resolutionProfile only:", {
           loraId,
           prompt,
           resolutionProfile,
-          width,
-          height,
           numFrames: frames
         });
         
