@@ -100,19 +100,24 @@ export function ImageList({
                     if (aspectRatio < 0.8) {
                       // 9:16 images - use a more compact layout with reasonable proportions
                       return (
-                        <div className="relative rounded-2xl overflow-hidden shadow-lg cursor-pointer group bg-muted">
+                        <div 
+                          className="relative rounded-2xl overflow-hidden shadow-lg cursor-pointer group bg-muted"
+                          onClick={() => {
+                            console.log("🖼️ 9:16 Grid clicked, task ID:", item.task.id);
+                            onImageClick(item);
+                          }}
+                        >
                           <div className="flex gap-2 p-2">
                             <div className="grid grid-cols-2 gap-1 flex-1">
                               {item.images.slice(0, 4).map((img, index) => (
                                 <div
                                   key={img.id || index}
                                   className="relative bg-muted aspect-[9/16] overflow-hidden rounded-lg"
-                                  onClick={() => onImageClick(item)}
                                 >
                                   <img
                                     src={img.url}
                                     alt={`${item.task.prompt} - Image ${index + 1}`}
-                                    className="w-full h-full object-cover transition-transform group-hover:scale-[1.02]"
+                                    className="w-full h-full object-cover transition-transform group-hover:scale-[1.02] pointer-events-none"
                                     loading="lazy"
                                   />
                                 </div>
@@ -135,7 +140,7 @@ export function ImageList({
                           
                           {/* Overlay and badge for 9:16 layout */}
                           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none rounded-2xl" />
-                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                             <div className="bg-white/90 dark:bg-black/90 backdrop-blur-sm rounded-full p-3">
                               <div className="w-6 h-6 flex items-center justify-center">
                                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -144,7 +149,7 @@ export function ImageList({
                               </div>
                             </div>
                           </div>
-                          <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
+                          <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full pointer-events-none">
                             {item.images.length} images
                           </div>
                         </div>
@@ -166,18 +171,23 @@ export function ImageList({
                     }
 
                     return (
-                      <div className="relative rounded-2xl overflow-hidden shadow-lg cursor-pointer group bg-muted">
+                      <div 
+                        className="relative rounded-2xl overflow-hidden shadow-lg cursor-pointer group bg-muted"
+                        onClick={() => {
+                          console.log("🖼️ Grid clicked, task ID:", item.task.id);
+                          onImageClick(item);
+                        }}
+                      >
                         <div className={`grid grid-cols-2 gap-1 w-full ${containerAspectClass}`}>
                           {item.images.slice(0, 4).map((img, index) => (
                             <div
                               key={img.id || index}
                               className={`relative overflow-hidden bg-muted ${imageAspectClass}`}
-                              onClick={() => onImageClick(item)}
                             >
                               <img
                                 src={img.url}
                                 alt={`${item.task.prompt} - Image ${index + 1}`}
-                                className="w-full h-full object-cover transition-transform group-hover:scale-[1.02]"
+                                className="w-full h-full object-cover transition-transform group-hover:scale-[1.02] pointer-events-none"
                                 loading="lazy"
                               />
                             </div>
@@ -201,7 +211,7 @@ export function ImageList({
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none rounded-2xl" />
                     
                     {/* Grid icon overlay */}
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                       <div className="bg-white/90 dark:bg-black/90 backdrop-blur-sm rounded-full p-3">
                         <div className="w-6 h-6 flex items-center justify-center">
                           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -212,7 +222,7 @@ export function ImageList({
                     </div>
                     
                     {/* Image count badge */}
-                    <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
+                    <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full pointer-events-none">
                       {item.images.length} images
                     </div>
                   </div>
@@ -222,18 +232,21 @@ export function ImageList({
                   /* Single image display */
                   <div
                     className="relative rounded-2xl overflow-hidden shadow-lg cursor-pointer group bg-muted"
-                    onClick={() => onImageClick(item)}
+                    onClick={() => {
+                      console.log("🖼️ Single image clicked, task ID:", item.task.id);
+                      onImageClick(item);
+                    }}
                   >
                     <img
                       src={item.image?.url || item.images?.[0]?.url}
                       alt={item.task.prompt}
-                      className="w-full h-auto object-cover transition-transform group-hover:scale-[1.02]"
+                      className="w-full h-auto object-cover transition-transform group-hover:scale-[1.02] pointer-events-none"
                       loading="lazy"
                     />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none rounded-2xl" />
                     
                     {/* Single image icon overlay */}
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                       <div className="bg-white/90 dark:bg-black/90 backdrop-blur-sm rounded-full p-3">
                         <div className="w-6 h-6 flex items-center justify-center">
                           🖼️

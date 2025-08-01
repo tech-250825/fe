@@ -4,7 +4,7 @@ import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useSSE } from "@/components/SSEProvider";
 import { config } from "@/config";
-import VideoResultModal from "@/components/video-result-modal";
+import ImageResultModal from "@/components/image-result-modal";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ImageList } from "@/components/image/ImageList";
 import {
@@ -431,8 +431,28 @@ export default function CreateImagesPage() {
     ? taskList.find((item) => item.task.id.toString() === taskId.toString())
     : null;
 
+  // Debug selected task
+  useEffect(() => {
+    console.log("🔍 TaskId from URL:", taskId);
+    console.log("🔍 TaskList length:", taskList.length);
+    console.log("🔍 Selected Task:", selectedTask);
+    if (taskList.length > 0) {
+      console.log("🔍 Available task IDs:", taskList.map(item => item.task.id));
+    }
+  }, [taskId, taskList, selectedTask]);
+
   const handleImageClick = (clickedItem: ImageItem) => {
-    router.push(`/create/images?taskId=${clickedItem.task.id}`);
+    console.log("🖼️ Image clicked:", clickedItem.task.id);
+    console.log("🖼️ Current URL:", window.location.href);
+    
+    // Get current locale from pathname
+    const currentPath = window.location.pathname;
+    const locale = currentPath.split('/')[1]; // Extract locale from path like /ko/create/images
+    
+    const newUrl = `/${locale}/create/images?taskId=${clickedItem.task.id}`;
+    console.log("🖼️ Navigating to:", newUrl);
+    
+    router.push(newUrl);
   };
 
   const handleCopyPrompt = async (item: ImageItem) => {
@@ -657,27 +677,11 @@ export default function CreateImagesPage() {
         console.log("🎯 Calculated resolution:", resolution);
         
         return (
-          <VideoResultModal
+          <ImageResultModal
             isOpen={true}
             onClose={handleCloseModal}
-            videoResult={{
-              src: (selectedTask.images && selectedTask.images.length > 1) 
-                ? selectedTask.images[0].url 
-                : (selectedTask.image?.url || selectedTask.images?.[0]?.url || ""),
-              prompt: selectedTask.task.prompt,
-              parameters: {
-                "Aspect Ratio": aspectRatio,
-                Style: selectedTask.task.lora,
-                Resolution: resolution,
-                "Images Count": selectedTask.images?.length 
-                  ? `${selectedTask.images.length} images` 
-                  : "1 image",
-                "Task ID": selectedTask.task.id.toString(),
-                "Created At": new Date(
-                  selectedTask.task.createdAt
-                ).toLocaleDateString(),
-              },
-            } as any}
+            imageItem={selectedTask}
+            onDownload={handleDownload}
           />
         );
       })()}
