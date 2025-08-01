@@ -90,36 +90,112 @@ export function ImageList({
               <>
                 {/* Multiple images grid (Midjourney style) */}
                 {item.images && item.images.length > 1 ? (
-                  <div className="relative rounded-2xl overflow-hidden shadow-lg cursor-pointer group bg-muted">
-                    <div className="grid grid-cols-2 gap-1 aspect-square w-full">
-                      {item.images.slice(0, 4).map((img, index) => (
-                        <div
-                          key={img.id || index}
-                          className="relative overflow-hidden bg-muted aspect-square"
-                          onClick={() => onImageClick(item)}
-                        >
-                          <img
-                            src={img.url}
-                            alt={`${item.task.prompt} - Image ${index + 1}`}
-                            className="w-full h-full object-cover transition-transform group-hover:scale-[1.02]"
-                            loading="lazy"
-                          />
-                        </div>
-                      ))}
-                      {/* Fill empty slots if less than 4 images */}
-                      {Array.from({ length: Math.max(0, 4 - item.images.length) }).map((_, index) => (
-                        <div
-                          key={`empty-${index}`}
-                          className="relative overflow-hidden bg-muted/50 aspect-square"
-                        >
-                          <div className="w-full h-full flex items-center justify-center text-muted-foreground/50">
-                            <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
-                            </svg>
+                  (() => {
+                    // Calculate aspect ratio from task dimensions
+                    const taskWidth = item.task.width || 1280;
+                    const taskHeight = item.task.height || 720;
+                    const aspectRatio = taskWidth / taskHeight;
+                    
+                    // For 9:16 images, use a compact horizontal layout 
+                    if (aspectRatio < 0.8) {
+                      // 9:16 images - use a more compact layout with reasonable proportions
+                      return (
+                        <div className="relative rounded-2xl overflow-hidden shadow-lg cursor-pointer group bg-muted">
+                          <div className="flex gap-2 p-2">
+                            <div className="grid grid-cols-2 gap-1 flex-1">
+                              {item.images.slice(0, 4).map((img, index) => (
+                                <div
+                                  key={img.id || index}
+                                  className="relative bg-muted aspect-[9/16] overflow-hidden rounded-lg"
+                                  onClick={() => onImageClick(item)}
+                                >
+                                  <img
+                                    src={img.url}
+                                    alt={`${item.task.prompt} - Image ${index + 1}`}
+                                    className="w-full h-full object-cover transition-transform group-hover:scale-[1.02]"
+                                    loading="lazy"
+                                  />
+                                </div>
+                              ))}
+                              {/* Fill empty slots if less than 4 images */}
+                              {Array.from({ length: Math.max(0, 4 - item.images.length) }).map((_, index) => (
+                                <div
+                                  key={`empty-${index}`}
+                                  className="relative bg-muted/50 aspect-[9/16] overflow-hidden rounded-lg"
+                                >
+                                  <div className="w-full h-full flex items-center justify-center text-muted-foreground/50">
+                                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                                      <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                                    </svg>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                          
+                          {/* Overlay and badge for 9:16 layout */}
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none rounded-2xl" />
+                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="bg-white/90 dark:bg-black/90 backdrop-blur-sm rounded-full p-3">
+                              <div className="w-6 h-6 flex items-center justify-center">
+                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                  <path d="M3 4a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2zM9 4a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1V4zM9 10a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1v-2z"/>
+                                </svg>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
+                            {item.images.length} images
                           </div>
                         </div>
-                      ))}
-                    </div>
+                      );
+                    }
+                    
+                    // For 16:9 and 1:1 images, use grid layout
+                    let containerAspectClass = "";
+                    let imageAspectClass = "";
+                    
+                    if (aspectRatio > 1.5) {
+                      // Wide images (16:9) - use wider container
+                      containerAspectClass = "aspect-[2/1]";
+                      imageAspectClass = "aspect-[16/9]";
+                    } else {
+                      // Square-ish images (1:1) - use square container
+                      containerAspectClass = "aspect-square";
+                      imageAspectClass = "aspect-square";
+                    }
+
+                    return (
+                      <div className="relative rounded-2xl overflow-hidden shadow-lg cursor-pointer group bg-muted">
+                        <div className={`grid grid-cols-2 gap-1 w-full ${containerAspectClass}`}>
+                          {item.images.slice(0, 4).map((img, index) => (
+                            <div
+                              key={img.id || index}
+                              className={`relative overflow-hidden bg-muted ${imageAspectClass}`}
+                              onClick={() => onImageClick(item)}
+                            >
+                              <img
+                                src={img.url}
+                                alt={`${item.task.prompt} - Image ${index + 1}`}
+                                className="w-full h-full object-cover transition-transform group-hover:scale-[1.02]"
+                                loading="lazy"
+                              />
+                            </div>
+                          ))}
+                          {/* Fill empty slots if less than 4 images */}
+                          {Array.from({ length: Math.max(0, 4 - item.images.length) }).map((_, index) => (
+                            <div
+                              key={`empty-${index}`}
+                              className={`relative overflow-hidden bg-muted/50 ${imageAspectClass}`}
+                            >
+                              <div className="w-full h-full flex items-center justify-center text-muted-foreground/50">
+                                <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                                </svg>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
                     
                     {/* Grid overlay */}
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none rounded-2xl" />
@@ -140,6 +216,8 @@ export function ImageList({
                       {item.images.length} images
                     </div>
                   </div>
+                    );
+                  })()
                 ) : (
                   /* Single image display */
                   <div
