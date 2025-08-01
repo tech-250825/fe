@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Loader2 } from "lucide-react";
 import { ImageActions } from "./ImageActions";
 import { ImageParameters } from "./ImageParameters";
+import { ImageGenerationScreen } from "./ImageGenerationScreen";
 import type { ImageItem } from "@/services/types/image.types";
 
 interface ImageListProps {
@@ -74,18 +75,7 @@ export function ImageList({
           {/* Image Content */}
           <div className="relative">
             {item.task.status === "IN_PROGRESS" ? (
-              <div className="w-full aspect-video bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 flex flex-col items-center justify-center border-2 border-dashed border-blue-200 dark:border-blue-800 rounded-2xl">
-                <div className="flex items-center space-x-3 mb-4">
-                  <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
-                  <div className="w-5 h-5 bg-purple-500 rounded-full animate-pulse" />
-                </div>
-                <p className="text-sm text-muted-foreground font-medium">
-                  {t("generation.generating")}
-                </p>
-                <p className="text-xs text-muted-foreground mt-2">
-                  {t("generation.pleaseWait")}
-                </p>
-              </div>
+              <ImageGenerationScreen taskId={item.task.id} lora={item.task.lora} />
             ) : item.task.status === "COMPLETED" && (item.images?.length || item.image?.url) ? (
               <>
                 {/* Multiple images grid (Midjourney style) */}
