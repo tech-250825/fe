@@ -18,6 +18,7 @@ import type { VideoOptions, GenerationMode } from "@/lib/types";
 import { getResolutionProfile, getI2VResolutionProfile } from "@/lib/types";
 import { VideoGenerationChatBar } from "@/components/VideoGenerationChatBar";
 import { api } from "@/lib/auth/apiClient";
+import type { ImageItem } from "@/services/types/image.types";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 
@@ -346,7 +347,8 @@ export default function CreatePage() {
     prompt: string,
     mode: GenerationMode,
     options: VideoOptions,
-    uploadedImageFile?: File
+    uploadedImageFile?: File,
+    libraryImageData?: { imageItem: ImageItem; imageUrl: string }
   ) => {
     setIsGenerating(true);
 
@@ -357,15 +359,22 @@ export default function CreatePage() {
     // Calculate dimensions for optimistic task display
     let tempWidth: number, tempHeight: number, tempFrames: number;
     
-    if (mode === "i2v" && uploadedImageFile) {
-      const imageDimensions = await getImageDimensions(uploadedImageFile);
-      const scaledDimensions = calculateScaledDimensions(
-        imageDimensions.width,
-        imageDimensions.height,
-        options.quality
-      );
-      tempWidth = scaledDimensions.width;
-      tempHeight = scaledDimensions.height;
+    if (mode === "i2v" && (uploadedImageFile || libraryImageData)) {
+      if (libraryImageData) {
+        // Use existing dimensions from library image
+        tempWidth = libraryImageData.imageItem.task.width || 1280;
+        tempHeight = libraryImageData.imageItem.task.height || 720;
+      } else if (uploadedImageFile) {
+        // Calculate dimensions from uploaded file
+        const imageDimensions = await getImageDimensions(uploadedImageFile);
+        const scaledDimensions = calculateScaledDimensions(
+          imageDimensions.width,
+          imageDimensions.height,
+          options.quality
+        );
+        tempWidth = scaledDimensions.width;
+        tempHeight = scaledDimensions.height;
+      }
     } else {
       // For T2V optimistic display, still calculate dimensions for UI
       const dimensions = getVideoDimensions(options.aspectRatio, options.quality);
@@ -395,8 +404,11 @@ export default function CreatePage() {
     setTaskList((prev) => [optimisticTask, ...prev]);
 
     try {
-      const endpoint =
-        mode === "t2v" ? "/api/videos/create/t2v" : "/api/videos/create/i2v";
+      const endpoint = mode === "t2v" 
+        ? "/api/videos/create/t2v" 
+        : libraryImageData 
+          ? "/api/videos/create/i2v/v2"  // Library image uses v2 endpoint
+          : "/api/videos/create/i2v";     // Computer upload uses original endpoint
 
       // Width/height no longer needed for API payload
 
@@ -408,38 +420,70 @@ export default function CreatePage() {
 
       let response: Response;
 
-      if (mode === "i2v" && uploadedImageFile) {
-        // I2V case - get actual image dimensions and calculate resolutionProfile
-        const imageDimensions = await getImageDimensions(uploadedImageFile);
-        const resolutionProfile = getI2VResolutionProfile(
-          imageDimensions.width,
-          imageDimensions.height,
-          options.quality
-        );
+      if (mode === "i2v" && (uploadedImageFile || libraryImageData)) {
+        let resolutionProfile: string;
+        let requestData: any;
         
-        console.log(`📏 I2V Image dimensions: ${imageDimensions.width}x${imageDimensions.height}`);
-        console.log(`📏 I2V Resolution profile: ${resolutionProfile}`);
-        
-        const formData = new FormData();
-        formData.append("image", uploadedImageFile);
-        formData.append(
-          "request",
-          JSON.stringify({
-            loraId: loraId,
+        if (libraryImageData) {
+          // Library image case - use JSON payload with imageUrl for v2 endpoint
+          const imageWidth = libraryImageData.imageItem.task.width || 1280;
+          const imageHeight = libraryImageData.imageItem.task.height || 720;
+          resolutionProfile = getI2VResolutionProfile(
+            imageWidth,
+            imageHeight,
+            options.quality
+          );
+          
+          console.log(`📏 I2V Library Image dimensions: ${imageWidth}x${imageHeight}`);
+          console.log(`📏 I2V Resolution profile: ${resolutionProfile}`);
+          console.log(`🖼️ Library Image URL: ${libraryImageData.imageUrl}`);
+          
+          // Create JSON payload for v2 endpoint
+          requestData = {
             prompt: prompt,
+            imageUrl: libraryImageData.imageUrl,
             resolutionProfile: resolutionProfile,
             numFrames: frames,
-          })
-        );
+            loraId: loraId || 1 // Default loraId as specified
+          };
+          
+          console.log("📦 I2V Library Request payload (JSON):", requestData);
+          
+        } else if (uploadedImageFile) {
+          // File upload case - get actual image dimensions and calculate resolutionProfile
+          const imageDimensions = await getImageDimensions(uploadedImageFile);
+          resolutionProfile = getI2VResolutionProfile(
+            imageDimensions.width,
+            imageDimensions.height,
+            options.quality
+          );
+          
+          console.log(`📏 I2V File Image dimensions: ${imageDimensions.width}x${imageDimensions.height}`);
+          console.log(`📏 I2V Resolution profile: ${resolutionProfile}`);
+          
+          const formData = new FormData();
+          formData.append("image", uploadedImageFile);
+          formData.append(
+            "request",
+            JSON.stringify({
+              loraId: loraId,
+              prompt: prompt,
+              resolutionProfile: resolutionProfile,
+              numFrames: frames,
+            })
+          );
+          
+          requestData = formData;
+        }
         
-        console.log("📦 I2V Request payload with resolutionProfile only:", {
-          loraId,
-          prompt,
-          resolutionProfile,
-          numFrames: frames
-        });
-        
-        response = await api.postForm(`${config.apiUrl}${endpoint}`, formData);
+        // Make API call based on request type
+        if (libraryImageData) {
+          // Library image uses JSON POST
+          response = await api.post(`${config.apiUrl}${endpoint}`, requestData);
+        } else {
+          // File upload uses FormData POST
+          response = await api.postForm(`${config.apiUrl}${endpoint}`, requestData);
+        }
       } else {
         // T2V case - use resolutionProfile instead of width/height
         const resolutionProfile = getResolutionProfile(options.aspectRatio, options.quality);

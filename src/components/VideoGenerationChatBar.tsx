@@ -9,9 +9,12 @@ import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import type { VideoOptions, GenerationMode } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { Settings2, Send, X, ImageIcon, Sparkles } from "lucide-react";
+import { Settings2, Send, X, ImageIcon, Sparkles, Images } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
+import { ImageLibraryModal } from "@/components/ImageLibraryModal";
+import type { ImageItem } from "@/services/types/image.types";
+import { getI2VResolutionProfile } from "@/lib/types";
 
 const defaultOptions: VideoOptions = {
   style: null,
@@ -26,7 +29,8 @@ interface ChatInputUIProps {
     prompt: string,
     mode: GenerationMode,
     options: VideoOptions,
-    uploadedImageFile?: File
+    uploadedImageFile?: File,
+    libraryImageData?: { imageItem: ImageItem; imageUrl: string }
   ) => void;
   isGenerating: boolean;
   availableModels: any[];
@@ -52,6 +56,11 @@ export function VideoGenerationChatBar({
   const [isDragging, setIsDragging] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEnhancing, setIsEnhancing] = useState(false);
+  const [isLibraryModalOpen, setIsLibraryModalOpen] = useState(false);
+  const [selectedImageFromLibrary, setSelectedImageFromLibrary] = useState<{
+    imageItem: ImageItem;
+    imageUrl: string;
+  } | null>(null);
 
   // Set first style model as default when styleModels are loaded (only if no character is selected)
   useEffect(() => {
@@ -87,12 +96,46 @@ export function VideoGenerationChatBar({
   const handleRemoveImage = useCallback(() => {
     setUploadedImage(null);
     setUploadedImageFile(null);
+    setSelectedImageFromLibrary(null);
     setMode("t2v");
     setSelections((prev) => ({
       ...prev,
       style: defaultOptions.style,
       character: defaultOptions.character,
     }));
+  }, []);
+
+  const handleImageFromLibrary = useCallback((imageItem: ImageItem, imageUrl: string) => {
+    console.log("🖼️ Selected image from library:", imageItem.task.id, imageUrl);
+    
+    // Set the image URL for display
+    setUploadedImage(imageUrl);
+    setUploadedImageFile(null); // Clear file since we're using URL
+    setSelectedImageFromLibrary({ imageItem, imageUrl });
+    
+    // Switch to I2V mode
+    setMode("i2v");
+    
+    // Automatically determine aspect ratio based on image dimensions
+    const imageWidth = imageItem.task.width || 1280;
+    const imageHeight = imageItem.task.height || 720;
+    const aspectRatio = imageWidth / imageHeight;
+    
+    let aspectRatioString = "1:1"; // default
+    if (aspectRatio > 1.5) {
+      aspectRatioString = "16:9";
+    } else if (aspectRatio < 0.8) {
+      aspectRatioString = "9:16";
+    }
+    
+    setSelections((prev) => ({
+      ...prev,
+      style: null,
+      character: null,
+      aspectRatio: aspectRatioString,
+    }));
+    
+    console.log("🎯 Auto-selected aspect ratio:", aspectRatioString, "for dimensions", imageWidth, "x", imageHeight);
   }, []);
 
   const handleModeChange = (newMode: GenerationMode) => {
@@ -139,7 +182,13 @@ export function VideoGenerationChatBar({
 
   const handleSubmit = () => {
     if (prompt.trim() && !isGenerating) {
-      onSubmit(prompt, mode, selections, uploadedImageFile || undefined);
+      onSubmit(
+        prompt, 
+        mode, 
+        selections, 
+        uploadedImageFile || undefined,
+        selectedImageFromLibrary || undefined
+      );
       // Clear the prompt after successful submission
       setPrompt("");
     }
@@ -285,6 +334,22 @@ export function VideoGenerationChatBar({
                 <p className="max-w-xs text-center">{t("chatBar.settingsTooltip")}</p>
               </TooltipContent>
             </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsLibraryModalOpen(true)}
+                  className="hover:bg-green-500/10 hover:text-green-600"
+                >
+                  <Images className="h-5 w-5" />
+                  <span className="sr-only">Choose from Library</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="max-w-xs text-center">Choose from your generated images</p>
+              </TooltipContent>
+            </Tooltip>
             {onEnhancePrompt && (
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -316,8 +381,8 @@ export function VideoGenerationChatBar({
             className={cn(
               "w-full h-14 pr-14 bg-card border-border text-foreground",
               uploadedImage 
-                ? onEnhancePrompt ? "pl-40" : "pl-28"
-                : onEnhancePrompt ? "pl-28" : "pl-14"
+                ? onEnhancePrompt ? "pl-52" : "pl-40"  // +12 for library button
+                : onEnhancePrompt ? "pl-40" : "pl-28"  // +12 for library button
             )}
             disabled={isGenerating}
           />
@@ -345,6 +410,12 @@ export function VideoGenerationChatBar({
         uploadedImageFile={uploadedImageFile}
         styleModels={styleModels} // 추가
         characterModels={characterModels} // 추가
+      />
+      
+      <ImageLibraryModal
+        isOpen={isLibraryModalOpen}
+        onClose={() => setIsLibraryModalOpen(false)}
+        onSelectImage={handleImageFromLibrary}
       />
     </div>
   );
