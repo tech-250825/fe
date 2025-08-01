@@ -439,16 +439,19 @@ export const SSEProvider = ({
         };
         newNotifications = [notification];
         console.log("단일 알림 처리:", notification);
-      } else if (data.memberId && data.taskId && data.imageUrl) {
-        // 새로운 형태: {memberId, taskId, imageUrl, prompt}
+      } else if (data.memberId && data.taskId && (data.imageUrl || data.videoUrl)) {
+        // 새로운 형태: {memberId, taskId, imageUrl/videoUrl, prompt, type}
+        const isImageNotification = data.type === "image" || Array.isArray(data.imageUrl);
+        const notificationType = isImageNotification ? "image" : "video";
+        
         const notification: ProcessedNotification = {
-          id: `video-${data.taskId}`, // taskId를 기반으로 ID 생성
-          type: "video" as NotificationType, // 비디오로 가정 (URL에 .mp4가 있으면)
+          id: `${notificationType}-${data.taskId}`, // taskId를 기반으로 ID 생성
+          type: notificationType as NotificationType,
           status: "SUCCESS", // 완료된 상태로 가정
           message: data.prompt || "작업이 완료되었습니다.",
           createdAt: new Date().toISOString(),
           payload: {
-            imageUrl: [data.imageUrl],
+            imageUrl: data.imageUrl || [data.videoUrl], // imageUrl 배열 또는 단일 videoUrl
             prompt: data.prompt,
             taskId: data.taskId,
           },
@@ -456,7 +459,7 @@ export const SSEProvider = ({
           timestamp: Date.now(),
         };
         newNotifications = [notification];
-        console.log("새로운 형태 알림 처리:", notification);
+        console.log(`${notificationType} 알림 처리:`, notification);
       } else {
         console.warn("알 수 없는 SSE 데이터 형태:", data);
         return;
@@ -488,27 +491,39 @@ export const SSEProvider = ({
           );
         });
 
-        // 알림 타입별 처리 및 콜백 호출
+        // 알림 타입별 처리 및 이벤트 발생
         newNotifications.forEach((notification) => {
           switch (notification.type) {
             case "image":
-              console.log("이미지 생성 알림:", notification);
+              console.log("🖼️ 이미지 생성 알림 받음:", notification);
               if (notification.status === "SUCCESS") {
                 showNotification("이미지 생성 완료", notification.message);
+                // 윈도우 이벤트 발생
+                window.dispatchEvent(new CustomEvent("imageCompleted", {
+                  detail: notification
+                }));
                 onImageComplete?.();
               }
               break;
             case "upscale":
-              console.log("업스케일 알림:", notification);
+              console.log("⬆️ 업스케일 알림 받음:", notification);
               if (notification.status === "SUCCESS") {
                 showNotification("업스케일 완료", notification.message);
+                // 윈도우 이벤트 발생
+                window.dispatchEvent(new CustomEvent("upscaleCompleted", {
+                  detail: notification
+                }));
                 onUpscaleComplete?.();
               }
               break;
             case "video":
-              console.log("비디오 생성 알림:", notification);
+              console.log("🎬 비디오 생성 알림 받음:", notification);
               if (notification.status === "SUCCESS") {
                 showNotification("비디오 생성 완료", notification.message);
+                // 윈도우 이벤트 발생
+                window.dispatchEvent(new CustomEvent("videoCompleted", {
+                  detail: notification
+                }));
                 onVideoComplete?.();
               }
               break;

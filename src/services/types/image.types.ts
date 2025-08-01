@@ -25,6 +25,13 @@ export interface ImageItem {
     index: number;
     createdAt: string;
   } | null;
+  // Support for multiple images (Midjourney-style grid)
+  images?: {
+    id: number;
+    url: string;
+    index: number;
+    createdAt: string;
+  }[];
 }
 
 export interface ImageListData {

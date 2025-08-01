@@ -18,6 +18,7 @@ import { ImageGenerationChatBar } from "@/components/ImageGenerationChatBar";
 import { api } from "@/lib/auth/apiClient";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
+import { getResolutionProfile } from "@/lib/types";
 
 export default function CreateImagesPage() {
   const t = useTranslations("VideoCreation");
@@ -174,20 +175,55 @@ export default function CreateImagesPage() {
       const content = backendResponse.data.content || [];
       console.log("📋 받은 데이터 개수:", content.length);
 
+      // Group images by task.id to create grid layouts
+      const groupedByTaskId = content.reduce((acc: { [key: number]: ImageItem[] }, item: ImageItem) => {
+        const taskId = item.task.id;
+        if (!acc[taskId]) {
+          acc[taskId] = [];
+        }
+        acc[taskId].push(item);
+        return acc;
+      }, {});
+
+      // Convert grouped data to ImageItem array with images property
+      const processedContent: ImageItem[] = Object.values(groupedByTaskId)
+        .map((items: ImageItem[]) => {
+          // Sort by image index to maintain order
+          const sortedItems = items.sort((a, b) => (a.image?.index || 0) - (b.image?.index || 0));
+          const firstItem = sortedItems[0];
+          
+          if (sortedItems.length > 1) {
+            // Multiple images - create grid item
+            return {
+              ...firstItem,
+              images: sortedItems.map(item => item.image!).filter(img => img !== null),
+              image: null // Clear single image since we have multiple
+            };
+          } else {
+            // Single image - keep as is
+            return firstItem;
+          }
+        })
+        // Sort by createdAt in descending order (newest first)
+        .sort((a, b) => new Date(b.task.createdAt).getTime() - new Date(a.task.createdAt).getTime());
+
+      console.log("🖼️ 처리된 데이터:", processedContent.length, "개 태스크");
+      console.log("🖼️ 그리드 항목:", processedContent.filter(item => item.images && item.images.length > 1).length, "개");
+
       if (reset) {
         console.log("🔄 Reset: 전체 교체");
-        taskListRef.current = content;
-        setTaskList(content);
+        taskListRef.current = processedContent;
+        setTaskList(processedContent);
       } else {
         console.log("➕ Append: 기존 데이터에 추가");
         const existingIds = new Set(taskListRef.current.map((t) => t.task.id));
-        const newItems = content.filter(
+        const newItems = processedContent.filter(
           (item: ImageItem) => !existingIds.has(item.task.id)
         );
 
         console.log("🔍 실제 추가될 새 항목:", newItems.length, "개");
 
-        if (newItems.length === 0 && content.length > 0) {
+        if (newItems.length === 0 && processedContent.length > 0) {
           console.warn("⚠️ 중복 데이터 - hasMore를 false로 설정");
           setHasMore(false);
           hasMoreRef.current = false;
@@ -267,12 +303,16 @@ export default function CreateImagesPage() {
     setTaskList((prev) => [optimisticTask, ...prev]);
 
     try {
-      const loraName = selectedLoraModel?.name || "studio ghibli style"; // Use lora name string instead
+      const loraId = selectedLoraModel?.id || 1; // Use lora ID instead of name
+      const resolutionProfile = getResolutionProfile(options.aspectRatio, options.quality);
 
       const requestData = {
+        loraId: loraId,
         prompt: prompt,
-        lora: loraName,
+        resolutionProfile: resolutionProfile,
       };
+      
+      console.log("📦 Image generation payload:", requestData);
       
       const response = await api.post(`${config.apiUrl}/api/images/create`, requestData);
 
@@ -326,10 +366,43 @@ export default function CreateImagesPage() {
 
   // SSE 알림을 받았을 때 새로고침 처리를 위한 이벤트 리스너
   useEffect(() => {
-    const handleImageCompleted = () => {
+    const handleImageCompleted = (event: any) => {
       console.log(
         "🖼️ Images 페이지: 이미지 생성 완료 알림 받음! 데이터 새로고침..."
       );
+      
+      // If SSE notification contains image data, update the optimistic task
+      if (event.detail && event.detail.payload && event.detail.payload.imageUrl) {
+        const { taskId, imageUrl, prompt } = event.detail.payload;
+        console.log("🖼️ SSE 이미지 데이터:", { taskId, imageUrl, prompt });
+        
+        // Update optimistic task with actual image URLs
+        setTaskList((prev) => prev.map((item) => {
+          if (item.task.id === taskId) {
+            const images = Array.isArray(imageUrl) ? imageUrl.map((url, index) => ({
+              id: taskId * 1000 + index, // Generate unique IDs
+              url,
+              index,
+              createdAt: new Date().toISOString()
+            })) : [{
+              id: taskId,
+              url: imageUrl,
+              index: 0,
+              createdAt: new Date().toISOString()
+            }];
+            
+            return {
+              ...item,
+              task: { ...item.task, status: "COMPLETED" },
+              images: Array.isArray(imageUrl) && imageUrl.length > 1 ? images : undefined,
+              image: Array.isArray(imageUrl) && imageUrl.length > 1 ? null : images[0]
+            };
+          }
+          return item;
+        }));
+      }
+      
+      // Still refresh the full list to ensure consistency
       fetchTaskList(true);
       setIsGenerating(false);
     };
@@ -374,14 +447,52 @@ export default function CreateImagesPage() {
   };
 
   const handleDownload = async (item: ImageItem) => {
-    if (!item.image?.url) return;
+    // Handle multiple images
+    if (item.images && item.images.length > 1) {
+      try {
+        console.log("Starting download for multiple images, task:", item.task.id);
+        
+        // Download each image
+        for (let i = 0; i < item.images.length; i++) {
+          const img = item.images[i];
+          const filename = `image-${item.task.id}-${i + 1}.jpg`;
+          const downloadApiUrl = `/api/download?url=${encodeURIComponent(img.url)}&filename=${encodeURIComponent(filename)}`;
+          
+          const link = document.createElement('a');
+          link.href = downloadApiUrl;
+          link.download = filename;
+          link.style.display = 'none';
+          
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          
+          // Small delay between downloads
+          if (i < item.images.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, 500));
+          }
+        }
+        
+        console.log("✅ Download initiated for", item.images.length, "images");
+        toast.success(`${item.images.length} images download started`);
+        
+      } catch (error) {
+        console.error("❌ Download failed:", error);
+        toast.error(t("toast.downloadFailed"));
+      }
+      return;
+    }
+
+    // Handle single image
+    const imageUrl = item.image?.url || item.images?.[0]?.url;
+    if (!imageUrl) return;
 
     try {
       console.log("Starting download for task:", item.task.id);
       
       // Use the download API route with the image URL
       const filename = `image-${item.task.id}.jpg`;
-      const downloadApiUrl = `/api/download?url=${encodeURIComponent(item.image.url)}&filename=${encodeURIComponent(filename)}`;
+      const downloadApiUrl = `/api/download?url=${encodeURIComponent(imageUrl)}&filename=${encodeURIComponent(filename)}`;
       
       const link = document.createElement('a');
       link.href = downloadApiUrl;
@@ -550,18 +661,23 @@ export default function CreateImagesPage() {
             isOpen={true}
             onClose={handleCloseModal}
             videoResult={{
-              src: selectedTask.image?.url || "",
+              src: (selectedTask.images && selectedTask.images.length > 1) 
+                ? selectedTask.images[0].url 
+                : (selectedTask.image?.url || selectedTask.images?.[0]?.url || ""),
               prompt: selectedTask.task.prompt,
               parameters: {
                 "Aspect Ratio": aspectRatio,
                 Style: selectedTask.task.lora,
                 Resolution: resolution,
+                "Images Count": selectedTask.images?.length 
+                  ? `${selectedTask.images.length} images` 
+                  : "1 image",
                 "Task ID": selectedTask.task.id.toString(),
                 "Created At": new Date(
                   selectedTask.task.createdAt
                 ).toLocaleDateString(),
               },
-            }}
+            } as any}
           />
         );
       })()}
