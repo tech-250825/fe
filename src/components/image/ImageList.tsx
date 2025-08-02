@@ -92,8 +92,11 @@ export function ImageList({
                       return (
                         <div 
                           className="relative rounded-2xl overflow-hidden shadow-lg cursor-pointer group bg-muted"
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
                             console.log("🖼️ 9:16 Grid clicked, task ID:", item.task.id);
+                            alert(`Clicked 9:16 grid task ${item.task.id}`);
                             onImageClick(item);
                           }}
                         >
@@ -163,8 +166,11 @@ export function ImageList({
                     return (
                       <div 
                         className="relative rounded-2xl overflow-hidden shadow-lg cursor-pointer group bg-muted"
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
                           console.log("🖼️ Grid clicked, task ID:", item.task.id);
+                          alert(`Clicked grid task ${item.task.id}`);
                           onImageClick(item);
                         }}
                       >
@@ -211,8 +217,11 @@ export function ImageList({
                   /* Single image display */
                   <div
                     className="relative rounded-2xl overflow-hidden shadow-lg cursor-pointer group bg-muted"
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
                       console.log("🖼️ Single image clicked, task ID:", item.task.id);
+                      alert(`Clicked single image task ${item.task.id}`);
                       onImageClick(item);
                     }}
                   >

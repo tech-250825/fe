@@ -442,8 +442,9 @@ export default function CreateImagesPage() {
   }, [taskId, taskList, selectedTask]);
 
   const handleImageClick = (clickedItem: ImageItem) => {
-    console.log("🖼️ Image clicked:", clickedItem.task.id);
+    console.log("🖼️ handleImageClick called with:", clickedItem.task.id);
     console.log("🖼️ Current URL:", window.location.href);
+    alert(`handleImageClick called with task ID: ${clickedItem.task.id}`);
     
     // Get current locale from pathname
     const currentPath = window.location.pathname;
@@ -451,6 +452,7 @@ export default function CreateImagesPage() {
     
     const newUrl = `/${locale}/create/images?taskId=${clickedItem.task.id}`;
     console.log("🖼️ Navigating to:", newUrl);
+    alert(`About to navigate to: ${newUrl}`);
     
     router.push(newUrl);
   };

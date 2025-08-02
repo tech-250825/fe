@@ -27,6 +27,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { ModernVideoCard } from "@/components/ModernVideoCard";
 import { config } from "@/config";
 import VideoPopup from "@/components/VideoPopup";
+import ImagePopup from "@/components/ImagePopup";
 import { useTranslations } from "next-intl";
 
 // 백엔드 응답에 맞게 수정된 MediaItem
@@ -61,6 +62,8 @@ export default function LibraryPage() {
   const [filterType, setFilterType] = useState("all");
   const [isVideoPopupOpen, setIsVideoPopupOpen] = useState(false);
   const [currentVideo, setCurrentVideo] = useState("");
+  const [isImagePopupOpen, setIsImagePopupOpen] = useState(false);
+  const [currentImage, setCurrentImage] = useState("");
 
   const nextCursorRef = useRef<string | null>(null);
 
@@ -144,6 +147,20 @@ export default function LibraryPage() {
   const closeVideoPopup = () => {
     setIsVideoPopupOpen(false);
     setCurrentVideo("");
+  };
+
+  // 이미지 팝업 열기
+  const openImagePopup = (item: MediaItem) => {
+    if (!isVideo(item.url)) {
+      setCurrentImage(item.url);
+      setIsImagePopupOpen(true);
+    }
+  };
+
+  // 이미지 팝업 닫기
+  const closeImagePopup = () => {
+    setIsImagePopupOpen(false);
+    setCurrentImage("");
   };
 
   // 필터링된 아이템들
@@ -271,7 +288,10 @@ export default function LibraryPage() {
                         
                       </div>
                     ) : (
-                      <div className="relative overflow-hidden bg-secondary rounded-lg cursor-pointer group hover:scale-[1.02] transition-all duration-300">
+                      <div 
+                        className="relative overflow-hidden bg-secondary rounded-lg cursor-pointer group hover:scale-[1.02] transition-all duration-300"
+                        onClick={() => openImagePopup(item)}
+                      >
                         <img
                           src={item.url}
                           alt={`Image ${item.id}`}
@@ -378,6 +398,12 @@ export default function LibraryPage() {
         isOpen={isVideoPopupOpen}
         onClose={closeVideoPopup}
         videoSrc={currentVideo}
+      />
+
+      <ImagePopup
+        isOpen={isImagePopupOpen}
+        onClose={closeImagePopup}
+        imageSrc={currentImage}
       />
     </div>
   );
