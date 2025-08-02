@@ -428,8 +428,8 @@ export function VideoGenerationChatBar({
             className={cn(
               "w-full h-14 pr-14 bg-card border-border text-foreground",
               uploadedImage 
-                ? onEnhancePrompt ? "pl-40" : "pl-28"  // Reduced since we removed one button
-                : onEnhancePrompt ? "pl-28" : "pl-16"  // Reduced since we removed one button
+                ? onEnhancePrompt ? "pl-48" : "pl-36"  // Image preview + 3 buttons (settings, image, enhance)
+                : onEnhancePrompt ? "pl-36" : "pl-24"  // No image preview + 3 buttons or 2 buttons
             )}
             disabled={isGenerating}
           />

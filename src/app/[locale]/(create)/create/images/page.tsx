@@ -576,11 +576,11 @@ export default function CreateImagesPage() {
         prompt: prompt
       };
       
-      if (selectedLoraModel?.name) {
-        requestPayload.lora = selectedLoraModel.name;
-        console.log("Using lora name:", selectedLoraModel.name, "for prompt:", prompt);
+      if (selectedLoraModel?.id) {
+        requestPayload.loraId = selectedLoraModel.id;
+        console.log("Using lora ID:", selectedLoraModel.id, "for prompt:", prompt);
       } else {
-        console.log("No lora model selected, enhancing prompt without lora");
+        console.log("No lora model selected, enhancing prompt without loraId");
       }
       
       const response = await api.post(`${config.apiUrl}/api/lora`, requestPayload);
