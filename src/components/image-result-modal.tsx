@@ -1,6 +1,7 @@
 "use client";
 
-import { Dialog, DialogContent, DialogClose } from "./ui/dialog";
+import { Dialog, DialogContent, DialogClose, DialogTitle } from "./ui/dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -101,6 +102,9 @@ export default function ImageResultModal({
           margin: 0,
         }}
       >
+        <VisuallyHidden>
+          <DialogTitle>Image Viewer</DialogTitle>
+        </VisuallyHidden>
         <TooltipProvider>
           <div className="flex flex-col md:flex-row h-full">
             {/* Left Side: Image Viewer */}
