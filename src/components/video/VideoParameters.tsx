@@ -68,11 +68,13 @@ export function VideoParameters({ lora, taskId, width, height, numFrames, inputI
         </div>
       )}
 
-      {/* Aspect Ratio */}
-      <Badge variant="outline" className="flex items-center gap-1 text-xs">
-        <Maximize2 className="w-3 h-3" />
-        {aspectRatio}
-      </Badge>
+      {/* Aspect Ratio - only show for T2V (no inputImageUrl) */}
+      {!inputImageUrl && (
+        <Badge variant="outline" className="flex items-center gap-1 text-xs">
+          <Maximize2 className="w-3 h-3" />
+          {aspectRatio}
+        </Badge>
+      )}
 
       {/* Duration */}
       <Badge variant="outline" className="flex items-center gap-1 text-xs">

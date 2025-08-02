@@ -3,7 +3,7 @@ export interface TaskItem {
   task: {
     id: number;
     prompt: string;
-    lora: string;
+    lora: string | null;
     imageUrl: string | null;
     height: number;
     width: number;

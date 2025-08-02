@@ -62,15 +62,19 @@ class TokenManager {
       this.isRefreshing = true;
       console.log("🔄 Attempting to refresh token...");
 
-      // Since _hrauth is HttpOnly, we can't access it from JavaScript
-      // Let the backend handle the refresh token from the cookie automatically
+      // Try to get the refresh token from cookie
+      const refreshToken = this.getCookie("_hrauth");
+      
+      const payload = refreshToken ? { _hrauth: refreshToken } : {};
+      console.log("📦 Token refresh payload:", refreshToken ? "with _hrauth token" : "empty payload");
+
       const response = await fetch(`${config.apiUrl}/auth/token/verify`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         credentials: "include", // This sends HttpOnly cookies to backend
-        body: JSON.stringify({}), // Empty body - backend reads cookie directly
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {

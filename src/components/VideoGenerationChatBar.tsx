@@ -245,7 +245,7 @@ export function VideoGenerationChatBar({
   const selectionBadges = useMemo(() => {
     const badges = [];
     if (mode === "t2v") {
-      // Always show lora badge (style or character)
+      // For T2V mode, show style/character and aspect ratio
       if (selections.style) {
         badges.push(
           <Badge
@@ -284,17 +284,19 @@ export function VideoGenerationChatBar({
           {selections.aspectRatio}
         </Badge>
       );
+      // For T2V mode, show duration and quality
+      badges.push(
+        <Badge key="duration" variant="outline">
+          {selections.duration}s
+        </Badge>
+      );
+      badges.push(
+        <Badge key="quality" variant="outline">
+          {selections.quality}
+        </Badge>
+      );
     }
-    badges.push(
-      <Badge key="duration" variant="outline">
-        {selections.duration}s
-      </Badge>
-    );
-    badges.push(
-      <Badge key="quality" variant="outline">
-        {selections.quality}
-      </Badge>
-    );
+    // For I2V mode, show NO badges at all
     return badges;
   }, [selections, mode]);
 

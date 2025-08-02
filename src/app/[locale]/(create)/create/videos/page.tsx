@@ -208,6 +208,15 @@ export default function CreatePage() {
         "📋 받은 데이터 ID들:",
         content.map((item) => item.task.id)
       );
+      
+      // Debug dimensions from backend
+      content.forEach((item) => {
+        if (item.task.imageUrl) { // I2V task
+          console.log(`📏 I2V Task ${item.task.id} dimensions from backend: ${item.task.width}x${item.task.height}`);
+          const ratio = item.task.width / item.task.height;
+          console.log(`📏 Task ${item.task.id} calculated ratio: ${ratio > 1 ? 'landscape' : ratio < 1 ? 'portrait' : 'square'}`);
+        }
+      });
 
       if (reset) {
         console.log("🔄 Reset: 전체 교체");
@@ -357,7 +366,9 @@ export default function CreatePage() {
     
     const tempId = Date.now();
     // Calculate dimensions for optimistic task display
-    let tempWidth: number, tempHeight: number, tempFrames: number;
+    let tempWidth: number = 1280; // Default fallback
+    let tempHeight: number = 720; // Default fallback
+    let tempFrames: number;
     
     if (mode === "i2v" && (uploadedImageFile || libraryImageData)) {
       if (libraryImageData) {
@@ -376,7 +387,7 @@ export default function CreatePage() {
         tempHeight = scaledDimensions.height;
       }
     } else {
-      // For T2V optimistic display, still calculate dimensions for UI
+      // For T2V mode, use aspect ratio dimensions
       const dimensions = getVideoDimensions(options.aspectRatio, options.quality);
       tempWidth = dimensions.width;
       tempHeight = dimensions.height;
@@ -389,8 +400,8 @@ export default function CreatePage() {
       task: {
         id: tempId,
         prompt: prompt,
-        lora: selectedLoraModel?.name || "studio ghibli style",
-        imageUrl: null,
+        lora: mode === "t2v" ? (selectedLoraModel?.name || "studio ghibli style") : null,
+        imageUrl: mode === "i2v" ? (libraryImageData?.imageUrl || null) : null,
         height: tempHeight,
         width: tempWidth,
         numFrames: tempFrames,
@@ -774,7 +785,7 @@ export default function CreatePage() {
               parameters: {
                 "Aspect Ratio": aspectRatio,
                 Duration: duration,
-                Style: selectedTask.task.lora,
+                Style: selectedTask.task.lora || "Default",
                 Resolution: resolution,
                 "Task ID": selectedTask.task.id.toString(),
                 "Created At": new Date(
