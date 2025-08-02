@@ -51,13 +51,17 @@ export default function ImageResultModal({
     }
   };
 
-  const handlePrevImage = () => {
+  const handlePrevImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
     setCurrentImageIndex((prev) => 
       prev > 0 ? prev - 1 : allImages.length - 1
     );
   };
 
-  const handleNextImage = () => {
+  const handleNextImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
     setCurrentImageIndex((prev) => 
       prev < allImages.length - 1 ? prev + 1 : 0
     );
@@ -104,11 +108,7 @@ export default function ImageResultModal({
               <img
                 src={currentImage.url}
                 alt={imageItem.task.prompt}
-                className="w-auto h-auto object-contain"
-                style={{ 
-                  maxHeight: 'calc(100vh - 2rem)', 
-                  maxWidth: 'min(calc(100vw - 2rem), calc(67vw - 2rem))'
-                }}
+                className="w-auto h-auto object-contain max-w-full max-h-full"
                 loading="lazy"
               />
               

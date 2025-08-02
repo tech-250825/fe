@@ -442,18 +442,11 @@ export default function CreateImagesPage() {
   }, [taskId, taskList, selectedTask]);
 
   const handleImageClick = (clickedItem: ImageItem) => {
-    console.log("🖼️ handleImageClick called with:", clickedItem.task.id);
-    console.log("🖼️ Current URL:", window.location.href);
-    alert(`handleImageClick called with task ID: ${clickedItem.task.id}`);
-    
     // Get current locale from pathname
     const currentPath = window.location.pathname;
     const locale = currentPath.split('/')[1]; // Extract locale from path like /ko/create/images
     
     const newUrl = `/${locale}/create/images?taskId=${clickedItem.task.id}`;
-    console.log("🖼️ Navigating to:", newUrl);
-    alert(`About to navigate to: ${newUrl}`);
-    
     router.push(newUrl);
   };
 
