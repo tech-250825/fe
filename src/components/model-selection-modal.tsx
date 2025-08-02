@@ -17,7 +17,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import type { VideoOptions, GenerationMode } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { CheckCircle2, UploadCloud, SwitchCamera, X } from "lucide-react";
+import { CheckCircle2, UploadCloud, X } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 
@@ -200,16 +200,8 @@ export function ModelSelectionModal({
   );
 
   const renderFooter = () => (
-    <DialogFooter className="sm:justify-between">
-      <Button
-        variant="ghost"
-        onClick={() => setTempMode(tempMode === "t2v" ? "i2v" : "t2v")}
-        className="flex items-center gap-2"
-      >
-        <SwitchCamera className="h-4 w-4" />
-        Switch to {tempMode === "t2v" ? "Image-to-Video" : "Text-to-Video"}
-      </Button>
-      <div className="flex gap-2">
+    <DialogFooter>
+      <div className="flex gap-2 ml-auto">
         <Button variant="outline" onClick={() => onOpenChange(false)}>
           Cancel
         </Button>

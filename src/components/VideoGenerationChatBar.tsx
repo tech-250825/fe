@@ -1,15 +1,21 @@
 "use client";
 
 import type React from "react";
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { ModelSelectionModal } from "@/components/model-selection-modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import type { VideoOptions, GenerationMode } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { Settings2, Send, X, ImageIcon, Sparkles, Images } from "lucide-react";
+import { Settings2, Send, X, ImageIcon, Sparkles, Images, Upload, FolderOpen } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { ImageLibraryModal } from "@/components/ImageLibraryModal";
@@ -61,6 +67,8 @@ export function VideoGenerationChatBar({
     imageItem: ImageItem;
     imageUrl: string;
   } | null>(null);
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Set first style model as default when styleModels are loaded (only if no character is selected)
   useEffect(() => {
@@ -136,6 +144,25 @@ export function VideoGenerationChatBar({
     }));
     
     console.log("🎯 Auto-selected aspect ratio:", aspectRatioString, "for dimensions", imageWidth, "x", imageHeight);
+  }, []);
+
+  const handleSelectFromComputer = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleImageUpload(file);
+    }
+    // Reset the input value so the same file can be selected again
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  }, [handleImageUpload]);
+
+  const handleUseFromLibrary = useCallback(() => {
+    setIsLibraryModalOpen(true);
   }, []);
 
   const handleModeChange = (newMode: GenerationMode) => {
@@ -336,15 +363,28 @@ export function VideoGenerationChatBar({
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsLibraryModalOpen(true)}
-                  className="hover:bg-green-500/10 hover:text-green-600"
-                >
-                  <Images className="h-5 w-5" />
-                  <span className="sr-only">Choose from Library</span>
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="hover:bg-blue-500/10 hover:text-blue-600"
+                    >
+                      <ImageIcon className="h-5 w-5" />
+                      <span className="sr-only">Image to Video</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-56">
+                    <DropdownMenuItem onClick={handleSelectFromComputer} className="flex items-center gap-2">
+                      <Upload className="h-4 w-4" />
+                      Select from computer
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleUseFromLibrary} className="flex items-center gap-2">
+                      <FolderOpen className="h-4 w-4" />
+                      Use from library images
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </TooltipTrigger>
               <TooltipContent>
                 <p className="max-w-xs text-center">Choose from your generated images</p>
@@ -372,6 +412,13 @@ export function VideoGenerationChatBar({
               </Tooltip>
             )}
           </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileInputChange}
+            className="hidden"
+          />
           <Input
             type="text"
             placeholder={t("chatBar.promptPlaceholder")}
@@ -381,8 +428,8 @@ export function VideoGenerationChatBar({
             className={cn(
               "w-full h-14 pr-14 bg-card border-border text-foreground",
               uploadedImage 
-                ? onEnhancePrompt ? "pl-52" : "pl-40"  // +12 for library button
-                : onEnhancePrompt ? "pl-40" : "pl-28"  // +12 for library button
+                ? onEnhancePrompt ? "pl-40" : "pl-28"  // Reduced since we removed one button
+                : onEnhancePrompt ? "pl-28" : "pl-16"  // Reduced since we removed one button
             )}
             disabled={isGenerating}
           />
