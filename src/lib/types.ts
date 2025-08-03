@@ -24,10 +24,7 @@ export type ResolutionProfile =
   | "RATIO_16_9_HD"
   | "RATIO_9_16_SD"
   | "RATIO_9_16_HD"
-  | "I2V_WIDTH_SD"
-  | "I2V_WIDTH_HD"
-  | "I2V_HEIGHT_SD"
-  | "I2V_HEIGHT_HD";
+  | "I2V_HD";
 
 // Utility function to map aspect ratio and quality to ResolutionProfile (for T2V)
 export function getResolutionProfile(
@@ -54,12 +51,5 @@ export function getI2VResolutionProfile(
   imageHeight: number,
   quality: "480p" | "720p"
 ): ResolutionProfile {
-  const isHD = quality === "720p";
-  const isWidthSmaller = imageWidth <= imageHeight;
-  
-  if (isWidthSmaller) {
-    return isHD ? "I2V_WIDTH_HD" : "I2V_WIDTH_SD";
-  } else {
-    return isHD ? "I2V_HEIGHT_HD" : "I2V_HEIGHT_SD";
-  }
+  return "I2V_HD";
 }
