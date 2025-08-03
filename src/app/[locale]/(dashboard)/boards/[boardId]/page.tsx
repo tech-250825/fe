@@ -106,6 +106,9 @@ export default function BoardPage() {
   const [totalDuration, setTotalDuration] = useState(0);
   const [globalCurrentTime, setGlobalCurrentTime] = useState(0);
   const [videoDurations, setVideoDurations] = useState<{[key: number]: number}>({});
+  
+  // Thumbnail hover state
+  const [hoveredThumbnail, setHoveredThumbnail] = useState<{sceneId: number, position: number} | null>(null);
 
   // Data fetching state
   const [taskList, setTaskList] = useState<TaskItem[]>([]);
@@ -300,6 +303,52 @@ export default function BoardPage() {
     setActiveVideoSrc(scene.src);
     setCurrentSceneIndex(index);
     setIsPlayingAll(false);
+  };
+
+  // Handle click on video thumbnail for frame-accurate seeking
+  const handleThumbnailClick = (e: React.MouseEvent<HTMLDivElement>, scene: Scene, index: number) => {
+    e.stopPropagation();
+    
+    // Get click position relative to thumbnail
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const percentage = clickX / rect.width;
+    
+    // Get video duration for this scene
+    const videoDuration = videoDurations[scene.id] || 0;
+    if (videoDuration === 0) return;
+    
+    // Calculate local time within this video
+    const localTime = percentage * videoDuration;
+    
+    // Switch to this video and set the time
+    setActiveVideoSrc(scene.src);
+    setCurrentSceneIndex(index);
+    setIsPlayingAll(false);
+    
+    // Set the specific time in the video
+    setTimeout(() => {
+      if (videoRef.current) {
+        videoRef.current.currentTime = Math.max(0, Math.min(localTime, videoDuration));
+        setCurrentTime(localTime);
+      }
+    }, 100);
+  };
+
+  // Handle mouse move over thumbnail for hover feedback
+  const handleThumbnailMouseMove = (e: React.MouseEvent<HTMLDivElement>, scene: Scene) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const position = (mouseX / rect.width) * 100;
+    
+    setHoveredThumbnail({
+      sceneId: scene.id,
+      position: Math.max(0, Math.min(position, 100))
+    });
+  };
+
+  const handleThumbnailMouseLeave = () => {
+    setHoveredThumbnail(null);
   };
 
   // Find which video contains a specific global time
@@ -1324,16 +1373,45 @@ export default function BoardPage() {
                       ? "ring-2 ring-green-400"
                       : ""
                   )}
-                  onClick={() => !isGenerating && handleSceneClick(scene, index)}
+                  onClick={(e) => !isGenerating && handleThumbnailClick(e, scene, index)}
+                  onMouseMove={(e) => !isGenerating && handleThumbnailMouseMove(e, scene)}
+                  onMouseLeave={handleThumbnailMouseLeave}
                 >
                   {isCompleted ? (
-                    /* 완성된 비디오 썸네일 */
-                    <video
-                      src={scene.src}
-                      className="w-full h-full object-cover"
-                      muted
-                      preload="metadata"
-                    />
+                    /* 완성된 비디오 썸네일 - 클릭 가능 */
+                    <div className="relative w-full h-full group">
+                      <video
+                        src={scene.src}
+                        className="w-full h-full object-cover"
+                        muted
+                        preload="metadata"
+                      />
+                      
+                      {/* 동적 호버 시 수직선 표시 (마우스 위치 추적) */}
+                      {hoveredThumbnail?.sceneId === scene.id && (
+                        <div className="absolute inset-0 pointer-events-none">
+                          <div 
+                            className="absolute top-0 bottom-0 w-0.5 bg-white shadow-lg transform -translate-x-0.5 z-10" 
+                            style={{ left: `${hoveredThumbnail.position}%` }} 
+                          />
+                          
+                          {/* 시간 표시 툴팁 */}
+                          <div 
+                            className="absolute -top-6 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded z-20"
+                            style={{ left: `${hoveredThumbnail.position}%` }}
+                          >
+                            {formatTime((hoveredThumbnail.position / 100) * (videoDurations[scene.id] || 0))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* 호버 힌트 */}
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/10">
+                        <div className="text-white text-xs bg-black/70 px-2 py-1 rounded pointer-events-none">
+                          Click to seek
+                        </div>
+                      </div>
+                    </div>
                   ) : (
                     /* 생성 중인 비디오 */
                     <div className="w-full h-full bg-gray-200 flex items-center justify-center">
