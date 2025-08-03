@@ -74,7 +74,6 @@ export default function BoardPage() {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isPlayingAll, setIsPlayingAll] = useState(false);
-  const [isTransitioning, setIsTransitioning] = useState(false);
 
   // Generation state
   const [isGenerating, setIsGenerating] = useState(false);
@@ -123,6 +122,10 @@ export default function BoardPage() {
   const loadingRef = useRef(false);
   const nextCursorRef = useRef<string | null>(null);
   const hasMoreRef = useRef(true);
+  
+  // Video preloading refs - cache for instant switching
+  const videoCache = useRef<{[key: string]: HTMLVideoElement}>({});
+  const preloadedVideos = useRef<Set<string>>(new Set());
 
   // Sync state with refs
   useEffect(() => {
@@ -213,6 +216,62 @@ export default function BoardPage() {
     }
   }, [currentSceneIndex, currentTime, scenes, videoDurations]);
 
+  // Preload videos for instant switching
+  const preloadVideo = useCallback((src: string): Promise<HTMLVideoElement> => {
+    return new Promise((resolve, reject) => {
+      if (preloadedVideos.current.has(src)) {
+        resolve(videoCache.current[src]);
+        return;
+      }
+
+      const video = document.createElement('video');
+      video.src = src;
+      video.preload = 'auto';
+      video.muted = true;
+      
+      video.addEventListener('canplaythrough', () => {
+        videoCache.current[src] = video;
+        preloadedVideos.current.add(src);
+        console.log("✅ Video preloaded:", src);
+        resolve(video);
+      });
+      
+      video.addEventListener('error', (e) => {
+        console.warn("⚠️ Failed to preload video:", src, e);
+        reject(new Error(`Failed to preload video: ${src}`));
+      });
+      
+      video.load();
+    });
+  }, []);
+
+  // Preload all available videos for seamless playback
+  useEffect(() => {
+    const preloadAllVideos = async () => {
+      if (scenes.length === 0) return;
+
+      console.log("🔄 Starting video preloading...");
+      
+      // Preload all completed videos
+      const preloadPromises = scenes
+        .filter(scene => scene.taskItem.task.status === "COMPLETED" && scene.src)
+        .map(scene => {
+          if (!preloadedVideos.current.has(scene.src)) {
+            return preloadVideo(scene.src).catch(() => null); // Ignore errors
+          }
+          return Promise.resolve(null);
+        });
+
+      const results = await Promise.allSettled(preloadPromises);
+      const successCount = results.filter(r => r.status === 'fulfilled').length;
+      console.log(`✅ Preloaded ${successCount} videos out of ${preloadPromises.length}`);
+    };
+
+    // Start preloading after initial render
+    const timeoutId = setTimeout(preloadAllVideos, 1000);
+    return () => clearTimeout(timeoutId);
+  }, [scenes, preloadVideo]);
+
   // Video player handlers
   const handlePlayPause = () => {
     if (videoRef.current) {
@@ -238,41 +297,58 @@ export default function BoardPage() {
   };
 
   const switchToNextVideo = async (nextIndex: number) => {
-    if (!videoRef.current || !nextVideoRef.current) return;
+    if (!videoRef.current || nextIndex >= scenes.length) return;
 
-    setIsTransitioning(true);
+    const nextVideoSrc = scenes[nextIndex].src;
+    if (!nextVideoSrc) return;
 
-    nextVideoRef.current.src = scenes[nextIndex].src;
-    nextVideoRef.current.currentTime = 0;
+    console.log("🔄 Switching to video:", nextIndex, nextVideoSrc);
 
-    await new Promise<void>((resolve) => {
-      const handleCanPlay = () => {
-        nextVideoRef.current!.removeEventListener("canplay", handleCanPlay);
-        resolve();
-      };
-      nextVideoRef.current!.addEventListener("canplay", handleCanPlay);
-      nextVideoRef.current!.load();
-    });
-
-    videoRef.current.style.opacity = "0";
-
-    setTimeout(() => {
+    // Check if video is preloaded for instant switching
+    if (preloadedVideos.current.has(nextVideoSrc)) {
+      console.log("⚡ Using preloaded video for instant switch");
+      
+      // Instant switch with preloaded video
       setCurrentSceneIndex(nextIndex);
-      setActiveVideoSrc(scenes[nextIndex].src);
-
-      setTimeout(() => {
-        if (videoRef.current) {
-          videoRef.current.style.opacity = "1";
-          videoRef.current.play();
-          setIsTransitioning(false);
-        }
-      }, 150);
-    }, 150);
+      setActiveVideoSrc(nextVideoSrc);
+      setCurrentTime(0);
+      
+      // Start playing immediately
+      if (videoRef.current) {
+        videoRef.current.currentTime = 0;
+        videoRef.current.play().catch(console.warn);
+      }
+    } else {
+      // Fallback to normal loading (with minimal delay)
+      console.log("📥 Video not preloaded, loading normally");
+      
+      setCurrentSceneIndex(nextIndex);
+      setActiveVideoSrc(nextVideoSrc);
+      setCurrentTime(0);
+      
+      // Play when ready
+      if (videoRef.current) {
+        videoRef.current.currentTime = 0;
+        videoRef.current.play().catch(console.warn);
+      }
+    }
   };
 
   const handleVideoEnd = async () => {
     if (isPlayingAll && currentSceneIndex < scenes.length - 1) {
       const nextIndex = currentSceneIndex + 1;
+      const nextVideoSrc = scenes[nextIndex]?.src;
+      
+      // Ensure next video is preloaded before switching
+      if (nextVideoSrc && !preloadedVideos.current.has(nextVideoSrc)) {
+        console.log("🔄 Preloading next video before switch:", nextVideoSrc);
+        try {
+          await preloadVideo(nextVideoSrc);
+        } catch (error) {
+          console.warn("⚠️ Failed to preload next video, switching anyway:", error);
+        }
+      }
+      
       await switchToNextVideo(nextIndex);
     } else {
       setIsPlaying(false);
@@ -282,9 +358,22 @@ export default function BoardPage() {
 
   const handleLoadedMetadata = () => {
     if (videoRef.current) {
-      setDuration(videoRef.current.duration);
-      if (isPlayingAll && !isTransitioning) {
-        videoRef.current.play();
+      const videoDuration = videoRef.current.duration;
+      setDuration(videoDuration);
+      console.log("🎬 Video metadata loaded:", videoRef.current.src, "Duration:", videoDuration);
+      
+      // Update video duration cache for timeline calculations
+      const currentScene = scenes[currentSceneIndex];
+      if (currentScene) {
+        setVideoDurations(prev => ({
+          ...prev,
+          [currentScene.id]: videoDuration
+        }));
+      }
+      
+      // Auto-play if we are in continuous playback mode
+      if (isPlayingAll) {
+        videoRef.current.play().catch(console.warn);
       }
     }
   };
@@ -1184,23 +1273,17 @@ export default function BoardPage() {
                 muted
               />
 
-              {/* 로딩 오버레이 */}
-              {(isTransitioning || isGenerating) && (
+              {/* 로딩 오버레이 - 비디오 생성 시만 표시 */}
+              {isGenerating && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/50">
                   <div className="bg-white/90 text-gray-800 px-6 py-4 rounded-xl text-center">
                     <div className="w-6 h-6 border-2 border-gray-800 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
                     <div className="text-sm font-medium">
-                      {isGenerating
-                        ? "Generating new video..."
-                        : isTransitioning
-                          ? "Loading next video..."
-                          : "Processing..."}
+                      Generating new video...
                     </div>
-                    {isGenerating && (
-                      <div className="text-xs text-gray-500 mt-2">
-                        SSE 연결: {isConnected ? "Connected" : "Disconnected"}
-                      </div>
-                    )}
+                    <div className="text-xs text-gray-500 mt-2">
+                      SSE 연결: {isConnected ? "Connected" : "Disconnected"}
+                    </div>
                   </div>
                 </div>
               )}
