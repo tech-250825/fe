@@ -275,7 +275,7 @@ export default function BoardPage() {
     try {
       console.log("🔄 Fetching board videos...");
 
-      const size = reset ? "8" : "6";
+      const size = reset ? "50" : "25";
       const params = new URLSearchParams({ size });
 
       const currentCursor = nextCursorRef.current;
@@ -713,36 +713,19 @@ export default function BoardPage() {
     router.push(`/boards/${boardId}`);
   };
 
-  // Infinite scroll handler
-  useEffect(() => {
-    const handleScroll = () => {
-      if (loadingRef.current || !hasMoreRef.current) {
-        return;
-      }
-
-      const scrollTop = document.documentElement.scrollTop;
-      const scrollHeight = document.documentElement.scrollHeight;
-      const clientHeight = document.documentElement.clientHeight;
-      const threshold = 150;
-      const isNearBottom = scrollTop + clientHeight >= scrollHeight - threshold;
-
-      if (isNearBottom) {
-        fetchTaskList(false);
-      }
-    };
-
-    let timeoutId: NodeJS.Timeout;
-    const debouncedHandleScroll = () => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(handleScroll, 100);
-    };
-
-    window.addEventListener("scroll", debouncedHandleScroll, { passive: true });
-    return () => {
-      clearTimeout(timeoutId);
-      window.removeEventListener("scroll", debouncedHandleScroll);
-    };
-  }, []);
+  // Timeline scroll handler for loading more videos
+  const handleTimelineScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+    if (loadingRef.current || !hasMoreRef.current) return;
+    
+    const { scrollLeft, scrollWidth, clientWidth } = e.currentTarget;
+    const threshold = 100;
+    
+    // Near the end of horizontal scroll, load more videos
+    if (scrollLeft + clientWidth >= scrollWidth - threshold) {
+      console.log("🔄 Timeline scroll: Loading more videos");
+      fetchTaskList(false);
+    }
+  }, [fetchTaskList]);
 
   // Initial data loading
   useEffect(() => {
@@ -845,11 +828,24 @@ export default function BoardPage() {
     }
   };
 
-  // Initialize video transition effect
+  // Initialize video transition effect and prevent page scrolling
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.style.transition = "opacity 0.3s ease-in-out";
     }
+    
+    // Only prevent scrolling on the main content area
+    const mainElement = document.querySelector('main');
+    if (mainElement) {
+      mainElement.style.overflow = "hidden";
+    }
+    
+    return () => {
+      // Restore scrolling when component unmounts
+      if (mainElement) {
+        mainElement.style.overflow = "";
+      }
+    };
   }, []);
 
   if (!isLoggedIn) {
@@ -872,9 +868,9 @@ export default function BoardPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
+    <div className="flex flex-col h-screen bg-gray-50 overflow-hidden">
       {/* 상단 툴바 */}
-      <div className="bg-white border-b px-4 py-2 flex items-center justify-between">
+      <div className="bg-white border-b px-4 py-2 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-4">
           <Button
             variant="ghost"
@@ -925,8 +921,8 @@ export default function BoardPage() {
         </div>
       </div>
 
-      {/* 메인 비디오 플레이어 영역 */}
-      <div className="flex-1 flex items-center justify-center p-3">
+      {/* 메인 비디오 플레이어 영역 - 완전 고정 */}
+      <div className="flex-1 flex items-center justify-center p-3 overflow-hidden">
         <div className="relative w-full max-w-2xl aspect-video bg-black rounded-lg shadow-lg overflow-hidden">
           {activeVideoSrc ? (
             <>
@@ -992,8 +988,8 @@ export default function BoardPage() {
         </div>
       </div>
 
-      {/* 하단 타임라인 및 컨트롤 영역 */}
-      <div className="bg-white border-t">
+      {/* 하단 타임라인 및 컨트롤 영역 - 고정 높이 */}
+      <div className="bg-white border-t flex-shrink-0">
         {/* 타임라인 바 */}
         <div className="bg-gray-100 p-3">
           <div className="flex items-center gap-4 mb-3">
@@ -1039,8 +1035,12 @@ export default function BoardPage() {
             </Tooltip>
           </div>
 
-          {/* 씬 타임라인 */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-2">
+          {/* 씬 타임라인 - 수평 스크롤만 */}
+          <div 
+            className="flex items-center gap-2 overflow-x-auto overflow-y-hidden pb-2 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200"
+            onScroll={handleTimelineScroll}
+            style={{ scrollbarWidth: 'thin' }}
+          >
             {scenes.map((scene, index) => (
               <div
                 key={scene.id}
