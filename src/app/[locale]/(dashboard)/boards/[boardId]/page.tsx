@@ -222,14 +222,10 @@ export default function BoardPage() {
         videoRef.current.pause();
         setIsPlayingAll(false);
       } else {
-        if (!isPlayingAll) {
-          setIsPlayingAll(true);
-          if (scenes.length > 0) {
-            setCurrentSceneIndex(0);
-            setActiveVideoSrc(scenes[0].src);
-          }
-        }
+        // Don't reset position or change video when resuming playback
+        // Just play from current position
         videoRef.current.play();
+        setIsPlayingAll(true);
       }
       setIsPlaying(!isPlaying);
     }
@@ -324,7 +320,13 @@ export default function BoardPage() {
     // Switch to this video and set the time
     setActiveVideoSrc(scene.src);
     setCurrentSceneIndex(index);
+    
+    // Pause playback when seeking to new position
+    setIsPlaying(false);
     setIsPlayingAll(false);
+    if (videoRef.current) {
+      videoRef.current.pause();
+    }
     
     // Set the specific time in the video
     setTimeout(() => {
@@ -400,6 +402,13 @@ export default function BoardPage() {
       // Switch to the correct video and set its time
       setActiveVideoSrc(videoInfo.scene.src);
       setCurrentSceneIndex(videoInfo.sceneIndex);
+      
+      // Pause playback when seeking to new position
+      setIsPlaying(false);
+      setIsPlayingAll(false);
+      if (videoRef.current) {
+        videoRef.current.pause();
+      }
       
       // Wait for video to load then set time
       setTimeout(() => {
