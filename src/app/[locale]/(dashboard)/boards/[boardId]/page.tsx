@@ -116,17 +116,22 @@ export default function BoardPage() {
     taskListRef.current = taskList;
   }, [hasMore, taskList]);
 
-  // Convert task list to scenes
+  // Convert task list to scenes - 생성 중인 비디오와 완성된 비디오 모두 포함
   useEffect(() => {
-    const completedVideos = taskList.filter(
-      item => item.task.status === "COMPLETED" && item.image?.url
+    const allVideos = taskList.filter(
+      item => (item.task.status === "COMPLETED" && item.image?.url) || item.task.status === "IN_PROGRESS"
     );
     
-    const newScenes: Scene[] = completedVideos.map((taskItem, index) => ({
+    // 생성 시간 기준으로 정렬 (오래된 것부터 왼쪽에, 최신 것이 오른쪽에)
+    const sortedVideos = [...allVideos].sort((a, b) => 
+      new Date(a.task.createdAt).getTime() - new Date(b.task.createdAt).getTime()
+    );
+    
+    const newScenes: Scene[] = sortedVideos.map((taskItem, index) => ({
       id: taskItem.task.id,
       type: "video",
-      src: taskItem.image!.url,
-      thumbnail: taskItem.image!.url, // Use video URL as thumbnail for now
+      src: taskItem.image?.url || "", // Empty src for generating videos
+      thumbnail: taskItem.image?.url || "", // Empty thumbnail for generating videos  
       taskItem
     }));
 
@@ -138,6 +143,16 @@ export default function BoardPage() {
       setCurrentSceneIndex(0);
     }
   }, [taskList, activeVideoSrc]);
+
+  // 새 비디오가 추가되면 타임라인을 맨 오른쪽으로 스크롤
+  useEffect(() => {
+    if (scenes.length > 0) {
+      const timelineElement = document.querySelector('[data-timeline]');
+      if (timelineElement) {
+        timelineElement.scrollLeft = timelineElement.scrollWidth;
+      }
+    }
+  }, [scenes.length]);
 
   // Video player handlers
   const handlePlayPause = () => {
@@ -1037,58 +1052,87 @@ export default function BoardPage() {
 
           {/* 씬 타임라인 - 수평 스크롤만 */}
           <div 
+            data-timeline
             className="flex items-center gap-2 overflow-x-auto overflow-y-hidden pb-2 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200"
             onScroll={handleTimelineScroll}
             style={{ scrollbarWidth: 'thin' }}
           >
-            {scenes.map((scene, index) => (
-              <div
-                key={scene.id}
-                className={cn(
-                  "w-24 h-16 rounded-lg bg-white border-2 cursor-pointer flex-shrink-0 relative overflow-hidden transition-all",
-                  activeVideoSrc === scene.src
-                    ? "border-blue-500 ring-2 ring-blue-200"
-                    : "border-gray-300 hover:border-gray-400",
-                  currentSceneIndex === index && isPlayingAll
-                    ? "ring-2 ring-green-400"
-                    : ""
-                )}
-                onClick={() => handleSceneClick(scene, index)}
-              >
-                {/* 비디오 썸네일 */}
-                <video
-                  src={scene.src}
-                  className="w-full h-full object-cover"
-                  muted
-                  preload="metadata"
-                />
-                
-                {/* 재생 중 표시 */}
-                {currentSceneIndex === index && isPlayingAll && (
-                  <div className="absolute top-2 right-2 w-3 h-3 bg-green-500 rounded-full animate-pulse" />
-                )}
+            {scenes.map((scene, index) => {
+              const isGenerating = scene.taskItem.task.status === "IN_PROGRESS";
+              const isCompleted = scene.taskItem.task.status === "COMPLETED" && scene.src;
+              
+              return (
+                <div
+                  key={scene.id}
+                  className={cn(
+                    "w-24 h-16 rounded-lg border-2 flex-shrink-0 relative overflow-hidden transition-all",
+                    isGenerating 
+                      ? "bg-gray-100 border-orange-400 cursor-default" 
+                      : "bg-white cursor-pointer",
+                    !isGenerating && activeVideoSrc === scene.src
+                      ? "border-blue-500 ring-2 ring-blue-200"
+                      : !isGenerating && "border-gray-300 hover:border-gray-400",
+                    currentSceneIndex === index && isPlayingAll && !isGenerating
+                      ? "ring-2 ring-green-400"
+                      : ""
+                  )}
+                  onClick={() => !isGenerating && handleSceneClick(scene, index)}
+                >
+                  {isCompleted ? (
+                    /* 완성된 비디오 썸네일 */
+                    <video
+                      src={scene.src}
+                      className="w-full h-full object-cover"
+                      muted
+                      preload="metadata"
+                    />
+                  ) : (
+                    /* 생성 중인 비디오 */
+                    <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="w-6 h-6 border-2 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-1" />
+                        <div className="text-[8px] text-gray-600">Generating</div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* 재생 중 표시 (완성된 비디오만) */}
+                  {currentSceneIndex === index && isPlayingAll && isCompleted && (
+                    <div className="absolute top-2 right-2 w-3 h-3 bg-green-500 rounded-full animate-pulse" />
+                  )}
 
-                {/* 씬 번호 */}
-                <div className="absolute bottom-1 left-1 bg-black/70 text-white text-xs px-1.5 py-0.5 rounded">
-                  {index + 1}
-                </div>
+                  {/* 생성 상태 표시 */}
+                  {isGenerating && (
+                    <div className="absolute top-1 right-1 w-3 h-3 bg-orange-500 rounded-full animate-pulse" />
+                  )}
 
-                {/* 삭제 버튼 (호버 시 표시) */}
-                <div className="absolute top-1 right-1 opacity-0 hover:opacity-100 transition-opacity">
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    className="w-6 h-6 p-0"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDelete(scene.taskItem);
-                    }}
-                  >
-                    ×
-                  </Button>
+                  {/* 씬 번호 */}
+                  <div className={cn(
+                    "absolute bottom-1 left-1 text-white text-xs px-1.5 py-0.5 rounded",
+                    isGenerating ? "bg-orange-500/70" : "bg-black/70"
+                  )}>
+                    {index + 1}
+                  </div>
+
+                  {/* 삭제 버튼 (호버 시 표시, 완성된 비디오만) */}
+                  {isCompleted && (
+                    <div className="absolute top-1 right-1 opacity-0 hover:opacity-100 transition-opacity">
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="w-6 h-6 p-0"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(scene.taskItem);
+                        }}
+                      >
+                        ×
+                      </Button>
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
 
             {/* 씬 추가 버튼 */}
             <div className="w-24 h-16 rounded-lg border-2 border-dashed border-gray-400 hover:border-gray-500 cursor-pointer flex items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors flex-shrink-0">
