@@ -96,6 +96,17 @@ export default function BoardPage() {
     quality: "720p",
   });
 
+  // Timeline scrubber state
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStartX, setDragStartX] = useState(0);
+  const [dragStartTime, setDragStartTime] = useState(0);
+  const timelineRef = useRef<HTMLDivElement>(null);
+  
+  // Total timeline state
+  const [totalDuration, setTotalDuration] = useState(0);
+  const [globalCurrentTime, setGlobalCurrentTime] = useState(0);
+  const [videoDurations, setVideoDurations] = useState<{[key: number]: number}>({});
+
   // Data fetching state
   const [taskList, setTaskList] = useState<TaskItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -153,6 +164,51 @@ export default function BoardPage() {
       }
     }
   }, [scenes.length]);
+
+  // Calculate total duration when scenes change
+  useEffect(() => {
+    let total = 0;
+    scenes.forEach(scene => {
+      if (scene.taskItem.task.status === "COMPLETED" && scene.src) {
+        const videoDuration = videoDurations[scene.id] || 0;
+        total += videoDuration;
+      }
+    });
+    setTotalDuration(total);
+  }, [scenes, videoDurations]);
+
+  // Load video durations when scenes change
+  useEffect(() => {
+    scenes.forEach(scene => {
+      if (scene.taskItem.task.status === "COMPLETED" && scene.src && !videoDurations[scene.id]) {
+        const video = document.createElement('video');
+        video.src = scene.src;
+        video.addEventListener('loadedmetadata', () => {
+          setVideoDurations(prev => ({
+            ...prev,
+            [scene.id]: video.duration
+          }));
+        });
+      }
+    });
+  }, [scenes, videoDurations]);
+
+  // Update global current time based on current video and its position
+  useEffect(() => {
+    if (currentSceneIndex >= 0 && scenes.length > 0) {
+      let timeBeforeCurrentVideo = 0;
+      
+      // Sum durations of all videos before current one
+      for (let i = 0; i < currentSceneIndex; i++) {
+        const scene = scenes[i];
+        if (scene.taskItem.task.status === "COMPLETED" && scene.src) {
+          timeBeforeCurrentVideo += videoDurations[scene.id] || 0;
+        }
+      }
+      
+      setGlobalCurrentTime(timeBeforeCurrentVideo + currentTime);
+    }
+  }, [currentSceneIndex, currentTime, scenes, videoDurations]);
 
   // Video player handlers
   const handlePlayPause = () => {
@@ -245,6 +301,117 @@ export default function BoardPage() {
     setCurrentSceneIndex(index);
     setIsPlayingAll(false);
   };
+
+  // Find which video contains a specific global time
+  const findVideoAtTime = (globalTime: number) => {
+    let accumulatedTime = 0;
+    
+    for (let i = 0; i < scenes.length; i++) {
+      const scene = scenes[i];
+      if (scene.taskItem.task.status === "COMPLETED" && scene.src) {
+        const videoDuration = videoDurations[scene.id] || 0;
+        
+        if (globalTime <= accumulatedTime + videoDuration) {
+          return {
+            sceneIndex: i,
+            localTime: globalTime - accumulatedTime,
+            scene: scene
+          };
+        }
+        
+        accumulatedTime += videoDuration;
+      }
+    }
+    
+    // If time is beyond all videos, return the last video
+    const lastValidScene = scenes.findLast(s => s.taskItem.task.status === "COMPLETED" && s.src);
+    if (lastValidScene) {
+      const lastIndex = scenes.indexOf(lastValidScene);
+      return {
+        sceneIndex: lastIndex,
+        localTime: videoDurations[lastValidScene.id] || 0,
+        scene: lastValidScene
+      };
+    }
+    
+    return null;
+  };
+
+  // Timeline scrubber handlers - now working with global timeline
+  const handleTimelineClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!timelineRef.current || totalDuration === 0) return;
+    
+    const rect = timelineRef.current.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const percentage = clickX / rect.width;
+    const globalTime = percentage * totalDuration;
+    
+    const videoInfo = findVideoAtTime(globalTime);
+    if (videoInfo && videoRef.current) {
+      // Switch to the correct video and set its time
+      setActiveVideoSrc(videoInfo.scene.src);
+      setCurrentSceneIndex(videoInfo.sceneIndex);
+      
+      // Wait for video to load then set time
+      setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.currentTime = videoInfo.localTime;
+          setCurrentTime(videoInfo.localTime);
+        }
+      }, 100);
+    }
+  };
+
+  const handleTimelineDragStart = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!timelineRef.current) return;
+    
+    setIsDragging(true);
+    setDragStartX(e.clientX);
+    setDragStartTime(globalCurrentTime);
+    
+    // Prevent text selection during drag
+    e.preventDefault();
+  };
+
+  const handleTimelineDragMove = (e: MouseEvent) => {
+    if (!isDragging || !timelineRef.current || totalDuration === 0) return;
+    
+    const rect = timelineRef.current.getBoundingClientRect();
+    const deltaX = e.clientX - dragStartX;
+    const deltaPercentage = deltaX / rect.width;
+    const deltaTime = deltaPercentage * totalDuration;
+    const newGlobalTime = Math.max(0, Math.min(dragStartTime + deltaTime, totalDuration));
+    
+    const videoInfo = findVideoAtTime(newGlobalTime);
+    if (videoInfo && videoRef.current) {
+      // Switch to the correct video if needed
+      if (videoInfo.sceneIndex !== currentSceneIndex) {
+        setActiveVideoSrc(videoInfo.scene.src);
+        setCurrentSceneIndex(videoInfo.sceneIndex);
+      }
+      
+      // Set the local time in the video
+      videoRef.current.currentTime = videoInfo.localTime;
+      setCurrentTime(videoInfo.localTime);
+    }
+  };
+
+  const handleTimelineDragEnd = () => {
+    setIsDragging(false);
+  };
+
+  // Mouse event listeners for timeline dragging
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleTimelineDragMove);
+      document.addEventListener('mouseup', handleTimelineDragEnd);
+      
+      return () => {
+        document.removeEventListener('mousemove', handleTimelineDragMove);
+        document.removeEventListener('mouseup', handleTimelineDragEnd);
+      };
+    }
+  }, [isDragging, dragStartX, dragStartTime, totalDuration, scenes, videoDurations, currentSceneIndex]);
 
   // Fetch board info
   const fetchBoardInfo = useCallback(async () => {
@@ -1049,6 +1216,87 @@ export default function BoardPage() {
               </TooltipContent>
             </Tooltip>
           </div>
+
+          {/* 인터랙티브 글로벌 타임라인 프로그레스 바 */}
+          {scenes.length > 0 && totalDuration > 0 && (
+            <div className="mb-3">
+              <div 
+                ref={timelineRef}
+                className="relative h-8 bg-gray-200 rounded-lg cursor-pointer overflow-hidden"
+                onClick={handleTimelineClick}
+                onMouseDown={handleTimelineDragStart}
+              >
+                {/* 비디오 세그먼트들 */}
+                {(() => {
+                  let accumulatedTime = 0;
+                  return scenes.map((scene, index) => {
+                    if (scene.taskItem.task.status === "COMPLETED" && scene.src) {
+                      const videoDuration = videoDurations[scene.id] || 0;
+                      const startPercentage = (accumulatedTime / totalDuration) * 100;
+                      const widthPercentage = (videoDuration / totalDuration) * 100;
+                      
+                      const segment = (
+                        <div
+                          key={scene.id}
+                          className={cn(
+                            "absolute top-0 h-full border-r border-gray-400 transition-all duration-100",
+                            currentSceneIndex === index 
+                              ? "bg-blue-200" 
+                              : "bg-gray-300 hover:bg-gray-350"
+                          )}
+                          style={{
+                            left: `${startPercentage}%`,
+                            width: `${widthPercentage}%`,
+                            zIndex: 1
+                          }}
+                        >
+                          {/* 비디오 제목/번호 */}
+                          <div className="absolute inset-0 flex items-center justify-center text-xs text-gray-700 font-medium pointer-events-none">
+                            {index + 1}
+                          </div>
+                        </div>
+                      );
+                      
+                      accumulatedTime += videoDuration;
+                      return segment;
+                    }
+                    return null;
+                  }).filter(Boolean);
+                })()}
+                
+                {/* 재생된 부분 (글로벌) */}
+                <div 
+                  className="absolute top-0 left-0 h-full bg-blue-500 rounded-lg transition-all duration-100"
+                  style={{ 
+                    width: `${(globalCurrentTime / totalDuration) * 100}%`,
+                    zIndex: 2
+                  }}
+                />
+                
+                {/* 플레이헤드 (드래그 가능한 수직선) */}
+                <div 
+                  className={cn(
+                    "absolute top-0 h-full w-1 bg-white shadow-lg transform -translate-x-0.5 transition-all duration-100",
+                    isDragging ? "scale-110" : "hover:scale-105"
+                  )}
+                  style={{ 
+                    left: `${(globalCurrentTime / totalDuration) * 100}%`,
+                    zIndex: 3
+                  }}
+                >
+                  {/* 플레이헤드 핸들 */}
+                  <div className="absolute top-1/2 left-1/2 w-3 h-3 bg-white border-2 border-blue-500 rounded-full transform -translate-x-1/2 -translate-y-1/2" />
+                </div>
+                
+                {/* 시간 마커들 */}
+                <div className="absolute inset-0 flex justify-between items-center px-2 text-xs text-gray-600 pointer-events-none">
+                  <span>0:00</span>
+                  <span className="text-center">{formatTime(globalCurrentTime)} / {formatTime(totalDuration)}</span>
+                  <span>{formatTime(totalDuration)}</span>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* 씬 타임라인 - 수평 스크롤만 */}
           <div 
