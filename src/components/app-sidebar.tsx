@@ -15,6 +15,7 @@ import {
   ChevronRight, // 중첩 메뉴용 화살표
   Sun,
   Moon,
+  Folder, // 보드 아이콘 추가
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -80,6 +81,11 @@ export function AppSidebar() {
   // 도구 메뉴 아이템들 (번역 적용)
   const toolItems = [
     {
+      title: t("tools.videoBoards"),
+      url: "/boards",
+      icon: Folder,
+    },
+    {
       title: t("tools.createImages"),
       url: "/create/images",
       icon: ImageIcon,
@@ -113,6 +119,9 @@ export function AppSidebar() {
     if (url === "/home") return pathname === "/home" || pathname === "/";
     if (url === "/profile") return pathname === "/profile";
     if (url === "/library") return pathname === "/library";
+    
+    // Boards 경로들 매칭
+    if (url === "/boards") return pathname === "/boards" || pathname.startsWith("/boards/");
     
     // Create 경로들은 더 구체적으로 매칭
     if (url === "/create/images") return pathname === "/create/images";

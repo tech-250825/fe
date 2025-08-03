@@ -53,3 +53,24 @@ export function getI2VResolutionProfile(
 ): ResolutionProfile {
   return "I2V_HD";
 }
+
+// Board-related types
+export interface Board {
+  id: number;
+  name: string;
+  createdAt: string;
+}
+
+export interface BoardListResponse {
+  success: boolean;
+  data: Board[];
+}
+
+export interface CreateBoardRequest {
+  name: string;
+}
+
+export interface CreateBoardResponse {
+  success: boolean;
+  data: Board;
+}
