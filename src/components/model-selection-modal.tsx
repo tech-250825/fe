@@ -32,6 +32,7 @@ interface ModelSelectionModalProps {
   uploadedImageFile: File | null;
   styleModels: any[]; // 추가
   characterModels: any[]; // 추가
+  mediaType?: "video" | "image"; // Add mediaType prop
 }
 
 // const styles = [
@@ -69,6 +70,7 @@ export function ModelSelectionModal({
   uploadedImageFile,
   styleModels, // 추가
   characterModels, // 추가
+  mediaType = "video", // Default to video for backward compatibility
 }: ModelSelectionModalProps) {
   const t = useTranslations("VideoCreation");
   const [tempMode, setTempMode] = useState<GenerationMode>(mode);
@@ -186,18 +188,30 @@ export function ModelSelectionModal({
     }
   };
 
-  const renderHeader = () => (
-    <DialogHeader>
-      <DialogTitle>
-        {tempMode === "t2v" ? "Text-to-Video" : "Image-to-Video"} Settings
-      </DialogTitle>
-      <DialogDescription>
-        {tempMode === "t2v"
-          ? "Choose a style or character for your video generation."
-          : "Adjust settings and upload an image for your video."}
-      </DialogDescription>
-    </DialogHeader>
-  );
+  const renderHeader = () => {
+    const getTitle = () => {
+      if (mediaType === "image") {
+        return "Text-to-Image Settings";
+      }
+      return tempMode === "t2v" ? "Text-to-Video Settings" : "Image-to-Video Settings";
+    };
+
+    const getDescription = () => {
+      if (mediaType === "image") {
+        return "Choose a style or character for your image generation.";
+      }
+      return tempMode === "t2v"
+        ? "Choose a style or character for your video generation."
+        : "Adjust settings and upload an image for your video.";
+    };
+
+    return (
+      <DialogHeader>
+        <DialogTitle>{getTitle()}</DialogTitle>
+        <DialogDescription>{getDescription()}</DialogDescription>
+      </DialogHeader>
+    );
+  };
 
   const renderFooter = () => (
     <DialogFooter>
@@ -210,100 +224,110 @@ export function ModelSelectionModal({
     </DialogFooter>
   );
 
-  const renderOptionSelectors = (isT2V: boolean) => (
-    <div
-      className={cn(
-        "grid grid-cols-1 gap-6 pt-4",
-        isT2V ? "md:grid-cols-3" : "md:grid-cols-2"
-      )}
-    >
-      {isT2V && (
-        <OptionGroup title={t("chatBar.settings.aspectRatio")}>
+  const renderOptionSelectors = (isT2V: boolean) => {
+    // Calculate grid columns based on what options are shown
+    const getGridCols = () => {
+      if (mediaType === "image") {
+        // For images: only aspect ratio and quality (no duration)
+        return "md:grid-cols-2";
+      }
+      // For videos: aspect ratio (T2V only), duration, quality
+      return isT2V ? "md:grid-cols-3" : "md:grid-cols-2";
+    };
+
+    return (
+      <div className={cn("grid grid-cols-1 gap-6 pt-4", getGridCols())}>
+        {isT2V && (
+          <OptionGroup title={t("chatBar.settings.aspectRatio")}>
+            <RadioGroup
+              value={tempOptions.aspectRatio}
+              onValueChange={(value) =>
+                setTempOptions((prev) => ({ ...prev, aspectRatio: value as any }))
+              }
+              className="flex space-x-2"
+            >
+              {["1:1", "16:9", "9:16"].map((ratio) => (
+                <Label
+                  key={ratio}
+                  htmlFor={`ratio-${ratio}`}
+                  className={cn(
+                    "flex-1 text-center border-2 rounded-md p-2 cursor-pointer transition-colors hover:bg-muted",
+                    tempOptions.aspectRatio === ratio
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "border-border"
+                  )}
+                >
+                  <RadioGroupItem
+                    value={ratio}
+                    id={`ratio-${ratio}`}
+                    className="sr-only"
+                  />
+                  {ratio}
+                </Label>
+              ))}
+            </RadioGroup>
+          </OptionGroup>
+        )}
+        {/* Only show duration for video generation */}
+        {mediaType === "video" && (
+          <OptionGroup title={t("chatBar.settings.duration")}>
+            <RadioGroup
+              value={String(tempOptions.duration)}
+              onValueChange={(value) =>
+                setTempOptions((prev) => ({ ...prev, duration: Number(value) }))
+              }
+              className="flex space-x-2"
+            >
+              {[4, 6].map((sec) => (
+                <Label
+                  key={sec}
+                  htmlFor={`sec-${sec}`}
+                  className={cn(
+                    "flex-1 text-center border-2 rounded-md p-2 cursor-pointer transition-colors hover:bg-muted",
+                    tempOptions.duration === sec
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "border-border"
+                  )}
+                >
+                  <RadioGroupItem
+                    value={String(sec)}
+                    id={`sec-${sec}`}
+                    className="sr-only"
+                  />
+                  {sec}s
+                </Label>
+              ))}
+            </RadioGroup>
+          </OptionGroup>
+        )}
+        <OptionGroup title={t("chatBar.settings.quality")}>
           <RadioGroup
-            value={tempOptions.aspectRatio}
+            value={tempOptions.quality}
             onValueChange={(value) =>
-              setTempOptions((prev) => ({ ...prev, aspectRatio: value as any }))
+              setTempOptions((prev) => ({ ...prev, quality: value as any }))
             }
             className="flex space-x-2"
           >
-            {["1:1", "16:9", "9:16"].map((ratio) => (
+            {["480p", "720p"].map((q) => (
               <Label
-                key={ratio}
-                htmlFor={`ratio-${ratio}`}
+                key={q}
+                htmlFor={`q-${q}`}
                 className={cn(
                   "flex-1 text-center border-2 rounded-md p-2 cursor-pointer transition-colors hover:bg-muted",
-                  tempOptions.aspectRatio === ratio
+                  tempOptions.quality === q
                     ? "bg-primary text-primary-foreground border-primary"
                     : "border-border"
                 )}
               >
-                <RadioGroupItem
-                  value={ratio}
-                  id={`ratio-${ratio}`}
-                  className="sr-only"
-                />
-                {ratio}
+                <RadioGroupItem value={q} id={`q-${q}`} className="sr-only" />
+                {q}
               </Label>
             ))}
           </RadioGroup>
         </OptionGroup>
-      )}
-      <OptionGroup title={t("chatBar.settings.duration")}>
-        <RadioGroup
-          value={String(tempOptions.duration)}
-          onValueChange={(value) =>
-            setTempOptions((prev) => ({ ...prev, duration: Number(value) }))
-          }
-          className="flex space-x-2"
-        >
-          {[4, 6].map((sec) => (
-            <Label
-              key={sec}
-              htmlFor={`sec-${sec}`}
-              className={cn(
-                "flex-1 text-center border-2 rounded-md p-2 cursor-pointer transition-colors hover:bg-muted",
-                tempOptions.duration === sec
-                  ? "bg-primary text-primary-foreground border-primary"
-                  : "border-border"
-              )}
-            >
-              <RadioGroupItem
-                value={String(sec)}
-                id={`sec-${sec}`}
-                className="sr-only"
-              />
-              {sec}s
-            </Label>
-          ))}
-        </RadioGroup>
-      </OptionGroup>
-      <OptionGroup title={t("chatBar.settings.quality")}>
-        <RadioGroup
-          value={tempOptions.quality}
-          onValueChange={(value) =>
-            setTempOptions((prev) => ({ ...prev, quality: value as any }))
-          }
-          className="flex space-x-2"
-        >
-          {["480p", "720p"].map((q) => (
-            <Label
-              key={q}
-              htmlFor={`q-${q}`}
-              className={cn(
-                "flex-1 text-center border-2 rounded-md p-2 cursor-pointer transition-colors hover:bg-muted",
-                tempOptions.quality === q
-                  ? "bg-primary text-primary-foreground border-primary"
-                  : "border-border"
-              )}
-            >
-              <RadioGroupItem value={q} id={`q-${q}`} className="sr-only" />
-              {q}
-            </Label>
-          ))}
-        </RadioGroup>
-      </OptionGroup>
-    </div>
-  );
+      </div>
+    );
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>

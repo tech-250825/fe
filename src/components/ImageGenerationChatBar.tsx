@@ -227,6 +227,7 @@ export function ImageGenerationChatBar({
         uploadedImageFile={null}
         styleModels={styleModels}
         characterModels={characterModels}
+        mediaType="image" // Specify this is for image generation
       />
     </div>
   );
