@@ -1,10 +1,10 @@
 "use client";
 
-import { Dialog, DialogContent, DialogClose, DialogHeader, DialogTitle } from "./ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { X, Search, Loader2 } from "lucide-react";
-import { useState, useEffect, useCallback } from "react";
+import { Search, Loader2 } from "lucide-react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { config } from "@/config";
 import { api } from "@/lib/auth/apiClient";
@@ -26,14 +26,22 @@ export function ImageLibraryModal({
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredImages, setFilteredImages] = useState<ImageItem[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const nextCursorRef = useRef<string | null>(null);
 
   // Fetch user's generated images
-  const fetchImages = useCallback(async () => {
+  const fetchImages = useCallback(async (reset = false) => {
     if (!isLoggedIn) return;
 
     setLoading(true);
     try {
-      const url = `${config.apiUrl}/api/images/task?size=20`;
+      const params = new URLSearchParams({ size: "30" });
+      if (!reset && nextCursorRef.current) {
+        params.append("cursor", nextCursorRef.current);
+      }
+
+      const url = `${config.apiUrl}/api/images/task?${params}`;
       const res = await api.get(url);
 
       if (!res.ok) {
@@ -63,8 +71,17 @@ export function ImageLibraryModal({
         }
       });
 
-      setImages(completedImages);
-      setFilteredImages(completedImages);
+      if (reset) {
+        setImages(completedImages);
+      } else {
+        setImages(prev => [...prev, ...completedImages]);
+      }
+
+      // Update pagination state
+      const newNextCursor = backendResponse.data?.nextPageCursor || null;
+      setNextCursor(newNextCursor);
+      nextCursorRef.current = newNextCursor;
+      setHasMore(!!newNextCursor);
     } catch (error) {
       console.error("Failed to fetch images:", error);
     } finally {
@@ -87,9 +104,24 @@ export function ImageLibraryModal({
   // Fetch images when modal opens
   useEffect(() => {
     if (isOpen) {
-      fetchImages();
+      setImages([]);
+      setNextCursor(null);
+      nextCursorRef.current = null;
+      setHasMore(true);
+      fetchImages(true);
     }
   }, [isOpen, fetchImages]);
+
+  // Add scroll listener for infinite scroll
+  const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    const threshold = 100; // Load more when 100px from bottom
+    
+    if (scrollHeight - scrollTop <= clientHeight + threshold && hasMore && !loading) {
+      console.log("🔄 Loading more images...");
+      fetchImages(false);
+    }
+  }, [hasMore, loading, fetchImages]);
 
   const handleImageSelect = (item: ImageItem) => {
     const imageUrl = item.image?.url;
@@ -101,7 +133,7 @@ export function ImageLibraryModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-6xl max-h-[80vh] overflow-hidden">
+      <DialogContent className="max-w-6xl max-h-[80vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>Choose from Your Images</DialogTitle>
         </DialogHeader>
@@ -118,8 +150,8 @@ export function ImageLibraryModal({
         </div>
 
         {/* Images Grid */}
-        <div className="flex-1 overflow-y-auto">
-          {loading ? (
+        <div className="flex-1 overflow-y-auto min-h-0" onScroll={handleScroll}>
+          {loading && images.length === 0 ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
               <span className="ml-2 text-muted-foreground">Loading images...</span>
@@ -162,6 +194,21 @@ export function ImageLibraryModal({
               ))}
             </div>
           )}
+          
+          {/* Load more indicator */}
+          {loading && images.length > 0 && (
+            <div className="flex items-center justify-center py-4">
+              <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+              <span className="ml-2 text-sm text-muted-foreground">Loading more images...</span>
+            </div>
+          )}
+          
+          {/* End of results indicator */}
+          {!hasMore && images.length > 0 && (
+            <div className="text-center py-4">
+              <p className="text-sm text-muted-foreground">No more images to load</p>
+            </div>
+          )}
         </div>
 
         {/* Footer */}
@@ -174,14 +221,6 @@ export function ImageLibraryModal({
           </Button>
         </div>
 
-        <DialogClose asChild>
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 rounded-full p-1 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </DialogClose>
       </DialogContent>
     </Dialog>
   );
