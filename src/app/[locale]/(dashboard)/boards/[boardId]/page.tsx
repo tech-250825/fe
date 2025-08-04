@@ -80,6 +80,8 @@ export default function BoardPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isExtending, setIsExtending] = useState(false);
+  const [extendingFromVideoId, setExtendingFromVideoId] = useState<number | null>(null);
 
   // Models state
   const [availableModels, setAvailableModels] = useState<any[]>([]);
@@ -1117,8 +1119,8 @@ export default function BoardPage() {
     });
   };
 
-  // Extend functionality - create new scene from last frame (from builder page)
-  const handleExtendFromLastFrame = async () => {
+  // Setup extend mode - prepare for I2V input (modified from builder page)
+  const handleExtendFromLastFrame = () => {
     if (!videoRef.current || !activeVideoSrc || !boardId) {
       console.log("❌ 활성 비디오가 없거나 보드 ID가 없습니다.");
       toast.error("No active video to extend from");
@@ -1131,8 +1133,41 @@ export default function BoardPage() {
       return;
     }
 
+    console.log("🖼️ Setting up extend mode...");
+    setIsExtending(true);
+    setExtendingFromVideoId(lastScene.id);
+    
+    // Focus on the prompt input
+    setTimeout(() => {
+      const promptInput = document.querySelector('input[placeholder*="Describe how to extend"]') as HTMLInputElement;
+      if (promptInput) {
+        promptInput.focus();
+      }
+    }, 100);
+    
+    toast.success("Ready to extend! Enter a prompt describing how to continue the video.");
+  };
+
+  // Actually perform the extension with user's prompt
+  const performExtendFromLastFrame = async () => {
+    if (!videoRef.current || !activeVideoSrc || !boardId) {
+      toast.error("No active video to extend from");
+      return;
+    }
+
+    const lastScene = scenes[scenes.length - 1];
+    if (!lastScene || lastScene.taskItem.task.status !== "COMPLETED" || !lastScene.src) {
+      toast.error("No completed video available to extend from");
+      return;
+    }
+
+    if (!prompt.trim()) {
+      toast.error("Please enter a prompt describing how to extend the video");
+      return;
+    }
+
     try {
-      console.log("🖼️ Starting extend from last frame...");
+      console.log("🖼️ Starting video extension with prompt:", prompt);
       setIsGenerating(true);
 
       // 마지막 프레임 캡쳐
@@ -1150,7 +1185,7 @@ export default function BoardPage() {
         "request",
         JSON.stringify({
           loraId: selectedLoraModel?.id || 1,
-          prompt: prompt || "extend this scene naturally, continue the story", 
+          prompt: prompt, 
           resolutionProfile: getI2VResolutionProfile(
             lastScene.taskItem.task.width || 1280,
             lastScene.taskItem.task.height || 720,
@@ -1186,6 +1221,8 @@ export default function BoardPage() {
       toast.error("Failed to extend video. Please try again.");
     } finally {
       setIsGenerating(false);
+      setIsExtending(false);
+      setExtendingFromVideoId(null);
     }
   };
 
@@ -1225,6 +1262,8 @@ export default function BoardPage() {
       console.log("🎬 Board page: Video completed notification received!");
       fetchTaskList(true);
       setIsGenerating(false);
+      setIsExtending(false);
+      setExtendingFromVideoId(null);
     };
 
     const handleImageCompleted = () => {
@@ -1254,6 +1293,13 @@ export default function BoardPage() {
   const handleGenerate = async () => {
     if (!prompt.trim() || isGenerating) return;
 
+    // If in extending mode, perform extension instead of new generation
+    if (isExtending) {
+      await performExtendFromLastFrame();
+      return;
+    }
+
+    // Otherwise, perform normal T2V generation
     const selectedLoraModel = videoOptions.style || videoOptions.character;
     await handleVideoGeneration(
       prompt,
@@ -1596,6 +1642,7 @@ export default function BoardPage() {
             {scenes.map((scene, index) => {
               const isGenerating = scene.taskItem.task.status === "IN_PROGRESS";
               const isCompleted = scene.taskItem.task.status === "COMPLETED" && scene.src;
+              const isBeingExtended = extendingFromVideoId === scene.id;
               
               return (
                 <div
@@ -1605,7 +1652,9 @@ export default function BoardPage() {
                     isGenerating 
                       ? "bg-gray-100 border-orange-400 cursor-default" 
                       : "bg-white cursor-pointer",
-                    !isGenerating && activeVideoSrc === scene.src
+                    isBeingExtended
+                      ? "border-blue-600 ring-2 ring-blue-300 bg-blue-50"
+                      : !isGenerating && activeVideoSrc === scene.src
                       ? "border-blue-500 ring-2 ring-blue-200"
                       : !isGenerating && "border-gray-300 hover:border-gray-400",
                     currentSceneIndex === index && isPlayingAll && !isGenerating
@@ -1671,10 +1720,20 @@ export default function BoardPage() {
                     <div className="absolute top-1 right-1 w-3 h-3 bg-orange-500 rounded-full animate-pulse" />
                   )}
 
+                  {/* 확장 중 표시 */}
+                  {isBeingExtended && (
+                    <div className="absolute inset-0 bg-blue-600/20 flex items-center justify-center">
+                      <div className="bg-blue-600 text-white text-xs px-2 py-1 rounded-md flex items-center gap-1 animate-pulse">
+                        <Image className="w-3 h-3" />
+                        <span>Extending...</span>
+                      </div>
+                    </div>
+                  )}
+
                   {/* 씬 번호 */}
                   <div className={cn(
                     "absolute bottom-1 left-1 text-white text-xs px-1.5 py-0.5 rounded",
-                    isGenerating ? "bg-orange-500/70" : "bg-black/70"
+                    isGenerating ? "bg-orange-500/70" : isBeingExtended ? "bg-blue-600/70" : "bg-black/70"
                   )}>
                     {index + 1}
                   </div>
@@ -1762,6 +1821,12 @@ export default function BoardPage() {
           <div className="flex flex-col gap-2">
             {/* 설정 배지들 */}
             <div className="flex items-center gap-2 flex-wrap">
+              {isExtending && (
+                <Badge variant="default" className="text-xs bg-blue-600 text-white animate-pulse">
+                  <Image className="w-3 h-3 mr-1" />
+                  Image to Video
+                </Badge>
+              )}
               {videoOptions.style ? (
                 <Badge variant="secondary" className="text-xs">
                   Style: {videoOptions.style.name}
@@ -1834,22 +1899,45 @@ export default function BoardPage() {
                   type="text"
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
-                  placeholder="AI로 비디오 생성하기... (예: 바다에서 석양이 지는 모습)"
+                  placeholder={isExtending 
+                    ? "Describe how to extend the video... (예: continue the scene with more action)"
+                    : "AI로 비디오 생성하기... (예: 바다에서 석양이 지는 모습)"
+                  }
                   className="w-full bg-transparent border-none outline-none"
                   onKeyPress={(e) => e.key === "Enter" && handleGenerate()}
                   disabled={isGenerating}
                 />
               </div>
               
+              {isExtending && !isGenerating && (
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setIsExtending(false);
+                    setExtendingFromVideoId(null);
+                    toast.success("Extend mode cancelled");
+                  }}
+                  className="gap-2 flex-shrink-0"
+                >
+                  Cancel
+                </Button>
+              )}
+              
               <Button
                 onClick={handleGenerate}
                 disabled={!prompt.trim() || isGenerating}
                 className="gap-2 flex-shrink-0"
+                variant={isExtending ? "default" : "default"}
               >
                 {isGenerating ? (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 ) : (
-                  <ArrowRight className="w-4 h-4" />
+                  <>
+                    {isExtending ? <Image className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
+                    <span className="hidden sm:inline">
+                      {isExtending ? "Extend Video" : "Generate"}
+                    </span>
+                  </>
                 )}
               </Button>
             </div>
