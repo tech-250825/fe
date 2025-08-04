@@ -381,6 +381,25 @@ export default function BoardPage() {
     }
   };
 
+  const handleVideoError = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
+    const video = e.currentTarget;
+    console.error("🚨 Video playback error:", {
+      error: video.error,
+      src: video.src,
+      readyState: video.readyState,
+      networkState: video.networkState,
+      userAgent: navigator.userAgent
+    });
+    
+    if (navigator.userAgent.includes('Safari') && !navigator.userAgent.includes('Chrome')) {
+      console.log("🍎 Safari video error - attempting fallback strategies");
+      // Try reloading the video
+      setTimeout(() => {
+        video.load();
+      }, 1000);
+    }
+  };
+
   const formatTime = (timeInSeconds: number) => {
     const minutes = Math.floor(timeInSeconds / 60);
     const seconds = Math.floor(timeInSeconds % 60);
@@ -1170,13 +1189,18 @@ export default function BoardPage() {
       console.log("🖼️ Starting video extension with prompt:", prompt);
       setIsGenerating(true);
 
-      // 마지막 프레임 캡쳐
-      const frameBlob = await captureVideoFrame(videoRef.current);
-      console.log("📸 Frame captured successfully");
+      // Backend에서 비디오의 마지막 프레임 추출 후 I2V 생성
+      console.log("🎬 Sending video URL to backend for latest frame extraction and I2V");
+      console.log("📹 Video details:", {
+        videoUrl: lastScene.src,
+        prompt: prompt
+      });
 
-      // FormData 생성하여 board-specific i2v API로 전송
+      // FormData 생성하여 latest frame API로 전송
       const formData = new FormData();
-      formData.append("image", frameBlob, "last_frame.jpg");
+      
+      // 비디오 URL을 백엔드로 전송 (자동으로 마지막 프레임 추출)
+      formData.append("videoUrl", lastScene.src);
       
       // Get selected model
       const selectedLoraModel = videoOptions.style || videoOptions.character;
@@ -1195,9 +1219,29 @@ export default function BoardPage() {
         })
       );
 
-      console.log("📤 Calling board-specific I2V API...");
+      console.log("📤 Calling board-specific I2V-from-video API...");
+      console.log("🔍 Request details:", {
+        url: `${config.apiUrl}/api/videos/create/i2v-from-latest-frame/${boardId}`,
+        boardId: boardId,
+        videoUrl: lastScene.src,
+        captureTime: Math.max(0, (videoDurations[lastScene.id] || 5) - 0.1).toString(),
+        prompt: prompt,
+        loraId: selectedLoraModel?.id || 1,
+        numFrames: videoOptions.duration === 4 ? 81 : 101
+      });
+      
+      // Debug FormData contents
+      console.log("📦 FormData contents:");
+      for (let [key, value] of formData.entries()) {
+        if (key === 'request') {
+          console.log(`  ${key}:`, JSON.parse(value as string));
+        } else {
+          console.log(`  ${key}:`, value);
+        }
+      }
+      
       const response = await api.postForm(
-        `${config.apiUrl}/api/videos/create/i2v/${boardId}`, 
+        `${config.apiUrl}/api/videos/create/i2v-from-latest-frame/${boardId}`, 
         formData
       );
 
@@ -1213,8 +1257,18 @@ export default function BoardPage() {
           fetchTaskList(true);
         }, 1000);
       } else {
-        console.error("❌ Extend API request failed:", response.statusText);
-        throw new Error(`API request failed: ${response.status}`);
+        // Get detailed error information
+        let errorMessage = `API request failed: ${response.status}`;
+        try {
+          const errorResponse = await response.text();
+          console.error("❌ Backend error response:", errorResponse);
+          errorMessage += ` - ${errorResponse}`;
+        } catch (e) {
+          console.error("❌ Could not parse error response");
+        }
+        
+        console.error("❌ Extend API request failed:", response.status, response.statusText);
+        throw new Error(errorMessage);
       }
     } catch (error) {
       console.error("❌ 프레임 캡쳐/확장 실패:", error);
@@ -1457,7 +1511,10 @@ export default function BoardPage() {
                 onTimeUpdate={handleTimeUpdate}
                 onLoadedMetadata={handleLoadedMetadata}
                 onEnded={handleVideoEnd}
+                onError={handleVideoError}
                 preload="auto"
+                playsInline
+                style={{ backgroundColor: 'transparent' }}
               />
               <video
                 ref={nextVideoRef}
