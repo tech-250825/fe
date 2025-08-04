@@ -31,7 +31,8 @@ import {
   Save,
   ArrowRight,
   Settings2,
-  Film
+  Film,
+  Image
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -79,7 +80,6 @@ export default function BoardPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isPlusMenuOpen, setIsPlusMenuOpen] = useState(false);
 
   // Models state
   const [availableModels, setAvailableModels] = useState<any[]>([]);
@@ -1043,6 +1043,152 @@ export default function BoardPage() {
     router.push(`/boards/${boardId}`);
   };
 
+  // 비디오의 마지막 프레임을 캡쳐하는 함수 (from builder page)
+  const captureVideoFrame = (
+    videoElement: HTMLVideoElement,
+    timePosition: number | null = null
+  ): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      // Canvas 생성
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
+      // ctx null 체크 추가
+      if (!ctx) {
+        reject(new Error("Canvas context is not available"));
+        return;
+      }
+
+      // 캔버스 크기를 비디오 크기에 맞춤
+      canvas.width = videoElement.videoWidth;
+      canvas.height = videoElement.videoHeight;
+
+      // 현재 재생 위치 저장
+      const originalTime = videoElement.currentTime;
+      const originalPaused = videoElement.paused;
+
+      // 마지막 프레임으로 이동 (timePosition이 없으면 duration - 0.1초)
+      const targetTime =
+        timePosition !== null
+          ? timePosition
+          : Math.max(0, videoElement.duration - 0.001);
+
+      const handleSeeked = () => {
+        // seeked 이벤트 리스너 제거
+        videoElement.removeEventListener("seeked", handleSeeked);
+
+        try {
+          // 비디오 프레임을 캔버스에 그리기
+          ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+          // 캔버스를 Blob으로 변환
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                // 원래 재생 위치로 복원
+                videoElement.currentTime = originalTime;
+                if (!originalPaused) {
+                  videoElement.play();
+                }
+                resolve(blob);
+              } else {
+                reject(new Error("Failed to create blob"));
+              }
+            },
+            "image/jpeg",
+            0.8
+          );
+        } catch (error) {
+          // 원래 재생 위치로 복원
+          videoElement.currentTime = originalTime;
+          if (!originalPaused) {
+            videoElement.play();
+          }
+          reject(error);
+        }
+      };
+
+      // seeked 이벤트 리스너 추가
+      videoElement.addEventListener("seeked", handleSeeked);
+
+      // 비디오 일시정지 후 마지막 프레임으로 이동
+      videoElement.pause();
+      videoElement.currentTime = targetTime;
+    });
+  };
+
+  // Extend functionality - create new scene from last frame (from builder page)
+  const handleExtendFromLastFrame = async () => {
+    if (!videoRef.current || !activeVideoSrc || !boardId) {
+      console.log("❌ 활성 비디오가 없거나 보드 ID가 없습니다.");
+      toast.error("No active video to extend from");
+      return;
+    }
+
+    const lastScene = scenes[scenes.length - 1];
+    if (!lastScene || lastScene.taskItem.task.status !== "COMPLETED" || !lastScene.src) {
+      toast.error("No completed video available to extend from");
+      return;
+    }
+
+    try {
+      console.log("🖼️ Starting extend from last frame...");
+      setIsGenerating(true);
+
+      // 마지막 프레임 캡쳐
+      const frameBlob = await captureVideoFrame(videoRef.current);
+      console.log("📸 Frame captured successfully");
+
+      // FormData 생성하여 board-specific i2v API로 전송
+      const formData = new FormData();
+      formData.append("image", frameBlob, "last_frame.jpg");
+      
+      // Get selected model
+      const selectedLoraModel = videoOptions.style || videoOptions.character;
+      
+      formData.append(
+        "request",
+        JSON.stringify({
+          loraId: selectedLoraModel?.id || 1,
+          prompt: prompt || "extend this scene naturally, continue the story", 
+          resolutionProfile: getI2VResolutionProfile(
+            lastScene.taskItem.task.width || 1280,
+            lastScene.taskItem.task.height || 720,
+            videoOptions.quality
+          ),
+          numFrames: videoOptions.duration === 4 ? 81 : 101,
+        })
+      );
+
+      console.log("📤 Calling board-specific I2V API...");
+      const response = await api.postForm(
+        `${config.apiUrl}/api/videos/create/i2v/${boardId}`, 
+        formData
+      );
+
+      if (response.ok) {
+        const backendResponse: BackendResponse<any> = await response.json();
+        console.log("✅ 비디오 확장 요청 성공!", backendResponse);
+        
+        toast.success("Video extension started! New scene will appear when ready.");
+        setPrompt(""); // Clear prompt after successful request
+        
+        // Refresh task list to show the new generating video
+        setTimeout(() => {
+          fetchTaskList(true);
+        }, 1000);
+      } else {
+        console.error("❌ Extend API request failed:", response.statusText);
+        throw new Error(`API request failed: ${response.status}`);
+      }
+    } catch (error) {
+      console.error("❌ 프레임 캡쳐/확장 실패:", error);
+      toast.error("Failed to extend video. Please try again.");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   // Timeline scroll handler for loading more videos
   const handleTimelineScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
     if (loadingRef.current || !hasMoreRef.current) return;
@@ -1554,21 +1700,57 @@ export default function BoardPage() {
             })}
 
             {/* 씬 추가 버튼 */}
-            <DropdownMenu open={isPlusMenuOpen} onOpenChange={setIsPlusMenuOpen}>
+            <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <div className="w-24 h-16 rounded-lg border-2 border-dashed border-gray-400 hover:border-gray-500 cursor-pointer flex items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors flex-shrink-0">
-                  <div className="text-center">
-                    <Plus className="w-4 h-4 text-gray-500 mx-auto mb-1" />
-                    <span className="text-[10px] text-gray-600">Add</span>
-                  </div>
-                </div>
+                <Button
+                  variant="outline"
+                  className="w-24 h-16 rounded-lg border-2 border-dashed border-gray-400 hover:border-gray-500 cursor-pointer flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors flex-shrink-0 p-2"
+                >
+                  <Plus className="w-4 h-4 text-gray-500 mb-1" />
+                  <span className="text-[10px] text-gray-600">Add</span>
+                </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" side="top" className="w-56">
-                <DropdownMenuItem onClick={() => alert("Change from last frame")}>
-                  Change from last frame
+                <DropdownMenuItem 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    console.log("🖼️ Change from last frame clicked - ACTIVE");
+                    handleExtendFromLastFrame();
+                  }}
+                  disabled={scenes.length === 0 || !scenes.some(scene => 
+                    scene.taskItem.task.status === "COMPLETED" && scene.src
+                  ) || isGenerating}
+                >
+                  <Image className="w-4 h-4 mr-2" />
+                  <div className="flex flex-col">
+                    <span className="font-medium">Change from last frame</span>
+                    <span className="text-xs text-muted-foreground">
+                      {scenes.length === 0 
+                        ? "No videos available" 
+                        : !scenes.some(scene => scene.taskItem.task.status === "COMPLETED" && scene.src)
+                        ? "No completed videos available"
+                        : isGenerating
+                        ? "Generating in progress..."
+                        : "Continue from the last video's final frame"
+                      }
+                    </span>
+                  </div>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => alert("New scene")}>
-                  New scene
+                <DropdownMenuItem 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    console.log("🎬 New scene clicked");
+                    setIsModalOpen(true);
+                    toast.success("Ready to create new scene");
+                  }}
+                >
+                  <Film className="w-4 h-4 mr-2" />
+                  <div className="flex flex-col">
+                    <span className="font-medium">New scene</span>
+                    <span className="text-xs text-muted-foreground">
+                      Create a completely new video scene
+                    </span>
+                  </div>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
