@@ -79,6 +79,7 @@ export default function BoardPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPlusMenuOpen, setIsPlusMenuOpen] = useState(false);
 
   // Models state
   const [availableModels, setAvailableModels] = useState<any[]>([]);
@@ -1553,12 +1554,24 @@ export default function BoardPage() {
             })}
 
             {/* 씬 추가 버튼 */}
-            <div className="w-24 h-16 rounded-lg border-2 border-dashed border-gray-400 hover:border-gray-500 cursor-pointer flex items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors flex-shrink-0">
-              <div className="text-center">
-                <Plus className="w-4 h-4 text-gray-500 mx-auto mb-1" />
-                <span className="text-[10px] text-gray-600">Add</span>
-              </div>
-            </div>
+            <DropdownMenu open={isPlusMenuOpen} onOpenChange={setIsPlusMenuOpen}>
+              <DropdownMenuTrigger asChild>
+                <div className="w-24 h-16 rounded-lg border-2 border-dashed border-gray-400 hover:border-gray-500 cursor-pointer flex items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors flex-shrink-0">
+                  <div className="text-center">
+                    <Plus className="w-4 h-4 text-gray-500 mx-auto mb-1" />
+                    <span className="text-[10px] text-gray-600">Add</span>
+                  </div>
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" side="top" className="w-56">
+                <DropdownMenuItem onClick={() => alert("Change from last frame")}>
+                  Change from last frame
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => alert("New scene")}>
+                  New scene
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
