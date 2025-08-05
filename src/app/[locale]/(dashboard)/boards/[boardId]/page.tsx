@@ -32,7 +32,9 @@ import {
   ArrowRight,
   Settings2,
   Film,
-  Image
+  Image,
+  X,
+  FolderOpen
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -43,6 +45,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { ModelSelectionModal } from "@/components/model-selection-modal";
 import type { Board, BoardListResponse } from "@/lib/types";
 
@@ -83,6 +92,17 @@ export default function BoardPage() {
   const [isExtending, setIsExtending] = useState(false);
   const [extendingFromVideoId, setExtendingFromVideoId] = useState<number | null>(null);
   const [isExporting, setIsExporting] = useState(false);
+  
+  // Image library state
+  const [showImageLibrary, setShowImageLibrary] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [libraryImages, setLibraryImages] = useState<any[]>([]);
+  const [libraryLoading, setLibraryLoading] = useState(false);
+  
+  // File upload state
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [uploadedImageFile, setUploadedImageFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Models state
   const [availableModels, setAvailableModels] = useState<any[]>([]);
@@ -118,6 +138,7 @@ export default function BoardPage() {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [lastFetchTime, setLastFetchTime] = useState("");
 
   // Refs
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -741,11 +762,20 @@ export default function BoardPage() {
     uploadedImageFile?: File,
     libraryImageData?: { imageItem: ImageItem; imageUrl: string }
   ) => {
+    console.log("🎬 handleVideoGeneration called");
+    console.log("🎬 boardId:", boardId);
+    console.log("🎬 mode:", mode);
+    console.log("🎬 prompt:", prompt);
+    console.log("🎬 uploadedImageFile:", uploadedImageFile?.name);
+    console.log("🎬 libraryImageData:", libraryImageData?.imageUrl);
+    
     if (!boardId) {
+      console.error("❌ No board selected");
       toast.error("No board selected");
       return;
     }
 
+    console.log("🎬 Setting isGenerating to true");
     setIsGenerating(true);
 
     const selectedLoraModel = options.style || options.character;
@@ -803,8 +833,16 @@ export default function BoardPage() {
         ? `/api/videos/create/t2v/${boardId}` 
         : `/api/videos/create/i2v/${boardId}`;
 
+      console.log("🎯 Board ID:", boardId);
+      console.log("🎯 Generation mode:", mode);
+      console.log("🎯 Endpoint:", endpoint);
+      console.log("🎯 Full URL will be:", `${config.apiUrl}${endpoint}`);
+
       const frames = options.duration === 4 ? 81 : 101;
       const loraId = selectedLoraModel?.id || 1;
+      
+      console.log("🎯 LoRA ID:", loraId);
+      console.log("🎯 Frames:", frames);
 
       let response: Response;
 
@@ -841,23 +879,47 @@ export default function BoardPage() {
           
           const formData = new FormData();
           formData.append("image", uploadedImageFile);
-          formData.append(
-            "request",
-            JSON.stringify({
-              loraId: loraId,
-              prompt: prompt,
-              resolutionProfile: resolutionProfile,
-              numFrames: frames,
-            })
-          );
+          
+          const requestPayload = {
+            loraId: loraId,
+            prompt: prompt,
+            resolutionProfile: resolutionProfile,
+            numFrames: frames,
+          };
+          
+          formData.append("request", JSON.stringify(requestPayload));
+          
+          console.log("📦 I2V Board Upload Request payload:", requestPayload);
+          console.log("📤 FormData created with image:", uploadedImageFile.name, "size:", uploadedImageFile.size);
           
           requestData = formData;
         }
         
         if (libraryImageData) {
+          console.log("📤 Making library image API call to:", `${config.apiUrl}${endpoint}`);
           response = await api.post(`${config.apiUrl}${endpoint}`, requestData);
         } else {
-          response = await api.postForm(`${config.apiUrl}${endpoint}`, requestData);
+          console.log("📤 Making file upload API call to:", `${config.apiUrl}${endpoint}`);
+          console.log("📤 FormData contents check:", requestData instanceof FormData);
+          
+          // Use direct fetch to match backend specification exactly (same as successful test)
+          const fullUrl = `${config.apiUrl}${endpoint}`;
+          console.log("🔄 Direct fetch to:", fullUrl);
+          
+          // Log FormData contents for debugging
+          for (let [key, value] of (requestData as FormData).entries()) {
+            console.log(`📦 FormData[${key}]:`, value instanceof File ? `File(${value.name}, ${value.size} bytes)` : value);
+          }
+          
+          response = await fetch(fullUrl, {
+            method: 'POST',
+            body: requestData as FormData,
+            credentials: 'include',
+            // Don't set Content-Type - let browser set multipart boundary
+          });
+          
+          console.log("📨 Real API response status:", response.status);
+          console.log("📨 Response headers:", Object.fromEntries(response.headers.entries()));
         }
       } else {
         // T2V case
@@ -906,7 +968,7 @@ export default function BoardPage() {
   // Helper functions (same as videos page)
   const getImageDimensions = (file: File): Promise<{ width: number; height: number }> => {
     return new Promise((resolve) => {
-      const img = new Image();
+      const img = new globalThis.Image(); // Use globalThis.Image to avoid conflict with lucide Image
       img.onload = () => {
         resolve({ width: img.naturalWidth, height: img.naturalHeight });
       };
@@ -1346,24 +1408,74 @@ export default function BoardPage() {
 
   // Video generation using models
   const handleGenerate = async () => {
-    if (!prompt.trim() || isGenerating) return;
+    console.log("🚀 handleGenerate called");
+    console.log("🚀 prompt:", prompt);
+    console.log("🚀 isGenerating:", isGenerating);
+    console.log("🚀 uploadedImageFile:", uploadedImageFile);
+    console.log("🚀 selectedImage:", selectedImage);
+    
+    if (!prompt.trim() || isGenerating) {
+      console.log("❌ Early return - no prompt or already generating");
+      return;
+    }
 
     // If in extending mode, perform extension instead of new generation
     if (isExtending) {
+      console.log("🔄 Extending mode, calling performExtendFromLastFrame");
       await performExtendFromLastFrame();
       return;
     }
 
-    // Otherwise, perform normal T2V generation
-    const selectedLoraModel = videoOptions.style || videoOptions.character;
-    await handleVideoGeneration(
-      prompt,
-      "t2v",
-      videoOptions,
-      undefined,
-      undefined
-    );
+    // Check if there's an uploaded file or selected image from library
+    if (uploadedImageFile) {
+      console.log("🖼️ Using uploaded file for I2V:", uploadedImageFile.name, uploadedImageFile.type);
+      console.log("🖼️ About to call handleVideoGeneration with I2V mode");
+      
+      // Use uploaded file for I2V generation
+      await handleVideoGeneration(
+        prompt,
+        "i2v",
+        videoOptions,
+        uploadedImageFile,
+        undefined
+      );
+      console.log("✅ handleVideoGeneration completed");
+    } else if (selectedImage) {
+      // Create mock image item for library image
+      const mockImageItem = {
+        task: {
+          width: 1280, // Default dimensions, will be adjusted in handleVideoGeneration
+          height: 720,
+        }
+      };
+      
+      const libraryImageData = {
+        imageItem: mockImageItem as ImageItem,
+        imageUrl: selectedImage
+      };
+
+      await handleVideoGeneration(
+        prompt,
+        "i2v",
+        videoOptions,
+        undefined,
+        libraryImageData
+      );
+    } else {
+      // Otherwise, perform normal T2V generation
+      await handleVideoGeneration(
+        prompt,
+        "t2v",
+        videoOptions,
+        undefined,
+        undefined
+      );
+    }
+    
     setPrompt(""); // Clear prompt after generation
+    setSelectedImage(null); // Clear selected image after generation
+    setUploadedImage(null); // Clear uploaded image after generation
+    setUploadedImageFile(null); // Clear uploaded file after generation
   };
 
   // Download handlers
@@ -1464,6 +1576,103 @@ export default function BoardPage() {
       setIsExporting(false);
     }
   };
+
+  // Fetch library images
+  const fetchLibraryImages = async () => {
+    if (libraryLoading) return;
+    
+    setLibraryLoading(true);
+    try {
+      const params = new URLSearchParams();
+      params.set("size", "20");
+
+      const response = await fetch(
+        `${config.apiUrl}/api/images/mypage?${params.toString()}`,
+        {
+          credentials: "include",
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to fetch library images");
+
+      const backendResponse = await response.json();
+      const data = backendResponse.data;
+
+      // Filter only images (not videos)
+      const imageItems = data.content.filter((item: any) => !item.url.includes(".mp4"));
+      setLibraryImages(imageItems);
+    } catch (error) {
+      console.error("❌ Failed to fetch library images:", error);
+      toast.error("Failed to load image library");
+    } finally {
+      setLibraryLoading(false);
+    }
+  };
+
+  // Handle image selection from library
+  const handleImageSelect = (imageUrl: string) => {
+    setSelectedImage(imageUrl);
+    setShowImageLibrary(false);
+    
+    // Switch to Image-to-Video mode when an image is selected
+    setVideoOptions(prev => ({ ...prev, mode: "i2v" as GenerationMode }));
+    
+    toast.success("Image selected for video generation");
+  };
+
+  // Remove selected image
+  const handleRemoveSelectedImage = () => {
+    setSelectedImage(null);
+    setUploadedImage(null);
+    setUploadedImageFile(null);
+    setVideoOptions(prev => ({ ...prev, mode: "t2v" as GenerationMode }));
+  };
+
+  // Handle file upload from computer
+  const handleImageUpload = useCallback((file: File) => {
+    console.log("📁 File upload attempt:", file?.name, file?.type, file?.size);
+    
+    if (file && file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        console.log("✅ File read complete, setting state variables");
+        setUploadedImage(reader.result as string);
+        setUploadedImageFile(file);
+        setSelectedImage(null); // Clear library selection
+        
+        // Switch to Image-to-Video mode
+        setVideoOptions(prev => ({ ...prev, mode: "i2v" as GenerationMode }));
+        
+        toast.success("Image uploaded successfully");
+        console.log("📄 Upload complete - file set in state:", file.name);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      console.error("❌ Invalid file type:", file?.type);
+      toast.error("Please upload an image file (JPG, PNG, GIF, WebP)");
+    }
+  }, []);
+
+  // Handle file input change
+  const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("📝 File input change event triggered");
+    const file = e.target.files?.[0];
+    console.log("📝 Selected file:", file?.name, file?.type);
+    
+    if (file) {
+      handleImageUpload(file);
+    }
+    // Reset the input value so the same file can be selected again
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  }, [handleImageUpload]);
+
+  // Handle select from computer
+  const handleSelectFromComputer = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
 
   // Initialize video transition effect and prevent page scrolling
   useEffect(() => {
@@ -2014,7 +2223,115 @@ export default function BoardPage() {
                     <p>Enhance prompt with AI</p>
                   </TooltipContent>
                 </Tooltip>
+
+                {/* 이미지 선택 드롭다운 */}
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          disabled={isGenerating}
+                          className="hover:bg-primary/10 hover:text-primary disabled:opacity-50 flex-shrink-0"
+                        >
+                          <Image className="h-4 w-4" />
+                          <span className="sr-only">Select image</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start" className="w-56">
+                        <DropdownMenuItem onClick={handleSelectFromComputer} className="flex items-center gap-2">
+                          <Upload className="h-4 w-4" />
+                          Upload from computer
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => {
+                            if (libraryImages.length === 0) {
+                              fetchLibraryImages();
+                            }
+                            setShowImageLibrary(true);
+                          }} 
+                          className="flex items-center gap-2"
+                        >
+                          <FolderOpen className="h-4 w-4" />
+                          Select from library
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Choose image source</p>
+                  </TooltipContent>
+                </Tooltip>
+
+                {/* 이미지 라이브러리 다이얼로그 */}
+                <Dialog open={showImageLibrary} onOpenChange={setShowImageLibrary}>
+                  <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden">
+                    <DialogHeader>
+                      <DialogTitle>Select Image from Library</DialogTitle>
+                    </DialogHeader>
+                    <div className="h-[60vh] w-full rounded-md border p-4 overflow-y-auto">
+                      {libraryLoading ? (
+                        <div className="flex items-center justify-center py-8">
+                          <div className="w-6 h-6 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin mr-2" />
+                          <span>Loading images...</span>
+                        </div>
+                      ) : libraryImages.length > 0 ? (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                          {libraryImages.map((image: any) => (
+                            <div
+                              key={image.id}
+                              className="relative group cursor-pointer rounded-lg overflow-hidden bg-gray-100 hover:ring-2 hover:ring-blue-500 transition-all"
+                              onClick={() => handleImageSelect(image.url)}
+                            >
+                              <img
+                                src={image.url}
+                                alt={`Library image ${image.id}`}
+                                className="w-full h-32 object-cover"
+                              />
+                              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                                <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <div className="bg-white/90 text-black px-2 py-1 rounded text-sm font-medium">
+                                    Select
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-8 text-gray-500">
+                          <Image className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                          <p>No images found in your library</p>
+                          <p className="text-sm">Create some images first!</p>
+                        </div>
+                      )}
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </div>
+
+              {/* Selected Image Preview */}
+              {(uploadedImage || selectedImage) && (
+                <div className="flex items-center gap-2 px-2 py-1 bg-blue-50 border border-blue-200 rounded-lg">
+                  <img
+                    src={uploadedImage || selectedImage || ""}
+                    alt="Selected image"
+                    className="w-8 h-8 object-cover rounded"
+                  />
+                  <span className="text-xs text-blue-700 font-medium">
+                    {uploadedImage ? "Uploaded image" : "Library image"}
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleRemoveSelectedImage}
+                    className="w-4 h-4 hover:bg-blue-100 flex-shrink-0"
+                  >
+                    <X className="w-3 h-3" />
+                  </Button>
+                </div>
+              )}
 
               <div className="flex-1">
                 <Input
@@ -2023,7 +2340,9 @@ export default function BoardPage() {
                   onChange={(e) => setPrompt(e.target.value)}
                   placeholder={isExtending 
                     ? "Describe how to extend the video... (예: continue the scene with more action)"
-                    : "AI로 비디오 생성하기... (예: 바다에서 석양이 지는 모습)"
+                    : (uploadedImage || selectedImage)
+                      ? "Describe what should happen in the video with your image..."
+                      : "AI로 비디오 생성하기... (예: 바다에서 석양이 지는 모습)"
                   }
                   className="w-full bg-transparent border-none outline-none"
                   onKeyPress={(e) => e.key === "Enter" && handleGenerate()}
@@ -2082,6 +2401,15 @@ export default function BoardPage() {
         styleModels={styleModels}
         characterModels={characterModels}
         mediaType="video"
+      />
+
+      {/* Hidden File Input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleFileInputChange}
+        className="hidden"
       />
     </div>
   );
