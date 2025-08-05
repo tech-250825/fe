@@ -82,6 +82,7 @@ export default function BoardPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isExtending, setIsExtending] = useState(false);
   const [extendingFromVideoId, setExtendingFromVideoId] = useState<number | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   // Models state
   const [availableModels, setAvailableModels] = useState<any[]>([]);
@@ -1385,22 +1386,64 @@ export default function BoardPage() {
   };
 
   const handleExportAll = async () => {
-    if (scenes.length === 0) return;
+    if (scenes.length === 0) {
+      toast.error("No videos to export");
+      return;
+    }
+
+    const completedScenes = scenes.filter(scene => 
+      scene.taskItem.task.status === "COMPLETED" && scene.src
+    );
+
+    if (completedScenes.length === 0) {
+      toast.error("No completed videos to export");
+      return;
+    }
 
     try {
-      for (let i = 0; i < scenes.length; i++) {
-        const scene = scenes[i];
-        const filename = `board_${boardId}_video_${scene.id}.mp4`;
-        downloadVideo(scene.src, filename);
+      setIsExporting(true);
+      
+      console.log("🎬 Starting board export...");
+      console.log(`📹 Exporting ${completedScenes.length} completed videos from board ${boardId}`);
+      
+      const exportSettings = {
+        format: "mp4",
+        quality: "high", // You can make this configurable later
+        includeTransitions: false
+      };
 
-        if (i < scenes.length - 1) {
-          await new Promise((resolve) => setTimeout(resolve, 500));
+      const response = await api.post(`${config.apiUrl}/api/boards/${boardId}/export`, {
+        exportSettings
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log("✅ Export completed:", result);
+        
+        if (result.success && result.downloadUrl) {
+          // Download the combined video
+          const link = document.createElement('a');
+          link.href = result.downloadUrl;
+          link.download = `board_${boardId}_combined_${Date.now()}.mp4`;
+          link.style.display = 'none';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          
+          toast.success("Board videos exported successfully! Download started.");
+        } else {
+          throw new Error(result.message || "Export failed");
         }
+      } else {
+        const errorText = await response.text();
+        console.error("❌ Export API failed:", response.status, errorText);
+        throw new Error(`Export failed: ${response.status}`);
       }
-      toast.success("All videos download started!");
     } catch (error) {
-      console.error("Export failed:", error);
+      console.error("❌ Export failed:", error);
       toast.error("Export failed. Please try again.");
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -1475,9 +1518,13 @@ export default function BoardPage() {
           {scenes.length > 0 && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <Download className="w-4 h-4 mr-2" />
-                  Export
+                <Button variant="outline" size="sm" disabled={isExporting}>
+                  {isExporting ? (
+                    <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin mr-2" />
+                  ) : (
+                    <Download className="w-4 h-4 mr-2" />
+                  )}
+                  {isExporting ? "Exporting..." : "Export"}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
@@ -1486,9 +1533,9 @@ export default function BoardPage() {
                   Export Current Video
                 </DropdownMenuItem>
                 {scenes.length > 1 && (
-                  <DropdownMenuItem onClick={handleExportAll}>
+                  <DropdownMenuItem onClick={handleExportAll} disabled={isExporting}>
                     <Download className="w-4 h-4 mr-2" />
-                    Export All Videos
+                    {isExporting ? "Combining Videos..." : "Export Combined Video"}
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
