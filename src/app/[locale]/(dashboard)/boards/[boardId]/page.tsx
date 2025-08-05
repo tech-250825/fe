@@ -1418,21 +1418,39 @@ export default function BoardPage() {
 
       if (response.ok) {
         const result = await response.json();
-        console.log("✅ Export completed:", result);
+        console.log("✅ Export API Response:", result);
         
-        if (result.success && result.downloadUrl) {
-          // Download the combined video
+        // The actual data is nested inside result.data
+        const exportData = result.data || result;
+        console.log("🔍 Export data structure:", {
+          success: exportData.success,
+          message: exportData.message,
+          downloadUrl: exportData.downloadUrl,
+          hasDownloadUrl: !!exportData.downloadUrl
+        });
+        
+        // Check if we have a download URL in the nested data
+        if (exportData.downloadUrl) {
+          console.log("📹 Starting download from:", exportData.downloadUrl);
+          
+          // Use the same download method as create/video page
+          const filename = `board_${boardId}_combined_${Date.now()}.mp4`;
+          const downloadApiUrl = `/api/download?url=${encodeURIComponent(exportData.downloadUrl)}&filename=${encodeURIComponent(filename)}`;
+          
           const link = document.createElement('a');
-          link.href = result.downloadUrl;
-          link.download = `board_${boardId}_combined_${Date.now()}.mp4`;
+          link.href = downloadApiUrl;
+          link.download = filename;
           link.style.display = 'none';
+          
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
           
+          console.log("✅ Board export download initiated");
           toast.success("Board videos exported successfully! Download started.");
         } else {
-          throw new Error(result.message || "Export failed");
+          console.error("❌ No downloadUrl in response:", result);
+          throw new Error(exportData.message || result.message || "No download URL provided");
         }
       } else {
         const errorText = await response.text();
