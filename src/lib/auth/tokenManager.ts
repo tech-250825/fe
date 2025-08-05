@@ -40,13 +40,13 @@ class TokenManager {
     }
   }
 
-  // Check if token is expired or will expire soon (within 5 minutes)
+  // Check if token is expired or will expire soon (within 30 minutes)
   private isTokenExpiringSoon(token: string): boolean {
     const decoded = this.decodeJWT(token);
     if (!decoded || !decoded.exp) return true;
     
     const currentTime = Math.floor(Date.now() / 1000);
-    const bufferTime = 5 * 60; // 5 minutes in seconds
+    const bufferTime = 30 * 60; // 30 minutes in seconds
     
     return decoded.exp - currentTime < bufferTime;
   }
@@ -117,7 +117,7 @@ class TokenManager {
 
     const currentTime = Math.floor(Date.now() / 1000);
     const expirationTime = decoded.exp;
-    const refreshTime = expirationTime - 5 * 60; // Refresh 5 minutes before expiration
+    const refreshTime = expirationTime - 30 * 60; // Refresh 30 minutes before expiration
     const timeUntilRefresh = Math.max(0, (refreshTime - currentTime) * 1000);
 
     console.log(`⏰ Scheduling token refresh in ${Math.floor(timeUntilRefresh / 1000 / 60)} minutes`);
