@@ -96,6 +96,9 @@
       "language": "언어",
       "lightMode": "라이트 모드",
       "darkMode": "다크 모드"
+    },
+    "community": {
+      "discord": "Discord 참여"
     }
   },
   "Dashboard": {

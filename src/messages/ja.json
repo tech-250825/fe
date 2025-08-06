@@ -118,6 +118,9 @@
       "language": "言語",
       "lightMode": "ライトモード",
       "darkMode": "ダークモード"
+    },
+    "community": {
+      "discord": "Discordに参加"
     }
   },
   "Dashboard": {

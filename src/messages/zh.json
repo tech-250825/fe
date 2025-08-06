@@ -118,6 +118,9 @@
       "language": "语言",
       "lightMode": "浅色模式",
       "darkMode": "深色模式"
+    },
+    "community": {
+      "discord": "加入Discord"
     }
   },
   "Dashboard": {

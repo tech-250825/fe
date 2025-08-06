@@ -118,6 +118,9 @@
       "language": "Language",
       "lightMode": "Light Mode",
       "darkMode": "Dark Mode"
+    },
+    "community": {
+      "discord": "Join Discord"
     }
   },
   "Dashboard": {
