@@ -9,19 +9,11 @@ import {
   MoreHorizontal,
   Grid3X3,
   List,
-  Filter,
   Loader2,
   Video,
   Image as ImageIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { ModernVideoCard } from "@/components/ModernVideoCard";
@@ -211,40 +203,54 @@ export default function LibraryPage() {
             </Badge>
           </div>
 
-          {/* 필터 */}
-          <div className="flex justify-end">
-            <div className="flex gap-2">
-              <Select value={filterType} onValueChange={setFilterType}>
-                <SelectTrigger className="w-32">
-                  <Filter className="w-4 h-4 mr-2" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t("filters.all")}</SelectItem>
-                  <SelectItem value="video">{t("filters.video")}</SelectItem>
-                  <SelectItem value="image">{t("filters.image")}</SelectItem>
-                </SelectContent>
-              </Select>
-
-
-              <div className="flex border rounded-lg">
-                <Button
-                  variant={viewMode === "grid" ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => setViewMode("grid")}
-                  className="rounded-r-none"
-                >
-                  <Grid3X3 className="w-4 h-4" />
-                </Button>
-                <Button
-                  variant={viewMode === "list" ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => setViewMode("list")}
-                  className="rounded-l-none"
-                >
-                  <List className="w-4 h-4" />
-                </Button>
-              </div>
+          {/* 필터 탭 */}
+          <div className="flex items-center justify-between">
+            <div className="flex border rounded-lg">
+              <Button
+                variant={filterType === "all" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setFilterType("all")}
+                className="rounded-r-none"
+              >
+                {t("filters.all")}
+              </Button>
+              <Button
+                variant={filterType === "video" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setFilterType("video")}
+                className="rounded-none"
+              >
+                <Video className="w-4 h-4 mr-1" />
+                {t("filters.video")}
+              </Button>
+              <Button
+                variant={filterType === "image" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setFilterType("image")}
+                className="rounded-l-none"
+              >
+                <ImageIcon className="w-4 h-4 mr-1" />
+                {t("filters.image")}
+              </Button>
+            </div>
+            
+            <div className="flex border rounded-lg">
+              <Button
+                variant={viewMode === "grid" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setViewMode("grid")}
+                className="rounded-r-none"
+              >
+                <Grid3X3 className="w-4 h-4" />
+              </Button>
+              <Button
+                variant={viewMode === "list" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setViewMode("list")}
+                className="rounded-l-none"
+              >
+                <List className="w-4 h-4" />
+              </Button>
             </div>
           </div>
         </div>
