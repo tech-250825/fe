@@ -109,8 +109,8 @@ export default function BoardsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">My Video Boards</h1>
-          <p className="text-gray-600 mt-2">Organize your video projects with boards</p>
+          <h1 className="text-3xl font-bold text-foreground">My Video Boards</h1>
+          <p className="text-muted-foreground mt-2">Organize your video projects with boards</p>
         </div>
         <Button
           onClick={() => setIsCreateModalOpen(true)}
@@ -132,11 +132,11 @@ export default function BoardsPage() {
           {/* Empty State */}
           {boards.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
-              <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-6">
-                <Video className="w-10 h-10 text-gray-400" />
+              <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mb-6">
+                <Video className="w-10 h-10 text-muted-foreground" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">No boards yet</h3>
-              <p className="text-gray-600 mb-6 max-w-md">
+              <h3 className="text-xl font-semibold mb-2 text-foreground">No boards yet</h3>
+              <p className="text-muted-foreground mb-6 max-w-md">
                 Create your first board to start organizing your video projects. 
                 Each board can contain multiple video generations.
               </p>
@@ -163,19 +163,19 @@ export default function BoardsPage() {
                         <CardTitle className="text-lg font-semibold truncate group-hover:text-primary transition-colors">
                           {board.name}
                         </CardTitle>
-                        <div className="flex items-center gap-2 mt-2 text-sm text-gray-500">
+                        <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
                           <Calendar className="w-4 h-4" />
                           <span>
                             {new Date(board.createdAt).toLocaleDateString()}
                           </span>
                         </div>
                       </div>
-                      <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-primary transition-colors" />
+                      <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
                     </div>
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Video className="w-4 h-4" />
                         <span>Board #{board.id}</span>
                       </div>

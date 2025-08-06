@@ -1763,7 +1763,7 @@ export default function BoardPage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="w-8 h-8 border-2 border-gray-400 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="w-8 h-8 border-2 border-muted-foreground border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="text-muted-foreground">Loading board...</p>
         </div>
       </div>
@@ -1771,9 +1771,9 @@ export default function BoardPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50 overflow-hidden">
+    <div className="flex flex-col h-screen bg-background overflow-hidden">
       {/* 상단 툴바 */}
-      <div className="bg-white border-b px-4 py-2 flex items-center justify-between flex-shrink-0">
+      <div className="bg-card border-b border-border px-4 py-2 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-4">
           <Button
             variant="ghost"
@@ -1784,12 +1784,12 @@ export default function BoardPage() {
             <ArrowLeft className="w-4 h-4" />
             Back to Boards
           </Button>
-          <div className="border-l border-gray-200 pl-4">
-            <h1 className="text-lg font-semibold text-gray-800">
+          <div className="border-l border-border pl-4">
+            <h1 className="text-lg font-semibold text-foreground">
               {board?.name || `Board #${boardId}`}
             </h1>
             {board && (
-              <div className="flex items-center gap-2 text-sm text-gray-500">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Calendar className="w-3 h-3" />
                 <span>{new Date(board.createdAt).toLocaleDateString()}</span>
                 <Video className="w-3 h-3 ml-2" />
@@ -1804,7 +1804,7 @@ export default function BoardPage() {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" disabled={isExporting}>
                   {isExporting ? (
-                    <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin mr-2" />
+                    <div className="w-4 h-4 border-2 border-muted-foreground border-t-transparent rounded-full animate-spin mr-2" />
                   ) : (
                     <Download className="w-4 h-4 mr-2" />
                   )}
@@ -1857,12 +1857,12 @@ export default function BoardPage() {
               {/* 로딩 오버레이 - 비디오 생성 시만 표시 */}
               {isGenerating && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                  <div className="bg-white/90 text-gray-800 px-6 py-4 rounded-xl text-center">
-                    <div className="w-6 h-6 border-2 border-gray-800 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+                  <div className="bg-card/90 text-foreground px-6 py-4 rounded-xl text-center">
+                    <div className="w-6 h-6 border-2 border-foreground border-t-transparent rounded-full animate-spin mx-auto mb-3" />
                     <div className="text-sm font-medium">
                       Generating new video...
                     </div>
-                    <div className="text-xs text-gray-500 mt-2">
+                    <div className="text-xs text-muted-foreground mt-2">
                       SSE 연결: {isConnected ? "Connected" : "Disconnected"}
                     </div>
                   </div>
@@ -1871,14 +1871,14 @@ export default function BoardPage() {
             </>
           ) : (
             /* 빈 상태 */
-            <div className="flex flex-col items-center justify-center h-full text-gray-500 p-8">
-              <div className="w-20 h-20 bg-gray-700 rounded-full flex items-center justify-center mb-6">
-                <Film className="w-10 h-10 text-gray-400" />
+            <div className="flex flex-col items-center justify-center h-full text-muted-foreground p-8">
+              <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mb-6">
+                <Film className="w-10 h-10 text-muted-foreground" />
               </div>
               <h3 className="text-xl font-semibold mb-2 text-white">
                 Generate your first video
               </h3>
-              <p className="text-gray-400 mb-6 text-center max-w-md">
+              <p className="text-muted-foreground mb-6 text-center max-w-md">
                 Use the prompt input below to create your first video for this board
               </p>
               <div className="flex gap-3">
@@ -1893,9 +1893,9 @@ export default function BoardPage() {
       </div>
 
       {/* 하단 타임라인 및 컨트롤 영역 - 고정 높이 */}
-      <div className="bg-white border-t flex-shrink-0">
+      <div className="bg-card border-t border-border flex-shrink-0">
         {/* 타임라인 바 */}
-        <div className="bg-gray-100 p-3">
+        <div className="bg-muted p-3">
           <div className="flex items-center gap-4 mb-3">
             {/* 재생 컨트롤 */}
             <Button
@@ -1912,7 +1912,7 @@ export default function BoardPage() {
             </Button>
 
             {/* 타임 표시 */}
-            <div className="text-sm text-gray-600 font-mono min-w-[80px]">
+            <div className="text-sm text-muted-foreground font-mono min-w-[80px]">
               {formatTime(currentTime)} / {formatTime(duration)}
             </div>
 
@@ -1944,7 +1944,7 @@ export default function BoardPage() {
             <div className="mb-3">
               <div 
                 ref={timelineRef}
-                className="relative h-8 bg-gray-200 rounded-lg cursor-pointer overflow-hidden"
+                className="relative h-8 bg-muted rounded-lg cursor-pointer overflow-hidden"
                 onClick={handleTimelineClick}
                 onMouseDown={handleTimelineDragStart}
               >
@@ -1973,7 +1973,7 @@ export default function BoardPage() {
                           }}
                         >
                           {/* 비디오 제목/번호 */}
-                          <div className="absolute inset-0 flex items-center justify-center text-xs text-gray-700 font-medium pointer-events-none">
+                          <div className="absolute inset-0 flex items-center justify-center text-xs text-foreground font-medium pointer-events-none">
                             {index + 1}
                           </div>
                         </div>
@@ -2011,7 +2011,7 @@ export default function BoardPage() {
                 </div>
                 
                 {/* 시간 마커들 */}
-                <div className="absolute inset-0 flex justify-between items-center px-2 text-xs text-gray-600 pointer-events-none">
+                <div className="absolute inset-0 flex justify-between items-center px-2 text-xs text-muted-foreground pointer-events-none">
                   <span>0:00</span>
                   <span className="text-center">{formatTime(globalCurrentTime)} / {formatTime(totalDuration)}</span>
                   <span>{formatTime(totalDuration)}</span>
@@ -2023,7 +2023,7 @@ export default function BoardPage() {
           {/* 씬 타임라인 - 수평 스크롤만 */}
           <div 
             data-timeline
-            className="flex items-center gap-2 overflow-x-auto overflow-y-hidden pb-2 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200"
+            className="flex items-center gap-2 overflow-x-auto overflow-y-hidden pb-2 scrollbar-thin scrollbar-thumb-muted-foreground scrollbar-track-muted"
             onScroll={handleTimelineScroll}
             style={{ scrollbarWidth: 'thin' }}
           >
@@ -2090,10 +2090,10 @@ export default function BoardPage() {
                     </div>
                   ) : (
                     /* 생성 중인 비디오 */
-                    <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                    <div className="w-full h-full bg-muted flex items-center justify-center">
                       <div className="text-center">
                         <div className="w-6 h-6 border-2 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-1" />
-                        <div className="text-[8px] text-gray-600">Generating</div>
+                        <div className="text-[8px] text-muted-foreground">Generating</div>
                       </div>
                     </div>
                   )}
@@ -2151,10 +2151,10 @@ export default function BoardPage() {
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-24 h-16 rounded-lg border-2 border-dashed border-gray-400 hover:border-gray-500 cursor-pointer flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors flex-shrink-0 p-2"
+                  className="w-24 h-16 rounded-lg border-2 border-dashed border-muted-foreground hover:border-foreground cursor-pointer flex flex-col items-center justify-center bg-muted hover:bg-muted/80 transition-colors flex-shrink-0 p-2"
                 >
-                  <Plus className="w-4 h-4 text-gray-500 mb-1" />
-                  <span className="text-[10px] text-gray-600">Add</span>
+                  <Plus className="w-4 h-4 text-muted-foreground mb-1" />
+                  <span className="text-[10px] text-muted-foreground">Add</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" side="top" className="w-56">
@@ -2224,7 +2224,7 @@ export default function BoardPage() {
                   Character: {videoOptions.character.name}
                 </Badge>
               ) : (
-                <Badge variant="outline" className="text-xs text-gray-500">
+                <Badge variant="outline" className="text-xs text-muted-foreground">
                   No style selected
                 </Badge>
               )}
@@ -2240,7 +2240,7 @@ export default function BoardPage() {
             </div>
             
             {/* 프롬프트 입력 바 */}
-            <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-3">
+            <div className="flex items-center gap-3 bg-muted rounded-xl p-3">
               <div className="flex items-center gap-2">
                 {/* 설정 버튼 */}
                 <Tooltip>
@@ -2332,7 +2332,7 @@ export default function BoardPage() {
                             {libraryImages.map((image: any) => (
                               <div
                                 key={image.id}
-                                className="relative group cursor-pointer rounded-lg overflow-hidden bg-gray-100 hover:ring-2 hover:ring-blue-500 transition-all"
+                                className="relative group cursor-pointer rounded-lg overflow-hidden bg-muted hover:ring-2 hover:ring-primary transition-all"
                                 onClick={() => handleImageSelect(image.url)}
                               >
                                 <img
@@ -2342,7 +2342,7 @@ export default function BoardPage() {
                                 />
                                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
                                   <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <div className="bg-white/90 text-black px-2 py-1 rounded text-sm font-medium">
+                                    <div className="bg-card/90 text-foreground px-2 py-1 rounded text-sm font-medium">
                                       Select
                                     </div>
                                   </div>
@@ -2354,25 +2354,25 @@ export default function BoardPage() {
                           {/* Loading more indicator */}
                           {libraryLoading && (
                             <div className="flex items-center justify-center py-4 mt-4">
-                              <div className="w-5 h-5 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin mr-2" />
-                              <span className="text-sm text-gray-600">Loading more images...</span>
+                              <div className="w-5 h-5 border-2 border-muted-foreground border-t-primary rounded-full animate-spin mr-2" />
+                              <span className="text-sm text-muted-foreground">Loading more images...</span>
                             </div>
                           )}
                           
                           {/* End of results indicator */}
                           {!libraryHasMore && !libraryLoading && (
-                            <div className="text-center py-4 mt-4 text-gray-500">
+                            <div className="text-center py-4 mt-4 text-muted-foreground">
                               <p className="text-sm">All images loaded ({libraryImages.length} total)</p>
                             </div>
                           )}
                         </>
                       ) : libraryLoading ? (
                         <div className="flex items-center justify-center py-8">
-                          <div className="w-6 h-6 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin mr-2" />
+                          <div className="w-6 h-6 border-2 border-muted-foreground border-t-primary rounded-full animate-spin mr-2" />
                           <span>Loading images...</span>
                         </div>
                       ) : (
-                        <div className="text-center py-8 text-gray-500">
+                        <div className="text-center py-8 text-muted-foreground">
                           <Image className="w-12 h-12 mx-auto mb-2 opacity-50" />
                           <p>No images found in your library</p>
                           <p className="text-sm">Create some images first!</p>
@@ -2385,7 +2385,7 @@ export default function BoardPage() {
 
               {/* Selected Image Preview */}
               {(uploadedImage || selectedImage) && (
-                <div className="flex items-center gap-2 px-2 py-1 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-center gap-2 px-2 py-1 bg-primary/10 border border-primary/20 rounded-lg">
                   <img
                     src={uploadedImage || selectedImage || ""}
                     alt="Selected image"
@@ -2398,7 +2398,7 @@ export default function BoardPage() {
                     variant="ghost"
                     size="icon"
                     onClick={handleRemoveSelectedImage}
-                    className="w-4 h-4 hover:bg-blue-100 flex-shrink-0"
+                    className="w-4 h-4 hover:bg-primary/20 flex-shrink-0"
                   >
                     <X className="w-3 h-3" />
                   </Button>
