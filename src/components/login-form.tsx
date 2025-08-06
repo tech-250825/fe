@@ -30,7 +30,7 @@ export function LoginForm({
                 onClick={() => {
                   // Get redirect URL from query params or use current URL
                   const urlParams = new URLSearchParams(window.location.search);
-                  const redirectUrl = urlParams.get('redirect') || window.location.origin + '/home';
+                  const redirectUrl = urlParams.get('redirect') || window.location.href;
                   
                   // Encode the redirect URL
                   const encodedRedirect = encodeURIComponent(redirectUrl);

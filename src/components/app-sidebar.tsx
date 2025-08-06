@@ -62,6 +62,7 @@ import Link from "next/link"; // ✅ Next.js Link 컴포넌트 추가
 import LocaleSwitcherDropdown from "@/components/LocaleSwitcher"; // 언어 스위처 추가
 import { useState } from "react"; // 드롭다운 상태 관리용
 import { useTheme } from "@/contexts/ThemeContext"; // 테마 컨텍스트 추가
+import { LoginModal } from "@/components/login-modal";
 
 export function AppSidebar() {
   const t = useTranslations("Sidebar");
@@ -71,6 +72,7 @@ export function AppSidebar() {
 
   // 드롭다운 열림/닫힘 상태 관리
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   // 네비게이션 메뉴 아이템들
   const navigationItems = [
@@ -319,12 +321,8 @@ export function AppSidebar() {
                 </div>
               </div>
               <SidebarMenuButton asChild className="w-full">
-                {/* ✅ Link 컴포넌트로 변경 */}
                 <button
-                  onClick={() => {
-                    const currentUrl = window.location.href;
-                    window.location.href = `/login?redirect=${encodeURIComponent(currentUrl)}`;
-                  }}
+                  onClick={() => setIsLoginModalOpen(true)}
                   className="flex items-center justify-center bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90 w-full px-3 py-2 rounded-md text-sm font-medium transition-colors"
                 >
                   <LogIn className="w-4 h-4 mr-2" />
@@ -335,6 +333,12 @@ export function AppSidebar() {
           </SidebarMenu>
         )}
       </SidebarFooter>
+
+      {/* Login Modal */}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+      />
     </Sidebar>
   );
 }
