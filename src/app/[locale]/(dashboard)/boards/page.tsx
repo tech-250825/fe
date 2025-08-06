@@ -11,11 +11,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Calendar, ChevronRight, Video, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import type { Board, BoardListResponse, CreateBoardRequest, CreateBoardResponse } from "@/lib/types";
 
 export default function BoardsPage() {
   const { isLoggedIn } = useAuth();
   const router = useRouter();
+  const t = useTranslations("Boards");
   const [boards, setBoards] = useState<Board[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -38,7 +40,7 @@ export default function BoardsPage() {
       setBoards(response.data || []);
     } catch (error) {
       console.error("Failed to fetch boards:", error);
-      toast.error("Failed to load boards. Please try again.");
+      toast.error(t("messages.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -47,7 +49,7 @@ export default function BoardsPage() {
   // Create new board
   const handleCreateBoard = async () => {
     if (!newBoardName.trim()) {
-      toast.error("Please enter a board name");
+      toast.error(t("messages.nameRequired"));
       return;
     }
 
@@ -72,13 +74,13 @@ export default function BoardsPage() {
       setIsCreateModalOpen(false);
       setNewBoardName("");
       
-      toast.success("Board created successfully!");
+      toast.success(t("messages.createSuccess"));
       
       // Redirect to the new board
       router.push(`/boards/${response.data.id}`);
     } catch (error) {
       console.error("Failed to create board:", error);
-      toast.error("Failed to create board. Please try again.");
+      toast.error(t("messages.createFailed"));
     } finally {
       setIsCreating(false);
     }
@@ -99,7 +101,7 @@ export default function BoardsPage() {
   if (!isLoggedIn) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground">Please log in to view your boards.</p>
+        <p className="text-muted-foreground">{t("loginRequired")}</p>
       </div>
     );
   }
@@ -109,15 +111,15 @@ export default function BoardsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">My Video Boards</h1>
-          <p className="text-muted-foreground mt-2">Organize your video projects with boards</p>
+          <h1 className="text-3xl font-bold text-foreground">{t("title")}</h1>
+          <p className="text-muted-foreground mt-2">{t("subtitle")}</p>
         </div>
         <Button
           onClick={() => setIsCreateModalOpen(true)}
           className="gap-2"
         >
           <Plus className="w-4 h-4" />
-          Create Board
+          {t("createBoard")}
         </Button>
       </div>
 
@@ -125,7 +127,7 @@ export default function BoardsPage() {
       {loading ? (
         <div className="flex items-center justify-center py-12">
           <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-          <span className="ml-2 text-muted-foreground">Loading boards...</span>
+          <span className="ml-2 text-muted-foreground">{t("loading")}</span>
         </div>
       ) : (
         <>
@@ -135,17 +137,16 @@ export default function BoardsPage() {
               <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mb-6">
                 <Video className="w-10 h-10 text-muted-foreground" />
               </div>
-              <h3 className="text-xl font-semibold mb-2 text-foreground">No boards yet</h3>
+              <h3 className="text-xl font-semibold mb-2 text-foreground">{t("noBoards")}</h3>
               <p className="text-muted-foreground mb-6 max-w-md">
-                Create your first board to start organizing your video projects. 
-                Each board can contain multiple video generations.
+                {t("noBoardsDescription")}
               </p>
               <Button
                 onClick={() => setIsCreateModalOpen(true)}
                 className="gap-2"
               >
                 <Plus className="w-4 h-4" />
-                Create Your First Board
+                {t("createFirstBoard")}
               </Button>
             </div>
           ) : (
@@ -177,7 +178,7 @@ export default function BoardsPage() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Video className="w-4 h-4" />
-                        <span>Board #{board.id}</span>
+                        <span>{t("board")} #{board.id}</span>
                       </div>
                       <Button
                         variant="ghost"
@@ -188,7 +189,7 @@ export default function BoardsPage() {
                           handleBoardClick(board.id);
                         }}
                       >
-                        Open
+                        {t("open")}
                       </Button>
                     </div>
                   </CardContent>
@@ -203,14 +204,14 @@ export default function BoardsPage() {
       <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Create New Board</DialogTitle>
+            <DialogTitle>{t("createNewBoard")}</DialogTitle>
           </DialogHeader>
           <div className="py-4">
             <Input
-              placeholder="Enter board name..."
+              placeholder={t("enterBoardName")}
               value={newBoardName}
               onChange={(e) => setNewBoardName(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && handleCreateBoard()}
+              onKeyDown={(e) => e.key === "Enter" && handleCreateBoard()}
               disabled={isCreating}
               autoFocus
             />
@@ -221,7 +222,7 @@ export default function BoardsPage() {
               onClick={() => setIsCreateModalOpen(false)}
               disabled={isCreating}
             >
-              Cancel
+              {t("cancel")}
             </Button>
             <Button
               onClick={handleCreateBoard}
@@ -230,12 +231,12 @@ export default function BoardsPage() {
               {isCreating ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Creating...
+                  {t("creating")}
                 </>
               ) : (
                 <>
                   <Plus className="w-4 h-4 mr-2" />
-                  Create Board
+                  {t("createBoard")}
                 </>
               )}
             </Button>

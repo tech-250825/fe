@@ -515,6 +515,28 @@
       "loadFailed": "Failed to load media"
     }
   },
+  "Boards": {
+    "title": "My Video Boards",
+    "subtitle": "Organize your video projects with boards",
+    "loginRequired": "Please log in to view your boards.",
+    "createBoard": "Create Board",
+    "createFirstBoard": "Create Your First Board",
+    "noBoards": "No boards yet",
+    "noBoardsDescription": "Create your first board to start organizing your video projects. Each board can contain multiple video generations.",
+    "loading": "Loading boards...",
+    "createNewBoard": "Create New Board",
+    "enterBoardName": "Enter board name...",
+    "cancel": "Cancel",
+    "creating": "Creating...",
+    "open": "Open",
+    "board": "Board",
+    "messages": {
+      "createSuccess": "Board created successfully!",
+      "createFailed": "Failed to create board. Please try again.",
+      "loadFailed": "Failed to load boards. Please try again.",
+      "nameRequired": "Please enter a board name"
+    }
+  },
   "VideoCreation": {
     "title": "Video Creation",
     "subtitle": "Create new videos",

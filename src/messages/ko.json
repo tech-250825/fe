@@ -515,6 +515,28 @@
       "loadFailed": "미디어 로드 실패"
     }
   },
+  "Boards": {
+    "title": "내 비디오 보드",
+    "subtitle": "비디오 프로젝트를 보드로 정리하세요",
+    "loginRequired": "보드를 보려면 로그인해주세요.",
+    "createBoard": "보드 만들기",
+    "createFirstBoard": "첫 번째 보드 만들기",
+    "noBoards": "아직 보드가 없습니다",
+    "noBoardsDescription": "첫 번째 보드를 만들어 비디오 프로젝트 정리를 시작하세요. 각 보드에는 여러 비디오 생성을 포함할 수 있습니다.",
+    "loading": "보드를 불러오는 중...",
+    "createNewBoard": "새 보드 만들기",
+    "enterBoardName": "보드 이름을 입력하세요...",
+    "cancel": "취소",
+    "creating": "생성 중...",
+    "open": "열기",
+    "board": "보드",
+    "messages": {
+      "createSuccess": "보드가 성공적으로 생성되었습니다!",
+      "createFailed": "보드 생성에 실패했습니다. 다시 시도해주세요.",
+      "loadFailed": "보드를 불러오는데 실패했습니다. 다시 시도해주세요.",
+      "nameRequired": "보드 이름을 입력해주세요"
+    }
+  },
   "VideoCreation": {
     "title": "비디오 생성",
     "subtitle": "새로운 비디오를 생성해보세요",
