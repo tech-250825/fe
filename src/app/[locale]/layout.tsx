@@ -6,6 +6,17 @@ import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import { routing } from "../../i18n/routing";
 import { Toaster } from "@/components/ui/sonner";
+import type { Metadata } from 'next';
+import { generateLandingPageMetadata } from './metadata';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return generateLandingPageMetadata(locale);
+}
 
 export default async function LocaleLayout({
   children,

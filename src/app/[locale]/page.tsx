@@ -20,6 +20,8 @@ import {
   LogOut,
 } from "lucide-react";
 import LocaleSwitcher from "@/components/LocaleSwitcher";
+import { StructuredData, generateWebSiteSchema, generateWebApplicationSchema, generateOrganizationSchema } from "@/components/seo/StructuredData";
+import { useLocale } from "next-intl";
 
 // Discord Icon Component
 const DiscordIcon = ({ className }: { className?: string }) => (
@@ -37,6 +39,7 @@ const MinimalistLandingPage: React.FC = () => {
   console.log("🎯 MinimalistLandingPage component is rendering!");
 
   const t = useTranslations("LandingPage");
+  const locale = useLocale();
   const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
 
   const copyToClipboard = (text: string) => {
@@ -45,6 +48,10 @@ const MinimalistLandingPage: React.FC = () => {
 
   return (
     <div className="font-sans">
+      {/* Structured Data for SEO */}
+      <StructuredData type="WebSite" data={generateWebSiteSchema(locale)} />
+      <StructuredData type="WebApplication" data={generateWebApplicationSchema(locale)} />
+      <StructuredData type="Organization" data={generateOrganizationSchema()} />
       {/* Header */}
       <header className="absolute top-0 w-full z-30">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
@@ -156,11 +163,12 @@ const MinimalistLandingPage: React.FC = () => {
                   <div className="relative rounded-lg overflow-hidden aspect-w-16 aspect-h-9 bg-gray-200">
                     <Image
                       src={thumbnailPaths[index]}
-                      alt={t(titleKeys[index] as any)}
+                      alt={`${t(titleKeys[index] as any)} - AI generated video example showcasing different art styles`}
                       width={400}
                       height={225}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       priority={index < 2}
+                      loading={index < 2 ? "eager" : "lazy"}
                     />
                     <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">
                       <Play className="w-12 h-12 text-white opacity-80 group-hover:opacity-100 transform group-hover:scale-110 transition-all" />
