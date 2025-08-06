@@ -27,8 +27,7 @@ import {
   Plus, 
   Sparkles, 
   Upload, 
-  Download, 
-  Save,
+  Download,
   ArrowRight,
   Settings2,
   Film,
@@ -1484,24 +1483,6 @@ export default function BoardPage() {
   };
 
   // Download handlers
-  const downloadVideo = (videoSrc: string, filename: string) => {
-    const link = document.createElement("a");
-    link.href = videoSrc;
-    link.download = filename;
-    link.style.display = "none";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  const handleExportCurrent = () => {
-    if (activeVideoSrc) {
-      const currentScene = scenes[currentSceneIndex];
-      const filename = `board_${boardId}_video_${currentScene.id}.mp4`;
-      downloadVideo(activeVideoSrc, filename);
-    }
-  };
-
   const handleExportAll = async () => {
     if (scenes.length === 0) {
       toast.error(t("messages.noVideosToExport"));
@@ -1812,16 +1793,10 @@ export default function BoardPage() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem onClick={handleExportCurrent}>
-                  <Save className="w-4 h-4 mr-2" />
-                  Export Current Video
+                <DropdownMenuItem onClick={handleExportAll} disabled={isExporting}>
+                  <Download className="w-4 h-4 mr-2" />
+                  {isExporting ? t("buttons.combiningVideos") : t("buttons.exportCombined")}
                 </DropdownMenuItem>
-                {scenes.length > 1 && (
-                  <DropdownMenuItem onClick={handleExportAll} disabled={isExporting}>
-                    <Download className="w-4 h-4 mr-2" />
-                    {isExporting ? "Combining Videos..." : "Export Combined Video"}
-                  </DropdownMenuItem>
-                )}
               </DropdownMenuContent>
             </DropdownMenu>
           )}
