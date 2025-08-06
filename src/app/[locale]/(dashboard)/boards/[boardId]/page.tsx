@@ -86,6 +86,7 @@ export default function BoardPage() {
 
   // Generation state
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isEnhancing, setIsEnhancing] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isExtending, setIsExtending] = useState(false);
@@ -1102,6 +1103,7 @@ export default function BoardPage() {
   };
 
   const handleEnhancePrompt = async (prompt: string, selections: VideoOptions): Promise<string> => {
+    setIsEnhancing(true);
     try {
       const selectedLoraModel = selections.style || selections.character;
       
@@ -1124,6 +1126,8 @@ export default function BoardPage() {
     } catch (error) {
       console.error("❌ Network error:", error);
       throw new Error(t("messages.enhancePromptFailed"));
+    } finally {
+      setIsEnhancing(false);
     }
   };
 
@@ -2243,10 +2247,10 @@ export default function BoardPage() {
                         variant="ghost"
                         size="icon"
                         onClick={() => handleEnhancePrompt(prompt, videoOptions).then(setPrompt)}
-                        disabled={!prompt.trim() || isGenerating}
+                        disabled={!prompt.trim() || isGenerating || isEnhancing}
                         className="hover:bg-primary/10 hover:text-primary disabled:opacity-50 flex-shrink-0"
                       >
-                        <Sparkles className="h-4 w-4" />
+                        <Sparkles className={`h-4 w-4 ${isEnhancing ? 'animate-spin' : ''}`} />
                         <span className="sr-only">Enhance prompt</span>
                       </Button>
                     </div>
