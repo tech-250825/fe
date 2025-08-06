@@ -732,25 +732,35 @@ export default function BoardPage() {
         `${config.apiUrl}/api/lora?mediaType=VIDEO&styleType=STYLE`
       );
 
+      let fetchedStyleModels = [];
       if (styleResponse.ok) {
         const styleData = await styleResponse.json();
-        const styleModels = styleData.data || styleData;
-        setStyleModels(styleModels);
+        fetchedStyleModels = styleData.data || styleData;
+        setStyleModels(fetchedStyleModels);
       }
 
       const characterResponse = await api.get(
         `${config.apiUrl}/api/lora?mediaType=VIDEO&styleType=CHARACTER`
       );
 
+      let fetchedCharacterModels = [];
       if (characterResponse.ok) {
         const characterData = await characterResponse.json();
-        const characterModels = characterData.data || characterData;
-        setCharacterModels(characterModels);
+        fetchedCharacterModels = characterData.data || characterData;
+        setCharacterModels(fetchedCharacterModels);
       }
 
       const currentModels =
-        selectedTab === "STYLE" ? styleModels : characterModels;
+        selectedTab === "STYLE" ? fetchedStyleModels : fetchedCharacterModels;
       setAvailableModels(currentModels);
+
+      // Auto-select the first style model as default if none selected
+      if (fetchedStyleModels.length > 0 && !videoOptions.style && !videoOptions.character) {
+        setVideoOptions(prev => ({
+          ...prev,
+          style: fetchedStyleModels[0]
+        }));
+      }
     } catch (error) {
       console.error("❌ Failed to load models:", error);
     }
