@@ -98,6 +98,8 @@ export default function BoardPage() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [libraryImages, setLibraryImages] = useState<any[]>([]);
   const [libraryLoading, setLibraryLoading] = useState(false);
+  const [libraryNextCursor, setLibraryNextCursor] = useState<string | null>(null);
+  const [libraryHasMore, setLibraryHasMore] = useState(true);
   
   // File upload state
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
@@ -828,13 +830,17 @@ export default function BoardPage() {
     setTaskList((prev) => [optimisticTask, ...prev]);
 
     try {
-      // Use board-specific endpoints
+      // Use board-specific endpoints (same logic as video create page)
       const endpoint = mode === "t2v" 
         ? `/api/videos/create/t2v/${boardId}` 
-        : `/api/videos/create/i2v/${boardId}`;
+        : libraryImageData 
+          ? `/api/videos/create/i2v/v2/${boardId}`  // Library image uses v2 endpoint
+          : `/api/videos/create/i2v/${boardId}`;     // Computer upload uses original endpoint
 
       console.log("🎯 Board ID:", boardId);
       console.log("🎯 Generation mode:", mode);
+      console.log("🎯 Using library image:", !!libraryImageData);
+      console.log("🎯 Using uploaded file:", !!uploadedImageFile);
       console.log("🎯 Endpoint:", endpoint);
       console.log("🎯 Full URL will be:", `${config.apiUrl}${endpoint}`);
 
@@ -851,6 +857,7 @@ export default function BoardPage() {
         let requestData: any;
         
         if (libraryImageData) {
+          // Library image case - use JSON payload with imageUrl for v2 endpoint (same as video create page)
           const imageWidth = libraryImageData.imageItem.task.width || 1280;
           const imageHeight = libraryImageData.imageItem.task.height || 720;
           resolutionProfile = getI2VResolutionProfile(
@@ -859,15 +866,20 @@ export default function BoardPage() {
             options.quality
           );
           
+          console.log(`📏 I2V Library Image dimensions: ${imageWidth}x${imageHeight}`);
+          console.log(`📏 I2V Resolution profile: ${resolutionProfile}`);
+          console.log(`🖼️ Library Image URL: ${libraryImageData.imageUrl}`);
+          
+          // Create JSON payload for v2 endpoint (exactly like video create page)
           requestData = {
             prompt: prompt,
             imageUrl: libraryImageData.imageUrl,
             resolutionProfile: resolutionProfile,
             numFrames: frames,
-            loraId: loraId || 1
+            loraId: loraId || 1 // Default loraId as specified
           };
           
-          console.log("📦 I2V Board Library Request payload:", requestData);
+          console.log("📦 I2V Board Library Request payload (JSON for v2):", requestData);
           
         } else if (uploadedImageFile) {
           const imageDimensions = await getImageDimensions(uploadedImageFile);
@@ -895,31 +907,24 @@ export default function BoardPage() {
           requestData = formData;
         }
         
+        // Make API call based on request type (same as video create page)
         if (libraryImageData) {
-          console.log("📤 Making library image API call to:", `${config.apiUrl}${endpoint}`);
+          // Library image uses JSON POST to v2 endpoint
+          console.log("📤 Making library image API call (JSON) to:", `${config.apiUrl}${endpoint}`);
           response = await api.post(`${config.apiUrl}${endpoint}`, requestData);
+          console.log("📨 Library API response status:", response.status);
         } else {
-          console.log("📤 Making file upload API call to:", `${config.apiUrl}${endpoint}`);
+          // File upload uses FormData POST to v1 endpoint
+          console.log("📤 Making file upload API call (FormData) to:", `${config.apiUrl}${endpoint}`);
           console.log("📤 FormData contents check:", requestData instanceof FormData);
-          
-          // Use direct fetch to match backend specification exactly (same as successful test)
-          const fullUrl = `${config.apiUrl}${endpoint}`;
-          console.log("🔄 Direct fetch to:", fullUrl);
           
           // Log FormData contents for debugging
           for (let [key, value] of (requestData as FormData).entries()) {
             console.log(`📦 FormData[${key}]:`, value instanceof File ? `File(${value.name}, ${value.size} bytes)` : value);
           }
           
-          response = await fetch(fullUrl, {
-            method: 'POST',
-            body: requestData as FormData,
-            credentials: 'include',
-            // Don't set Content-Type - let browser set multipart boundary
-          });
-          
-          console.log("📨 Real API response status:", response.status);
-          console.log("📨 Response headers:", Object.fromEntries(response.headers.entries()));
+          response = await api.postForm(`${config.apiUrl}${endpoint}`, requestData);
+          console.log("📨 Upload API response status:", response.status);
         }
       } else {
         // T2V case
@@ -1577,14 +1582,20 @@ export default function BoardPage() {
     }
   };
 
-  // Fetch library images
-  const fetchLibraryImages = async () => {
+  // Fetch library images with pagination support
+  const fetchLibraryImages = async (reset = true) => {
     if (libraryLoading) return;
     
     setLibraryLoading(true);
     try {
       const params = new URLSearchParams();
       params.set("size", "20");
+      params.set("type", "image"); // Only fetch images, not videos
+      
+      // Add cursor for pagination (only if not resetting)
+      if (!reset && libraryNextCursor) {
+        params.set("nextPageCursor", libraryNextCursor);
+      }
 
       const response = await fetch(
         `${config.apiUrl}/api/images/mypage?${params.toString()}`,
@@ -1596,11 +1607,32 @@ export default function BoardPage() {
       if (!response.ok) throw new Error("Failed to fetch library images");
 
       const backendResponse = await response.json();
-      const data = backendResponse.data;
+      const data = backendResponse.data; // Using actual response structure
 
-      // Filter only images (not videos)
-      const imageItems = data.content.filter((item: any) => !item.url.includes(".mp4"));
-      setLibraryImages(imageItems);
+      // Check if data and content exist
+      if (data && data.content) {
+        if (reset) {
+          // First load - replace all images
+          setLibraryImages(data.content);
+          console.log("📸 Initial fetch - library images:", data.content.length);
+        } else {
+          // Load more - append to existing images
+          setLibraryImages(prev => [...prev, ...data.content]);
+          console.log("📸 Loaded more images:", data.content.length, "Total:", libraryImages.length + data.content.length);
+        }
+        
+        // Update pagination state
+        setLibraryNextCursor(data.nextPageCursor);
+        setLibraryHasMore(!!data.nextPageCursor);
+        
+        console.log("📄 Next cursor:", data.nextPageCursor);
+        console.log("📄 Has more:", !!data.nextPageCursor);
+      } else {
+        console.error("❌ Invalid response structure:", { data, hasContent: data?.content });
+        if (reset) {
+          setLibraryImages([]);
+        }
+      }
     } catch (error) {
       console.error("❌ Failed to fetch library images:", error);
       toast.error("Failed to load image library");
@@ -1618,6 +1650,31 @@ export default function BoardPage() {
     setVideoOptions(prev => ({ ...prev, mode: "i2v" as GenerationMode }));
     
     toast.success("Image selected for video generation");
+  };
+
+  // Handle infinite scroll in image library
+  const handleLibraryScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    
+    // Load more when scrolled to bottom (with small buffer)
+    if (scrollHeight - scrollTop <= clientHeight + 100) {
+      if (libraryHasMore && !libraryLoading && libraryNextCursor) {
+        console.log("📜 Loading more images...");
+        fetchLibraryImages(false); // false = don't reset, append to existing
+      }
+    }
+  }, [libraryHasMore, libraryLoading, libraryNextCursor, fetchLibraryImages]);
+
+  // Reset library state when dialog opens
+  const handleOpenImageLibrary = () => {
+    // Reset pagination state
+    setLibraryImages([]);
+    setLibraryNextCursor(null);
+    setLibraryHasMore(true);
+    
+    // Fetch first page
+    fetchLibraryImages(true);
+    setShowImageLibrary(true);
   };
 
   // Remove selected image
@@ -2245,12 +2302,7 @@ export default function BoardPage() {
                           Upload from computer
                         </DropdownMenuItem>
                         <DropdownMenuItem 
-                          onClick={() => {
-                            if (libraryImages.length === 0) {
-                              fetchLibraryImages();
-                            }
-                            setShowImageLibrary(true);
-                          }} 
+                          onClick={handleOpenImageLibrary}
                           className="flex items-center gap-2"
                         >
                           <FolderOpen className="h-4 w-4" />
@@ -2270,34 +2322,54 @@ export default function BoardPage() {
                     <DialogHeader>
                       <DialogTitle>Select Image from Library</DialogTitle>
                     </DialogHeader>
-                    <div className="h-[60vh] w-full rounded-md border p-4 overflow-y-auto">
-                      {libraryLoading ? (
-                        <div className="flex items-center justify-center py-8">
-                          <div className="w-6 h-6 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin mr-2" />
-                          <span>Loading images...</span>
-                        </div>
-                      ) : libraryImages.length > 0 ? (
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                          {libraryImages.map((image: any) => (
-                            <div
-                              key={image.id}
-                              className="relative group cursor-pointer rounded-lg overflow-hidden bg-gray-100 hover:ring-2 hover:ring-blue-500 transition-all"
-                              onClick={() => handleImageSelect(image.url)}
-                            >
-                              <img
-                                src={image.url}
-                                alt={`Library image ${image.id}`}
-                                className="w-full h-32 object-cover"
-                              />
-                              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                                <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <div className="bg-white/90 text-black px-2 py-1 rounded text-sm font-medium">
-                                    Select
+                    <div 
+                      className="h-[60vh] w-full rounded-md border p-4 overflow-y-auto"
+                      onScroll={handleLibraryScroll}
+                    >
+                      {libraryImages.length > 0 ? (
+                        <>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                            {libraryImages.map((image: any) => (
+                              <div
+                                key={image.id}
+                                className="relative group cursor-pointer rounded-lg overflow-hidden bg-gray-100 hover:ring-2 hover:ring-blue-500 transition-all"
+                                onClick={() => handleImageSelect(image.url)}
+                              >
+                                <img
+                                  src={image.url}
+                                  alt={`Library image ${image.id}`}
+                                  className="w-full h-32 object-cover"
+                                />
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                                  <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div className="bg-white/90 text-black px-2 py-1 rounded text-sm font-medium">
+                                      Select
+                                    </div>
                                   </div>
                                 </div>
                               </div>
+                            ))}
+                          </div>
+                          
+                          {/* Loading more indicator */}
+                          {libraryLoading && (
+                            <div className="flex items-center justify-center py-4 mt-4">
+                              <div className="w-5 h-5 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin mr-2" />
+                              <span className="text-sm text-gray-600">Loading more images...</span>
                             </div>
-                          ))}
+                          )}
+                          
+                          {/* End of results indicator */}
+                          {!libraryHasMore && !libraryLoading && (
+                            <div className="text-center py-4 mt-4 text-gray-500">
+                              <p className="text-sm">All images loaded ({libraryImages.length} total)</p>
+                            </div>
+                          )}
+                        </>
+                      ) : libraryLoading ? (
+                        <div className="flex items-center justify-center py-8">
+                          <div className="w-6 h-6 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin mr-2" />
+                          <span>Loading images...</span>
                         </div>
                       ) : (
                         <div className="text-center py-8 text-gray-500">
