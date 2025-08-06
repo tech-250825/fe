@@ -1,0 +1,720 @@
+{
+  "LandingPage": {
+    "nav": {
+      "features": "機能",
+      "pricing": "料金",
+      "api": "API",
+      "tryForFree": "無料体験"
+    },
+    "hero": {
+      "title": "AIでアニメーション作成",
+      "description": "想像し、説明し、作成してください。Hoitはテキストプロンプトから高品質な動画を生成し、数秒でアイデアを現実にします。",
+      "placeholder": "小さなカウボーイハットを被った子狸の映画のような場面...",
+      "noCreditCard": "クレジットカード不要。今すぐ動画作成を始めましょう。"
+    },
+    "showcase": {
+      "title": "アニメーションショーケース",
+      "ghibli": "ジブリ風アニメーション",
+      "violet": "バイオレットキャラクターアニメーション",
+      "pastel": "パステルアートアニメーション",
+      "vintage": "ヴィンテージ風アニメーション",
+      "aiGenerated": "AI生成アニメーション"
+    },
+    "howItWorks": {
+      "title": "動作方法",
+      "step1": {
+        "title": "キャラクター送信",
+        "description": "画像をアップロードするか、キャラクターの詳細な説明を提供してください。詳細であればあるほど良い結果が得られます。"
+      },
+      "step2": {
+        "title": "AIマジックが発生",
+        "description": "私たちのAIが作業を開始し、入力を分析してキャラクターを希望のスタイルでアニメーション化します。"
+      },
+      "step3": {
+        "title": "動画を受け取る",
+        "description": "数分以内に、高品質で即座に使用可能なキャラクターアニメーションを受け取ります。"
+      }
+    },
+    "whyChoose": {
+      "title": "なぜ私たちのAIアニメーションを選ぶべきか？",
+      "feature1": {
+        "title": "カスタムキャラクター",
+        "description": "独自の創作物に命を吹き込みましょう。私たちのAIは想像または描けるあらゆるキャラクターをアニメーション化できます。"
+      },
+      "feature2": {
+        "title": "簡単なプロセス",
+        "description": "複雑なソフトウェアやアニメーション技術は不要です。キャラクターをアップロードするだけで、AIがすべての重い作業を処理します。"
+      },
+      "feature3": {
+        "title": "多様なスタイル",
+        "description": "キャラクターの個性とビジョンに完璧にマッチする様々なアニメーションスタイルから選択してください。"
+      }
+    },
+    "readyToAnimate": {
+      "title": "アニメーションを作成する準備はできましたか？",
+      "description": "キャラクターとスタイルを送ってください。AIアニメーションで作成いたします。",
+      "getInTouch": "お問い合わせ"
+    },
+    "contact": {
+      "email": "Eメール",
+      "instagram": "インスタグラム"
+    },
+    "cta": {
+      "title": "作成を始める準備はできましたか？",
+      "description": "動画制作の未来を探求してください。今すぐサインアップして、AI駆動ツールの完全なスイートにアクセスしてください。",
+      "signUp": "無料サインアップ"
+    },
+    "footer": {
+      "copyright": "全著作権所有。",
+      "twitter": "ツイッター",
+      "discord": "ディスコード",
+      "contact": "お問い合わせ"
+    }
+  },
+  "HomePage": {
+    "banner": {
+      "createAnimation": "アニメーション作成",
+      "createImages": "画像作成"
+    },
+    "hero": {
+      "consistentCharacter": "一貫したキャラクターアニメーション",
+      "unifiedStyle": "統一されたスタイル",
+      "continuousStories": "連続したストーリー"
+    },
+    "explore": {
+      "title": "アニメーションを探索",
+      "videoThumbnail": "動画サムネイル{number}",
+      "animationTitle": "素晴らしいアニメーション{number}",
+      "aiGenerated": "AI生成",
+      "loading": "作品を読み込み中...",
+      "noWorks": "利用可能な作品がありません。",
+      "clickToPlay": "クリックして再生",
+      "by": "作者",
+      "author": "作者"
+    }
+  },
+  "Sidebar": {
+    "navigation": {
+      "home": "ホーム",
+      "profile": "プロフィール",
+      "library": "ライブラリ"
+    },
+    "tools": {
+      "videoBoards": "動画ボード",
+      "createImages": "画像生成",
+      "createVideos": "動画生成",
+      "trainCharacters": "キャラクター訓練"
+    },
+    "groups": {
+      "tools": "ツール"
+    },
+    "user": {
+      "loggedIn": "ログイン済み",
+      "guest": "ゲスト",
+      "notLoggedIn": "ログインしていません",
+      "login": "ログイン",
+      "logout": "ログアウト",
+      "settings": "設定",
+      "language": "言語",
+      "lightMode": "ライトモード",
+      "darkMode": "ダークモード"
+    }
+  },
+  "Dashboard": {
+    "pageTitle": {
+      "home": "ホーム",
+      "profile": "プロフィール",
+      "create": "作成",
+      "dashboard": "ダッシュボード"
+    }
+  },
+  "CreateImages": {
+    "title": "画像生成",
+    "tabs": {
+      "textToImage": "テキストから画像へ",
+      "imageToImage": "画像から画像へ"
+    }
+  },
+  "Text2Image": {
+    "prompt": {
+      "title": "生成したい画像を説明してください",
+      "placeholder": "山の上の美しい夕日、デジタルアートスタイル..."
+    },
+    "negativePrompt": {
+      "title": "ネガティブプロンプト（避けたい要素）",
+      "placeholder": "ぼやけた、低品質、歪んだ..."
+    },
+    "proMode": {
+      "title": "プロモード",
+      "description": "高度な制御"
+    },
+    "model": {
+      "title": "モデル",
+      "placeholder": "モデルを選択",
+      "latest": "最新",
+      "premium": "プレミアム"
+    },
+    "settings": {
+      "size": "サイズ",
+      "style": "スタイル",
+      "quality": "品質",
+      "portrait": "縦向き",
+      "landscape": "横向き"
+    },
+    "style": {
+      "natural": "自然",
+      "vivid": "鮮やか",
+      "artistic": "芸術的",
+      "photographic": "写真的"
+    },
+    "quality": {
+      "standard": "標準",
+      "hd": "HD"
+    },
+    "buttons": {
+      "create": "作成",
+      "generating": "生成中...",
+      "recreate": "再作成",
+      "publish": "公開",
+      "trySamples": "サンプルを試す"
+    },
+    "status": {
+      "creating": "画像生成中...",
+      "success": "画像が正常に生成されました！（デモ）",
+      "processing": "処理中",
+      "completed": "完了",
+      "ready": "準備完了"
+    },
+    "progress": {
+      "generating": "画像生成中...",
+      "generatingImages": "画像を生成しています...",
+      "takeFewMoments": "数分かかる場合があります",
+      "complete": "完了"
+    },
+    "results": {
+      "generatedImage": "生成画像{number}",
+      "imagesWillAppear": "画像がここに表示されます",
+      "enterPromptToStart": "プロンプトを入力して作成をクリックして開始"
+    },
+    "type": {
+      "textToImage": "テキストから画像へ"
+    },
+    "errors": {
+      "enterPrompt": "プロンプトを入力してください",
+      "failedToGenerate": "画像生成に失敗しました"
+    },
+    "links": {
+      "userGuide": "ユーザーガイド"
+    }
+  },
+  "Img2Image": {
+    "referenceImage": {
+      "title": "参照画像",
+      "upload": "参照画像をアップロード",
+      "instruction": "クリックして参照するかドラッグ＆ドロップ",
+      "alt": "参照画像"
+    },
+    "prompt": {
+      "title": "画像をどのように変更したいかを説明してください",
+      "placeholder": "これを魔法的な要素を持つファンタジー風景に変換..."
+    },
+    "negativePrompt": {
+      "title": "ネガティブプロンプト（避けたい要素）",
+      "placeholder": "ぼやけた、低品質、歪んだ..."
+    },
+    "strength": {
+      "title": "変換強度",
+      "moreSimilar": "より似ている",
+      "moreCreative": "より創造的"
+    },
+    "proMode": {
+      "title": "プロモード",
+      "description": "高度な制御"
+    },
+    "model": {
+      "title": "モデル",
+      "placeholder": "モデルを選択",
+      "popular": "人気",
+      "premium": "プレミアム"
+    },
+    "settings": {
+      "size": "サイズ",
+      "style": "スタイル",
+      "quality": "品質"
+    },
+    "style": {
+      "natural": "自然",
+      "vivid": "鮮やか",
+      "cinematic": "映画的",
+      "anime": "アニメ"
+    },
+    "quality": {
+      "standard": "標準",
+      "hd": "HD"
+    },
+    "buttons": {
+      "create": "作成",
+      "generating": "生成中...",
+      "recreate": "再作成",
+      "publish": "公開",
+      "trySamples": "サンプルを試す"
+    },
+    "status": {
+      "creating": "画像生成中...",
+      "success": "画像が正常に生成されました！（デモ）",
+      "processing": "処理中",
+      "completed": "完了",
+      "ready": "準備完了"
+    },
+    "progress": {
+      "generating": "画像生成中...",
+      "generatingImages": "画像を生成しています...",
+      "takeFewMoments": "数分かかる場合があります",
+      "complete": "完了"
+    },
+    "results": {
+      "generatedImage": "生成画像{number}",
+      "modifiedImagesWillAppear": "変更された画像がここに表示されます",
+      "uploadImageAndPrompt": "画像をアップロードしてプロンプトを入力して開始"
+    },
+    "type": {
+      "imageToImage": "画像から画像へ"
+    },
+    "errors": {
+      "invalidFileType": "無効なファイル形式です。画像ファイルをアップロードしてください",
+      "fileTooLarge": "ファイルが大きすぎます。10MB未満の画像を選択してください",
+      "uploadImageAndPrompt": "参照画像をアップロードしてプロンプトを入力してください",
+      "failedToGenerate": "画像生成に失敗しました"
+    },
+    "info": {
+      "largeFileDetected": "大きなファイルが検出されました（{size}MB）。自動的に圧縮されます。"
+    },
+    "links": {
+      "userGuide": "ユーザーガイド"
+    }
+  },
+  "CreateVideos": {
+    "title": "動画生成",
+    "tabs": {
+      "textToVideo": "テキストから動画へ",
+      "imageToVideo": "画像から動画へ"
+    }
+  },
+  "Text2Video": {
+    "prompt": {
+      "title": "生成したい動画を説明してください",
+      "placeholder": "テキストに基づいて生成したいコンテンツを説明してください..."
+    },
+    "proMode": {
+      "title": "プロモード",
+      "trialsLeft": "3回残り"
+    },
+    "model": {
+      "title": "モデル",
+      "placeholder": "モデルを選択",
+      "premium": "プレミアム",
+      "freeTrials": "5回の無料体験が残っています"
+    },
+    "settings": {
+      "duration": "再生時間",
+      "resolution": "解像度"
+    },
+    "buttons": {
+      "create": "作成",
+      "generating": "生成中...",
+      "recreate": "再作成",
+      "publish": "公開",
+      "trySamples": "サンプルを試す"
+    },
+    "status": {
+      "processing": "処理中",
+      "ready": "準備完了"
+    },
+    "progress": {
+      "generating": "動画生成中...",
+      "generatingVideo": "動画を生成しています...",
+      "takeFewMinutes": "数分かかる場合があります"
+    },
+    "results": {
+      "videoGenerated": "動画が正常に生成されました！",
+      "clickToPlay": "クリックして再生",
+      "videoWillAppear": "動画がここに表示されます",
+      "enterPromptToStart": "プロンプトを入力して作成をクリックして開始"
+    },
+    "type": {
+      "textToVideo": "テキストから動画へ"
+    },
+    "links": {
+      "userGuide": "ユーザーガイド"
+    }
+  },
+  "Img2Video": {
+    "referenceImages": {
+      "title": "参照画像",
+      "first": "最初（必須）",
+      "last": "最後（任意）",
+      "firstAlt": "最初のフレーム",
+      "lastAlt": "最後のフレーム",
+      "uploadFirst": "最初の画像をアップロード",
+      "optional": "最後（任意）"
+    },
+    "prompt": {
+      "title": "画像に基づいて生成したいコンテンツを説明してください",
+      "placeholder": "画像間で見たい動きと変換を説明してください..."
+    },
+    "proMode": {
+      "title": "プロモード",
+      "description": "より高品質、より多くの制御"
+    },
+    "model": {
+      "title": "モデル",
+      "placeholder": "モデルを選択",
+      "premium": "プレミアム"
+    },
+    "settings": {
+      "duration": "再生時間",
+      "resolution": "解像度"
+    },
+    "buttons": {
+      "create": "作成",
+      "generating": "生成中...",
+      "recreate": "再作成",
+      "publish": "公開",
+      "trySamples": "サンプルを試す"
+    },
+    "status": {
+      "processingImages": "画像処理中...",
+      "creating": "動画生成中...",
+      "started": "動画生成が開始されました！",
+      "success": "動画が正常に生成されました！",
+      "successDemo": "動画が正常に生成されました！（デモ）",
+      "stillProcessing": "動画はまだ処理中です...",
+      "processing": "処理中",
+      "completed": "完了",
+      "ready": "準備完了"
+    },
+    "progress": {
+      "generating": "動画生成中...",
+      "generatingVideo": "動画を生成しています...",
+      "takeFewMinutes": "数分かかる場合があります",
+      "complete": "完了"
+    },
+    "results": {
+      "videoWillAppear": "動画がここに表示されます",
+      "uploadImagesAndPrompt": "画像をアップロードしてプロンプトを入力して開始"
+    },
+    "type": {
+      "imageToVideo": "画像から動画へ"
+    },
+    "video": {
+      "notSupported": "お使いのブラウザは動画タグをサポートしていません。"
+    },
+    "errors": {
+      "invalidFileType": "無効なファイル形式です。画像ファイルをアップロードしてください",
+      "fileTooLarge": "ファイルが大きすぎます。10MB未満の画像を選択してください",
+      "uploadImageAndPrompt": "最初の画像をアップロードしてプロンプトを入力してください",
+      "failedToCreate": "動画作成に失敗しました",
+      "failedToGenerate": "動画生成に失敗しました",
+      "authRequired": "認証が必要です。ログインしてから再試行してください。",
+      "apiNotFound": "APIエンドポイントが見つかりません。サーバー設定を確認してください。",
+      "networkError": "ネットワークエラーです。接続とサーバーの状態を確認してください。"
+    },
+    "info": {
+      "largeFileDetected": "大きなファイルが検出されました（{size}MB）。自動的に圧縮されます。"
+    },
+    "links": {
+      "userGuide": "ユーザーガイド"
+    }
+  },
+  "Profile": {
+    "title": "ユーザープロフィール",
+    "subtitle": "アカウント情報と活動履歴を確認してください",
+    "user": {
+      "activeUser": "アクティブユーザー",
+      "userId": "ユーザーID",
+      "joinedDate": "参加日"
+    },
+    "credit": {
+      "title": "保有クレジット",
+      "description": "画像生成で使用可能",
+      "purchase": "クレジット購入",
+      "purchaseDescription": "より多くの画像を生成するためにクレジットを購入してください"
+    },
+    "account": {
+      "title": "アカウント管理",
+      "allSettings": "すべての設定",
+      "accountType": {
+        "title": "アカウントタイプ",
+        "description": "一般ユーザーアカウント",
+        "badge": "一般"
+      },
+      "email": {
+        "title": "Eメール",
+        "badge": "認証済み"
+      },
+      "joinDate": {
+        "title": "参加日",
+        "badge": "アクティブ"
+      },
+      "logout": {
+        "title": "ログアウト",
+        "description": "アカウントから安全にログアウト",
+        "button": "ログアウト"
+      },
+      "withdraw": {
+        "title": "退会",
+        "description": "アカウントとすべてのデータを永久削除",
+        "button": "退会",
+        "confirm": "本当に退会しますか？この操作は元に戻せず、すべてのデータが削除されます。"
+      }
+    },
+    "messages": {
+      "fetchError": "プロフィール情報の読み込みに失敗しました。",
+      "noProfile": "プロフィールを読み込めません。",
+      "creditsPending": "クレジット購入機能は準備中です。",
+      "withdrawSuccess": "退会が完了しました。",
+      "withdrawError": "退会中にエラーが発生しました。"
+    }
+  },
+  "Common": {
+    "toasts": {
+      "promptCopied": "プロンプトがクリップボードにコピーされました！",
+      "linkCopied": "リンクがコピーされました！",
+      "downloadStarted": "ダウンロードが開始されました！",
+      "downloadFailed": "ダウンロードに失敗しました。",
+      "invalidFileType": "画像ファイルをアップロードしてください（JPG、PNG、GIF、WebP）",
+      "fileTooLarge": "ファイルが大きすぎます（{size}MB）。10MB未満の画像をアップロードしてください。",
+      "unsupportedFileType": "サポートされていないファイル形式です。JPG、PNG、WebP、またはGIF画像のみをアップロードしてください。",
+      "profileLoadFailed": "プロフィール情報の読み込みに失敗しました。"
+    }
+  },
+  "Library": {
+    "title": "マイライブラリ",
+    "subtitle": "作成した画像と動画を管理してください",
+    "stats": {
+      "total": "合計{count}個のアイテム"
+    },
+    "filters": {
+      "all": "すべて",
+      "video": "動画",
+      "image": "画像"
+    },
+    "empty": {
+      "title": "まだコンテンツが作成されていません",
+      "subtitle": "新しい画像や動画を作成してみてください！"
+    },
+    "actions": {
+      "like": "いいね",
+      "share": "共有",
+      "download": "ダウンロード"
+    },
+    "loading": "読み込み中...",
+    "allLoaded": "すべてのコンテンツが読み込まれました。",
+    "loginRequired": "ログインが必要です。",
+    "errors": {
+      "loadFailed": "メディアの読み込みに失敗しました"
+    }
+  },
+  "Boards": {
+    "title": "マイ動画ボード",
+    "subtitle": "動画プロジェクトをボードで整理してください",
+    "loginRequired": "ボードを表示するにはログインしてください。",
+    "createBoard": "ボード作成",
+    "createFirstBoard": "最初のボードを作成",
+    "noBoards": "まだボードがありません",
+    "noBoardsDescription": "最初のボードを作成して動画プロジェクトの整理を始めましょう。各ボードには複数の動画生成を含めることができます。",
+    "loading": "ボードを読み込み中...",
+    "createNewBoard": "新しいボード作成",
+    "enterBoardName": "ボード名を入力してください...",
+    "cancel": "キャンセル",
+    "creating": "作成中...",
+    "open": "開く",
+    "board": "ボード",
+    "messages": {
+      "createSuccess": "ボードが正常に作成されました！",
+      "createFailed": "ボード作成に失敗しました。再試行してください。",
+      "loadFailed": "ボードの読み込みに失敗しました。再試行してください。",
+      "nameRequired": "ボード名を入力してください"
+    }
+  },
+  "BoardDetail": {
+    "loginRequired": "ログインが必要です。",
+    "loadingBoard": "ボードを読み込み中...",
+    "buttons": {
+      "export": "エクスポート",
+      "exporting": "エクスポート中...",
+      "exportCurrent": "現在の動画をエクスポート",
+      "exportCombined": "結合動画をエクスポート",
+      "combiningVideos": "動画を結合中...",
+      "generate": "生成",
+      "extendVideo": "動画延長",
+      "cancel": "キャンセル",
+      "startCreating": "作成開始",
+      "select": "選択"
+    },
+    "modals": {
+      "selectImageTitle": "ライブラリから画像を選択"
+    },
+    "status": {
+      "connected": "接続済み",
+      "disconnected": "切断済み",
+      "generatingNew": "新しい動画を生成中...",
+      "generatingInProgress": "生成進行中...",
+      "noVideos": "利用可能な動画がありません",
+      "noCompletedVideos": "完了した動画がありません",
+      "noStyleSelected": "スタイルが選択されていません",
+      "uploadedImage": "アップロード済み画像",
+      "libraryImage": "ライブラリ画像"
+    },
+    "placeholders": {
+      "extendVideo": "動画をどのように延長するかを説明してください...（例：よりアクションのあるシーンを続ける）",
+      "imageToVideo": "画像で動画に何が起こるべきかを説明してください...",
+      "textToVideo": "AIで動画を作成...（例：海に沈む夕日）"
+    },
+    "loading": {
+      "moreImages": "更多画像を読み込み中...",
+      "images": "画像を読み込み中...",
+      "allImagesLoaded": "すべての画像が読み込まれました（{count}個合計）"
+    },
+    "emptyStates": {
+      "generateFirst": "最初の動画を生成",
+      "generateFirstDescription": "このボードの最初の動画を作成するには、下のプロンプト入力を使用してください",
+      "noImagesInLibrary": "ライブラリに画像がありません",
+      "createImagesFirst": "まず画像を作成してください！"
+    },
+    "menu": {
+      "changeFromLastFrame": "最後のフレームから変更",
+      "continueFromLastFrame": "最後の動画の最終フレームから続ける",
+      "newScene": "新しいシーン",
+      "createNewScene": "完全に新しい動画シーンを作成",
+      "uploadFromComputer": "コンピューターからアップロード",
+      "selectFromLibrary": "ライブラリから選択"
+    },
+    "tooltips": {
+      "openSettings": "設定を開く",
+      "videoGenerationSettings": "動画生成設定",
+      "enhancePrompt": "AIでプロンプトを拡張",
+      "selectImage": "画像を選択",
+      "chooseImageSource": "画像ソースを選択"
+    },
+    "badges": {
+      "imageToVideo": "画像から動画へ",
+      "style": "スタイル：{name}",
+      "character": "キャラクター：{name}"
+    },
+    "messages": {
+      "boardNotFound": "ボードが見つかりません",
+      "loadBoardFailed": "ボード情報の読み込みに失敗しました",
+      "noBoardSelected": "ボードが選択されていません",
+      "noActiveVideo": "延長するアクティブな動画がありません",
+      "noCompletedVideo": "延長に利用可能な完了した動画がありません",
+      "enterExtendPrompt": "動画をどのように延長するかを説明するプロンプトを入力してください",
+      "noVideosToExport": "エクスポートする動画がありません",
+      "noCompletedVideosToExport": "エクスポートする完了した動画がありません",
+      "exportFailed": "エクスポートに失敗しました。再試行してください。",
+      "loadImageLibraryFailed": "画像ライブラリの読み込みに失敗しました",
+      "uploadImageFile": "画像ファイルをアップロードしてください（JPG、PNG、GIF、WebP）",
+      "extendVideoFailed": "動画の延長に失敗しました。再試行してください。",
+      "readyToExtend": "延長準備完了！動画をどのように続けるかを説明するプロンプトを入力してください。",
+      "videoExtensionStarted": "動画延長が開始されました！新しいシーンが準備できたら表示されます。",
+      "boardVideosExported": "ボード動画が正常にエクスポートされました！ダウンロードが開始されました。",
+      "imageSelected": "動画生成用画像が選択されました",
+      "imageUploaded": "画像が正常にアップロードされました",
+      "readyToCreate": "新しいシーンを作成する準備ができました",
+      "extendCancelled": "延長モードがキャンセルされました",
+      "videoGenerationFailed": "動画生成に失敗しました（エラー{status}）。再試行してください。",
+      "enhancePromptFailed": "プロンプトの拡張に失敗しました",
+      "canvasContextNotAvailable": "キャンバスコンテキストが利用できません",
+      "failedToCreateBlob": "blobの作成に失敗しました",
+      "noDownloadUrl": "ダウンロードURLが提供されませんでした"
+    }
+  },
+  "VideoCreation": {
+    "title": "動画生成",
+    "subtitle": "新しい動画を生成してください",
+    "loginRequired": "ログインが必要です。",
+    "list": {
+      "empty": {
+        "title": "まだ生成された動画がありません。",
+        "description": "下でプロンプトを入力して動画を生成してみてください！"
+      },
+      "loading": "さらに読み込み中...",
+      "allLoaded": "すべてのコンテンツが読み込まれました。"
+    },
+    "actions": {
+      "copyPrompt": {
+        "title": "プロンプトをコピー",
+        "tooltip": "プロンプトテキストをクリップボードにコピー"
+      },
+      "download": {
+        "title": "ダウンロード",
+        "tooltip": "動画ファイルをダウンロード"
+      },
+      "delete": {
+        "title": "削除",
+        "tooltip": "この動画を削除"
+      }
+    },
+    "generation": {
+      "generating": "生成中",
+      "creatingContent": "動画コンテンツを作成中",
+      "processingFrames": "フレーム処理中",
+      "renderingVideo": "動画レンダリング中"
+    },
+    "error": {
+      "title": "問題が発生しました",
+      "description": "予期しないエラーにより生成に失敗しました",
+      "tryAgain": "しばらくしてから再試行してください",
+      "generationFailed": "生成失敗",
+      "unexpectedStatus": "予期しないステータスに遭遇しました。"
+    },
+    "chatBar": {
+      "uploadError": "画像ファイルをアップロードしてください（JPG、PNG、GIF、WebP）",
+      "promptPlaceholder": "生成したい動画を説明してください...",
+      "enhance": "プロンプトを拡張",
+      "enhancing": "拡張中...",
+      "enhanceTooltip": "プロンプトをより詳細で改善されたバージョンに変換して、より良い動画生成結果を得ます",
+      "settingsTooltip": "モデル、スタイル、キャラクター、アスペクト比、再生時間設定を変更できます",
+      "generate": "生成",
+      "generating": "生成中...",
+      "mode": {
+        "textToVideo": "テキストから動画へ",
+        "imageToVideo": "画像から動画へ"
+      },
+      "settings": {
+        "style": "スタイル",
+        "character": "キャラクター",
+        "aspectRatio": "アスペクト比",
+        "duration": "再生時間",
+        "quality": "品質",
+        "uploadImage": "画像アップロード",
+        "removeImage": "画像を削除"
+      }
+    },
+    "parameters": {
+      "aspectRatio": "アスペクト比",
+      "duration": "再生時間",
+      "style": "スタイル",
+      "resolution": "解像度",
+      "taskId": "タスクID",
+      "createdAt": "作成日"
+    },
+    "toast": {
+      "promptCopied": "プロンプトがクリップボードにコピーされました！",
+      "downloadStarted": "ダウンロードが開始されました！",
+      "downloadFailed": "ダウンロードに失敗しました。再試行してください。",
+      "copyFailed": "プロンプトのコピーに失敗しました",
+      "generationSuccess": "動画生成リクエストが成功しました！",
+      "serverError": "動画生成中にサーバーエラーが発生しました。後で再試行してください。",
+      "invalidRequest": "無効なリクエストです。設定を確認してから再試行してください。",
+      "authFailed": "認証に失敗しました。再度ログインしてください。",
+      "networkError": "ネットワークエラーが発生しました。接続を確認してから再試行してください。"
+    },
+    "delete": {
+      "confirm": "本当にこの動画を削除しますか？",
+      "success": "動画が削除されました。",
+      "constraintError": "関連データがあるため削除できません。管理者にお問い合わせください。",
+      "failed": "削除に失敗しました。再試行してください。"
+    }
+  }
+}

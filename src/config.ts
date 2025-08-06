@@ -1,4 +1,4 @@
-export const locales = ["ko", "en"] as const;
+export const locales = ["ko", "en", "ja", "zh"] as const;
 
 export const config = {
   apiUrl:
