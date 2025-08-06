@@ -537,6 +537,98 @@
       "nameRequired": "Please enter a board name"
     }
   },
+  "BoardDetail": {
+    "loginRequired": "Login required.",
+    "loadingBoard": "Loading board...",
+    "buttons": {
+      "export": "Export",
+      "exporting": "Exporting...",
+      "exportCurrent": "Export Current Video",
+      "exportCombined": "Export Combined Video",
+      "combiningVideos": "Combining Videos...",
+      "generate": "Generate",
+      "extendVideo": "Extend Video",
+      "cancel": "Cancel",
+      "startCreating": "Start Creating",
+      "select": "Select"
+    },
+    "modals": {
+      "selectImageTitle": "Select Image from Library"
+    },
+    "status": {
+      "connected": "Connected",
+      "disconnected": "Disconnected",
+      "generatingNew": "Generating new video...",
+      "generatingInProgress": "Generating in progress...",
+      "noVideos": "No videos available",
+      "noCompletedVideos": "No completed videos available",
+      "noStyleSelected": "No style selected",
+      "uploadedImage": "Uploaded image",
+      "libraryImage": "Library image"
+    },
+    "placeholders": {
+      "extendVideo": "Describe how to extend the video... (e.g., continue the scene with more action)",
+      "imageToVideo": "Describe what should happen in the video with your image...",
+      "textToVideo": "Create video with AI... (e.g., a sunset over the ocean)"
+    },
+    "loading": {
+      "moreImages": "Loading more images...",
+      "images": "Loading images...",
+      "allImagesLoaded": "All images loaded ({count} total)"
+    },
+    "emptyStates": {
+      "generateFirst": "Generate your first video",
+      "generateFirstDescription": "Use the prompt input below to create your first video for this board",
+      "noImagesInLibrary": "No images found in your library",
+      "createImagesFirst": "Create some images first!"
+    },
+    "menu": {
+      "changeFromLastFrame": "Change from last frame",
+      "continueFromLastFrame": "Continue from the last video's final frame",
+      "newScene": "New scene",
+      "createNewScene": "Create a completely new video scene",
+      "uploadFromComputer": "Upload from computer",
+      "selectFromLibrary": "Select from library"
+    },
+    "tooltips": {
+      "openSettings": "Open settings",
+      "videoGenerationSettings": "Video generation settings",
+      "enhancePrompt": "Enhance prompt with AI",
+      "selectImage": "Select image",
+      "chooseImageSource": "Choose image source"
+    },
+    "badges": {
+      "imageToVideo": "Image to Video",
+      "style": "Style: {name}",
+      "character": "Character: {name}"
+    },
+    "messages": {
+      "boardNotFound": "Board not found",
+      "loadBoardFailed": "Failed to load board information",
+      "noBoardSelected": "No board selected",
+      "noActiveVideo": "No active video to extend from",
+      "noCompletedVideo": "No completed video available to extend from",
+      "enterExtendPrompt": "Please enter a prompt describing how to extend the video",
+      "noVideosToExport": "No videos to export",
+      "noCompletedVideosToExport": "No completed videos to export",
+      "exportFailed": "Export failed. Please try again.",
+      "loadImageLibraryFailed": "Failed to load image library",
+      "uploadImageFile": "Please upload an image file (JPG, PNG, GIF, WebP)",
+      "extendVideoFailed": "Failed to extend video. Please try again.",
+      "readyToExtend": "Ready to extend! Enter a prompt describing how to continue the video.",
+      "videoExtensionStarted": "Video extension started! New scene will appear when ready.",
+      "boardVideosExported": "Board videos exported successfully! Download started.",
+      "imageSelected": "Image selected for video generation",
+      "imageUploaded": "Image uploaded successfully",
+      "readyToCreate": "Ready to create new scene",
+      "extendCancelled": "Extend mode cancelled",
+      "videoGenerationFailed": "Video generation failed (Error {status}). Please try again.",
+      "enhancePromptFailed": "Failed to enhance prompt",
+      "canvasContextNotAvailable": "Canvas context is not available",
+      "failedToCreateBlob": "Failed to create blob",
+      "noDownloadUrl": "No download URL provided"
+    }
+  },
   "VideoCreation": {
     "title": "Video Creation",
     "subtitle": "Create new videos",

@@ -537,6 +537,98 @@
       "nameRequired": "보드 이름을 입력해주세요"
     }
   },
+  "BoardDetail": {
+    "loginRequired": "로그인이 필요합니다.",
+    "loadingBoard": "보드를 불러오는 중...",
+    "buttons": {
+      "export": "내보내기",
+      "exporting": "내보내는 중...",
+      "exportCurrent": "현재 비디오 내보내기",
+      "exportCombined": "통합 비디오 내보내기",
+      "combiningVideos": "비디오 합치는 중...",
+      "generate": "생성",
+      "extendVideo": "비디오 연장",
+      "cancel": "취소",
+      "startCreating": "생성 시작",
+      "select": "선택"
+    },
+    "modals": {
+      "selectImageTitle": "라이브러리에서 이미지 선택"
+    },
+    "status": {
+      "connected": "연결됨",
+      "disconnected": "연결 끊김",
+      "generatingNew": "새 비디오 생성 중...",
+      "generatingInProgress": "생성 진행 중...",
+      "noVideos": "사용 가능한 비디오가 없습니다",
+      "noCompletedVideos": "완료된 비디오가 없습니다",
+      "noStyleSelected": "스타일이 선택되지 않았습니다",
+      "uploadedImage": "업로드된 이미지",
+      "libraryImage": "라이브러리 이미지"
+    },
+    "placeholders": {
+      "extendVideo": "비디오를 어떻게 연장할지 설명하세요... (예: 더 많은 액션으로 장면을 계속하기)",
+      "imageToVideo": "이미지로 비디오에서 무엇이 일어날지 설명하세요...",
+      "textToVideo": "AI로 비디오 생성하기... (예: 바다에서 석양이 지는 모습)"
+    },
+    "loading": {
+      "moreImages": "더 많은 이미지 불러오는 중...",
+      "images": "이미지 불러오는 중...",
+      "allImagesLoaded": "모든 이미지가 로드되었습니다 ({count}개 총)"
+    },
+    "emptyStates": {
+      "generateFirst": "첫 번째 비디오를 생성하세요",
+      "generateFirstDescription": "이 보드의 첫 번째 비디오를 만들기 위해 아래 프롬프트 입력을 사용하세요",
+      "noImagesInLibrary": "라이브러리에 이미지가 없습니다",
+      "createImagesFirst": "먼저 이미지를 생성하세요!"
+    },
+    "menu": {
+      "changeFromLastFrame": "마지막 프레임에서 변경",
+      "continueFromLastFrame": "마지막 비디오의 최종 프레임에서 계속",
+      "newScene": "새로운 장면",
+      "createNewScene": "완전히 새로운 비디오 장면 생성",
+      "uploadFromComputer": "컴퓨터에서 업로드",
+      "selectFromLibrary": "라이브러리에서 선택"
+    },
+    "tooltips": {
+      "openSettings": "설정 열기",
+      "videoGenerationSettings": "비디오 생성 설정",
+      "enhancePrompt": "AI로 프롬프트 개선",
+      "selectImage": "이미지 선택",
+      "chooseImageSource": "이미지 소스 선택"
+    },
+    "badges": {
+      "imageToVideo": "이미지를 비디오로",
+      "style": "스타일: {name}",
+      "character": "캐릭터: {name}"
+    },
+    "messages": {
+      "boardNotFound": "보드를 찾을 수 없습니다",
+      "loadBoardFailed": "보드 정보를 불러오는데 실패했습니다",
+      "noBoardSelected": "선택된 보드가 없습니다",
+      "noActiveVideo": "연장할 활성 비디오가 없습니다",
+      "noCompletedVideo": "연장할 완료된 비디오가 없습니다",
+      "enterExtendPrompt": "비디오를 어떻게 연장할지 설명하는 프롬프트를 입력하세요",
+      "noVideosToExport": "내보낼 비디오가 없습니다",
+      "noCompletedVideosToExport": "내보낼 완료된 비디오가 없습니다",
+      "exportFailed": "내보내기에 실패했습니다. 다시 시도해주세요.",
+      "loadImageLibraryFailed": "이미지 라이브러리를 불러오는데 실패했습니다",
+      "uploadImageFile": "이미지 파일을 업로드해주세요 (JPG, PNG, GIF, WebP)",
+      "extendVideoFailed": "비디오 연장에 실패했습니다. 다시 시도해주세요.",
+      "readyToExtend": "연장 준비 완료! 비디오를 어떻게 계속할지 설명하는 프롬프트를 입력하세요.",
+      "videoExtensionStarted": "비디오 연장이 시작되었습니다! 새 장면이 준비되면 표시됩니다.",
+      "boardVideosExported": "보드 비디오가 성공적으로 내보내기되었습니다! 다운로드가 시작되었습니다.",
+      "imageSelected": "비디오 생성용 이미지가 선택되었습니다",
+      "imageUploaded": "이미지가 성공적으로 업로드되었습니다",
+      "readyToCreate": "새 장면을 만들 준비가 되었습니다",
+      "extendCancelled": "연장 모드가 취소되었습니다",
+      "videoGenerationFailed": "비디오 생성에 실패했습니다 (오류 {status}). 다시 시도해주세요.",
+      "enhancePromptFailed": "프롬프트 개선에 실패했습니다",
+      "canvasContextNotAvailable": "캔버스 컨텍스트를 사용할 수 없습니다",
+      "failedToCreateBlob": "blob 생성에 실패했습니다",
+      "noDownloadUrl": "다운로드 URL이 제공되지 않았습니다"
+    }
+  },
   "VideoCreation": {
     "title": "비디오 생성",
     "subtitle": "새로운 비디오를 생성해보세요",

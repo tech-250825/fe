@@ -64,7 +64,7 @@ interface Scene {
 }
 
 export default function BoardPage() {
-  const t = useTranslations("VideoCreation");
+  const t = useTranslations("BoardDetail");
   const router = useRouter();
   const searchParams = useSearchParams();
   const params = useParams();
@@ -622,7 +622,7 @@ export default function BoardPage() {
       const foundBoard = response.data.find(b => b.id.toString() === boardId);
       
       if (!foundBoard) {
-        toast.error("Board not found");
+        toast.error(t("messages.boardNotFound"));
         router.push("/boards");
         return;
       }
@@ -630,7 +630,7 @@ export default function BoardPage() {
       setBoard(foundBoard);
     } catch (error) {
       console.error("Failed to fetch board info:", error);
-      toast.error("Failed to load board information");
+      toast.error(t("messages.loadBoardFailed"));
       router.push("/boards");
     } finally {
       setBoardLoading(false);
@@ -773,7 +773,7 @@ export default function BoardPage() {
     
     if (!boardId) {
       console.error("❌ No board selected");
-      toast.error("No board selected");
+      toast.error(t("messages.noBoardSelected"));
       return;
     }
 
@@ -956,7 +956,7 @@ export default function BoardPage() {
         } else if (response.status === 401) {
           toast.error(t("toast.authFailed"));
         } else {
-          toast.error(`Video generation failed (Error ${response.status}). Please try again.`);
+          toast.error(t("messages.videoGenerationFailed", {status: response.status}));
         }
         
         setTaskList((prev) => prev.filter((task) => task.task.id !== tempId));
@@ -1124,7 +1124,7 @@ export default function BoardPage() {
       }
     } catch (error) {
       console.error("❌ Network error:", error);
-      throw new Error("Failed to enhance prompt");
+      throw new Error(t("messages.enhancePromptFailed"));
     }
   };
 
@@ -1144,7 +1144,7 @@ export default function BoardPage() {
 
       // ctx null 체크 추가
       if (!ctx) {
-        reject(new Error("Canvas context is not available"));
+        reject(new Error(t("messages.canvasContextNotAvailable")));
         return;
       }
 
@@ -1181,7 +1181,7 @@ export default function BoardPage() {
                 }
                 resolve(blob);
               } else {
-                reject(new Error("Failed to create blob"));
+                reject(new Error(t("messages.failedToCreateBlob")));
               }
             },
             "image/jpeg",
@@ -1210,13 +1210,13 @@ export default function BoardPage() {
   const handleExtendFromLastFrame = () => {
     if (!videoRef.current || !activeVideoSrc || !boardId) {
       console.log("❌ 활성 비디오가 없거나 보드 ID가 없습니다.");
-      toast.error("No active video to extend from");
+      toast.error(t("messages.noActiveVideo"));
       return;
     }
 
     const lastScene = scenes[scenes.length - 1];
     if (!lastScene || lastScene.taskItem.task.status !== "COMPLETED" || !lastScene.src) {
-      toast.error("No completed video available to extend from");
+      toast.error(t("messages.noCompletedVideo"));
       return;
     }
 
@@ -1232,24 +1232,24 @@ export default function BoardPage() {
       }
     }, 100);
     
-    toast.success("Ready to extend! Enter a prompt describing how to continue the video.");
+    toast.success(t("messages.readyToExtend"));
   };
 
   // Actually perform the extension with user's prompt
   const performExtendFromLastFrame = async () => {
     if (!videoRef.current || !activeVideoSrc || !boardId) {
-      toast.error("No active video to extend from");
+      toast.error(t("messages.noActiveVideo"));
       return;
     }
 
     const lastScene = scenes[scenes.length - 1];
     if (!lastScene || lastScene.taskItem.task.status !== "COMPLETED" || !lastScene.src) {
-      toast.error("No completed video available to extend from");
+      toast.error(t("messages.noCompletedVideo"));
       return;
     }
 
     if (!prompt.trim()) {
-      toast.error("Please enter a prompt describing how to extend the video");
+      toast.error(t("messages.enterExtendPrompt"));
       return;
     }
 
@@ -1317,7 +1317,7 @@ export default function BoardPage() {
         const backendResponse: BackendResponse<any> = await response.json();
         console.log("✅ 비디오 확장 요청 성공!", backendResponse);
         
-        toast.success("Video extension started! New scene will appear when ready.");
+        toast.success(t("messages.videoExtensionStarted"));
         setPrompt(""); // Clear prompt after successful request
         
         // Refresh task list to show the new generating video
@@ -1340,7 +1340,7 @@ export default function BoardPage() {
       }
     } catch (error) {
       console.error("❌ 프레임 캡쳐/확장 실패:", error);
-      toast.error("Failed to extend video. Please try again.");
+      toast.error(t("messages.extendVideoFailed"));
     } finally {
       setIsGenerating(false);
       setIsExtending(false);
@@ -1504,7 +1504,7 @@ export default function BoardPage() {
 
   const handleExportAll = async () => {
     if (scenes.length === 0) {
-      toast.error("No videos to export");
+      toast.error(t("messages.noVideosToExport"));
       return;
     }
 
@@ -1513,7 +1513,7 @@ export default function BoardPage() {
     );
 
     if (completedScenes.length === 0) {
-      toast.error("No completed videos to export");
+      toast.error(t("messages.noCompletedVideosToExport"));
       return;
     }
 
@@ -1564,10 +1564,10 @@ export default function BoardPage() {
           document.body.removeChild(link);
           
           console.log("✅ Board export download initiated");
-          toast.success("Board videos exported successfully! Download started.");
+          toast.success(t("messages.boardVideosExported"));
         } else {
           console.error("❌ No downloadUrl in response:", result);
-          throw new Error(exportData.message || result.message || "No download URL provided");
+          throw new Error(exportData.message || result.message || t("messages.noDownloadUrl"));
         }
       } else {
         const errorText = await response.text();
@@ -1576,7 +1576,7 @@ export default function BoardPage() {
       }
     } catch (error) {
       console.error("❌ Export failed:", error);
-      toast.error("Export failed. Please try again.");
+      toast.error(t("messages.exportFailed"));
     } finally {
       setIsExporting(false);
     }
@@ -1635,7 +1635,7 @@ export default function BoardPage() {
       }
     } catch (error) {
       console.error("❌ Failed to fetch library images:", error);
-      toast.error("Failed to load image library");
+      toast.error(t("messages.loadImageLibraryFailed"));
     } finally {
       setLibraryLoading(false);
     }
@@ -1649,7 +1649,7 @@ export default function BoardPage() {
     // Switch to Image-to-Video mode when an image is selected
     setVideoOptions(prev => ({ ...prev, mode: "i2v" as GenerationMode }));
     
-    toast.success("Image selected for video generation");
+    toast.success(t("messages.imageSelected"));
   };
 
   // Handle infinite scroll in image library
@@ -1700,13 +1700,13 @@ export default function BoardPage() {
         // Switch to Image-to-Video mode
         setVideoOptions(prev => ({ ...prev, mode: "i2v" as GenerationMode }));
         
-        toast.success("Image uploaded successfully");
+        toast.success(t("messages.imageUploaded"));
         console.log("📄 Upload complete - file set in state:", file.name);
       };
       reader.readAsDataURL(file);
     } else {
       console.error("❌ Invalid file type:", file?.type);
-      toast.error("Please upload an image file (JPG, PNG, GIF, WebP)");
+      toast.error(t("messages.uploadImageFile"));
     }
   }, []);
 
@@ -1764,7 +1764,7 @@ export default function BoardPage() {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-muted-foreground border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">Loading board...</p>
+          <p className="text-muted-foreground">{t("loadingBoard")}</p>
         </div>
       </div>
     );
@@ -1808,7 +1808,7 @@ export default function BoardPage() {
                   ) : (
                     <Download className="w-4 h-4 mr-2" />
                   )}
-                  {isExporting ? "Exporting..." : "Export"}
+                  {isExporting ? t("buttons.exporting") : t("buttons.export")}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
@@ -1863,7 +1863,7 @@ export default function BoardPage() {
                       Generating new video...
                     </div>
                     <div className="text-xs text-muted-foreground mt-2">
-                      SSE 연결: {isConnected ? "Connected" : "Disconnected"}
+                      SSE 연결: {isConnected ? t("status.connected") : t("status.disconnected")}
                     </div>
                   </div>
                 </div>
@@ -2173,9 +2173,9 @@ export default function BoardPage() {
                     <span className="font-medium">Change from last frame</span>
                     <span className="text-xs text-muted-foreground">
                       {scenes.length === 0 
-                        ? "No videos available" 
+                        ? t("status.noVideos") 
                         : !scenes.some(scene => scene.taskItem.task.status === "COMPLETED" && scene.src)
-                        ? "No completed videos available"
+                        ? t("status.noCompletedVideos")
                         : isGenerating
                         ? "Generating in progress..."
                         : "Continue from the last video's final frame"
@@ -2188,7 +2188,7 @@ export default function BoardPage() {
                     e.preventDefault();
                     console.log("🎬 New scene clicked");
                     setIsModalOpen(true);
-                    toast.success("Ready to create new scene");
+                    toast.success(t("messages.readyToCreate"));
                   }}
                 >
                   <Film className="w-4 h-4 mr-2" />
@@ -2392,7 +2392,7 @@ export default function BoardPage() {
                     className="w-8 h-8 object-cover rounded"
                   />
                   <span className="text-xs text-blue-700 font-medium">
-                    {uploadedImage ? "Uploaded image" : "Library image"}
+                    {uploadedImage ? t("status.uploadedImage") : t("status.libraryImage")}
                   </span>
                   <Button
                     variant="ghost"
@@ -2411,13 +2411,13 @@ export default function BoardPage() {
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
                   placeholder={isExtending 
-                    ? "Describe how to extend the video... (예: continue the scene with more action)"
+                    ? t("placeholders.extendVideo")
                     : (uploadedImage || selectedImage)
-                      ? "Describe what should happen in the video with your image..."
-                      : "AI로 비디오 생성하기... (예: 바다에서 석양이 지는 모습)"
+                      ? t("placeholders.imageToVideo")
+                      : t("placeholders.textToVideo")
                   }
                   className="w-full bg-transparent border-none outline-none"
-                  onKeyPress={(e) => e.key === "Enter" && handleGenerate()}
+                  onKeyDown={(e) => e.key === "Enter" && handleGenerate()}
                   disabled={isGenerating}
                 />
               </div>
@@ -2428,7 +2428,7 @@ export default function BoardPage() {
                   onClick={() => {
                     setIsExtending(false);
                     setExtendingFromVideoId(null);
-                    toast.success("Extend mode cancelled");
+                    toast.success(t("messages.extendCancelled"));
                   }}
                   className="gap-2 flex-shrink-0"
                 >
@@ -2448,7 +2448,7 @@ export default function BoardPage() {
                   <>
                     {isExtending ? <Image className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
                     <span className="hidden sm:inline">
-                      {isExtending ? "Extend Video" : "Generate"}
+                      {isExtending ? t("buttons.extendVideo") : t("buttons.generate")}
                     </span>
                   </>
                 )}
