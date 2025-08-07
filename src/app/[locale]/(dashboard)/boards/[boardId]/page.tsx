@@ -729,7 +729,7 @@ export default function BoardPage() {
   const fetchAvailableModels = async () => {
     try {
       const styleResponse = await api.get(
-        `${config.apiUrl}/api/lora?mediaType=VIDEO&styleType=STYLE`
+        `${config.apiUrl}/api/weights?mediaType=VIDEO&styleType=STYLE&modelType=LORA`
       );
 
       let fetchedStyleModels = [];
@@ -740,7 +740,7 @@ export default function BoardPage() {
       }
 
       const characterResponse = await api.get(
-        `${config.apiUrl}/api/lora?mediaType=VIDEO&styleType=CHARACTER`
+        `${config.apiUrl}/api/weights?mediaType=VIDEO&styleType=CHARACTER&modelType=LORA`
       );
 
       let fetchedCharacterModels = [];
@@ -1125,7 +1125,7 @@ export default function BoardPage() {
         requestPayload.loraId = selectedLoraModel.id;
       }
       
-      const response = await api.post(`${config.apiUrl}/api/lora`, requestPayload);
+      const response = await api.post(`${config.apiUrl}/api/weights`, requestPayload);
       
       if (response.ok) {
         const backendResponse: BackendResponse<string> = await response.json();

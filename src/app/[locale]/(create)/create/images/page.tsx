@@ -64,7 +64,7 @@ export default function CreateImagesPage() {
     try {
       // STYLE 모델 조회 - IMAGE 타입으로 변경
       const styleResponse = await api.get(
-        `${config.apiUrl}/api/lora?mediaType=IMAGE&styleType=STYLE`
+        `${config.apiUrl}/api/weights?mediaType=IMAGE&styleType=STYLE&modelType=LORA`
       );
 
       if (styleResponse.ok) {
@@ -76,7 +76,7 @@ export default function CreateImagesPage() {
 
       // CHARACTER 모델 조회 - IMAGE 타입으로 변경
       const characterResponse = await api.get(
-        `${config.apiUrl}/api/lora?mediaType=IMAGE&styleType=CHARACTER`
+        `${config.apiUrl}/api/weights?mediaType=IMAGE&styleType=CHARACTER&modelType=LORA`
       );
 
       if (characterResponse.ok) {
@@ -583,7 +583,7 @@ export default function CreateImagesPage() {
         console.log("No lora model selected, enhancing prompt without loraId");
       }
       
-      const response = await api.post(`${config.apiUrl}/api/lora`, requestPayload);
+      const response = await api.post(`${config.apiUrl}/api/weights`, requestPayload);
       
       if (response.ok) {
         const backendResponse: BackendResponse<string> = await response.json();
