@@ -2,7 +2,7 @@
 
 import type React from "react";
 import { useState, useCallback, useMemo, useEffect } from "react";
-import { ModelSelectionModal } from "@/components/model-selection-modal";
+import { ModelSelectionDropdown } from "@/components/ModelSelectionDropdown";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -16,8 +16,8 @@ import { useTranslations } from "next-intl";
 const defaultOptions: ImageOptions = {
   style: null,
   character: null,
-  aspectRatio: "16:9",
-  quality: "720p",
+  aspectRatio: "16:9" as "1:1" | "16:9" | "9:16",
+  quality: "720p" as "480p" | "720p",
 };
 
 interface ImageChatInputUIProps {
@@ -45,7 +45,6 @@ export function ImageGenerationChatBar({
   const [mode] = useState<ImageGenerationMode>("t2i"); // Fixed to text-to-image
   const [prompt, setPrompt] = useState("");
   const [selections, setSelections] = useState<ImageOptions>(defaultOptions);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEnhancing, setIsEnhancing] = useState(false);
 
   // Set first style model as default when styleModels are loaded (only if no character is selected)
@@ -142,14 +141,33 @@ export function ImageGenerationChatBar({
           <div className="absolute left-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsModalOpen(true)}
-                >
-                  <Settings2 className="h-5 w-5" />
-                  <span className="sr-only">Open settings</span>
-                </Button>
+                <div>
+                  <ModelSelectionDropdown
+                    mode="t2v" // Use t2v mode for image selection (reuse existing logic)
+                    options={{
+                      style: selections.style,
+                      character: selections.character,
+                      aspectRatio: selections.aspectRatio,
+                      duration: 4, // Dummy value for compatibility
+                      quality: selections.quality,
+                    }}
+                    onSave={(videoOptions) => {
+                      // Convert video options back to image options
+                      setSelections({
+                        style: videoOptions.style,
+                        character: videoOptions.character,
+                        aspectRatio: videoOptions.aspectRatio,
+                        quality: videoOptions.quality,
+                      });
+                    }}
+                    onImageUpload={() => {}} // Not used for images page
+                    onModeChange={() => {}} // Not used for images page
+                    uploadedImageFile={null}
+                    styleModels={styleModels}
+                    characterModels={characterModels}
+                    mediaType="image"
+                  />
+                </div>
               </TooltipTrigger>
               <TooltipContent>
                 <p className="max-w-xs text-center">{t("chatBar.settingsTooltip")}</p>
@@ -202,33 +220,6 @@ export function ImageGenerationChatBar({
         </div>
       </div>
 
-      <ModelSelectionModal
-        isOpen={isModalOpen}
-        onOpenChange={setIsModalOpen}
-        mode="t2v" // Use t2v mode for model selection (reuse existing modal)
-        options={{
-          style: selections.style,
-          character: selections.character,
-          aspectRatio: selections.aspectRatio,
-          duration: 4, // Dummy value for modal compatibility
-          quality: selections.quality,
-        }}
-        onSave={(videoOptions) => {
-          // Convert video options back to image options
-          setSelections({
-            style: videoOptions.style,
-            character: videoOptions.character,
-            aspectRatio: videoOptions.aspectRatio,
-            quality: videoOptions.quality,
-          });
-        }}
-        onImageUpload={() => {}} // Not used for images page
-        onModeChange={() => {}} // Not used for images page
-        uploadedImageFile={null}
-        styleModels={styleModels}
-        characterModels={characterModels}
-        mediaType="image" // Specify this is for image generation
-      />
     </div>
   );
 }

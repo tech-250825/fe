@@ -2,7 +2,7 @@
 
 import type React from "react";
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
-import { ModelSelectionModal } from "@/components/model-selection-modal";
+import { ModelSelectionDropdown } from "@/components/ModelSelectionDropdown";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -25,9 +25,9 @@ import { getI2VResolutionProfile } from "@/lib/types";
 const defaultOptions: VideoOptions = {
   style: null,
   character: null,
-  aspectRatio: "16:9",
+  aspectRatio: "16:9" as "1:1" | "16:9" | "9:16",
   duration: 4,
-  quality: "720p",
+  quality: "720p" as "480p" | "720p",
 };
 
 interface ChatInputUIProps {
@@ -60,7 +60,6 @@ export function VideoGenerationChatBar({
   const [uploadedImageFile, setUploadedImageFile] = useState<File | null>(null);
   const [selections, setSelections] = useState<VideoOptions>(defaultOptions);
   const [isDragging, setIsDragging] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEnhancing, setIsEnhancing] = useState(false);
   const [isLibraryModalOpen, setIsLibraryModalOpen] = useState(false);
   const [selectedImageFromLibrary, setSelectedImageFromLibrary] = useState<{
@@ -91,7 +90,7 @@ export function VideoGenerationChatBar({
           ...prev,
           style: null,
           character: null,
-          aspectRatio: "1:1",
+          aspectRatio: "1:1" as "1:1" | "16:9" | "9:16",
         }));
       };
       reader.readAsDataURL(file);
@@ -129,7 +128,7 @@ export function VideoGenerationChatBar({
     const imageHeight = imageItem.task.height || 720;
     const aspectRatio = imageWidth / imageHeight;
     
-    let aspectRatioString = "1:1"; // default
+    let aspectRatioString: "1:1" | "16:9" | "9:16" = "1:1"; // default
     if (aspectRatio > 1.5) {
       aspectRatioString = "16:9";
     } else if (aspectRatio < 0.8) {
@@ -350,14 +349,19 @@ export function VideoGenerationChatBar({
             )}
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsModalOpen(true)}
-                >
-                  <Settings2 className="h-5 w-5" />
-                  <span className="sr-only">Open settings</span>
-                </Button>
+                <div>
+                  <ModelSelectionDropdown
+                    mode={mode}
+                    options={selections}
+                    onSave={setSelections}
+                    onImageUpload={handleImageUpload}
+                    onModeChange={handleModeChange}
+                    uploadedImageFile={uploadedImageFile}
+                    styleModels={styleModels}
+                    characterModels={characterModels}
+                    mediaType="video"
+                  />
+                </div>
               </TooltipTrigger>
               <TooltipContent>
                 <p className="max-w-xs text-center">{t("chatBar.settingsTooltip")}</p>
@@ -448,18 +452,6 @@ export function VideoGenerationChatBar({
         </div>
       </div>
 
-      <ModelSelectionModal
-        isOpen={isModalOpen}
-        onOpenChange={setIsModalOpen}
-        mode={mode}
-        options={selections}
-        onSave={setSelections}
-        onImageUpload={handleImageUpload}
-        onModeChange={handleModeChange}
-        uploadedImageFile={uploadedImageFile}
-        styleModels={styleModels} // 추가
-        characterModels={characterModels} // 추가
-      />
       
       <ImageLibraryModal
         isOpen={isLibraryModalOpen}
