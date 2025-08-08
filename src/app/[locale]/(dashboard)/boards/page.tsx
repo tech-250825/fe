@@ -155,9 +155,33 @@ export default function BoardsPage() {
               {boards.map((board) => (
                 <Card
                   key={board.id}
-                  className="cursor-pointer hover:shadow-lg transition-all duration-200 group"
+                  className="cursor-pointer hover:shadow-lg transition-all duration-200 group overflow-hidden"
                   onClick={() => handleBoardClick(board.id)}
                 >
+                  {/* Board Image/Video Thumbnail */}
+                  <div className="relative aspect-video bg-muted">
+                    {board.latestVideoTask?.image?.url ? (
+                      <div className="relative w-full h-full">
+                        <video
+                          src={board.latestVideoTask.image.url}
+                          className="w-full h-full object-cover"
+                          muted
+                          loop
+                          onMouseEnter={(e) => e.currentTarget.play()}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.pause();
+                            e.currentTarget.currentTime = 0;
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center w-full h-full">
+                        <Video className="w-12 h-12 text-muted-foreground/40" />
+                      </div>
+                    )}
+                  </div>
+                  
                   <CardHeader className="pb-4">
                     <div className="flex items-start justify-between">
                       <div className="flex-1 min-w-0">
@@ -170,15 +194,26 @@ export default function BoardsPage() {
                             {new Date(board.createdAt).toLocaleDateString()}
                           </span>
                         </div>
+                        {board.latestVideoTask && (
+                          <p className="text-sm text-muted-foreground mt-1 truncate">
+                            "{board.latestVideoTask.task.prompt}"
+                          </p>
+                        )}
                       </div>
                       <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
                     </div>
                   </CardHeader>
+                  
                   <CardContent>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Video className="w-4 h-4" />
                         <span>{t("board")} #{board.id}</span>
+                        {board.latestVideoTask && (
+                          <span className="text-green-600 font-medium">
+                            • {board.latestVideoTask.task.status}
+                          </span>
+                        )}
                       </div>
                       <Button
                         variant="ghost"
