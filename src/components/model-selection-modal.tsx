@@ -575,7 +575,7 @@ function VisualSelectButton({
     >
       {/* Loading placeholder */}
       {imageLoading && (
-        <div className="w-full aspect-[4/3] bg-muted animate-pulse flex items-center justify-center">
+        <div className="w-full aspect-[3/4] bg-muted animate-pulse flex items-center justify-center">
           <div className="text-muted-foreground text-xs">Loading...</div>
         </div>
       )}
@@ -585,7 +585,7 @@ function VisualSelectButton({
         src={imgSrc || "/placeholder.svg"}
         alt={label}
         className={cn(
-          "w-full h-auto object-cover aspect-[4/3]",
+          "w-full h-auto object-cover aspect-[3/4]",
           imageLoading && "hidden"
         )}
         onLoad={handleImageLoad}
@@ -594,7 +594,7 @@ function VisualSelectButton({
       
       {/* Error state */}
       {imageError && !imageLoading && (
-        <div className="w-full aspect-[4/3] bg-muted flex items-center justify-center">
+        <div className="w-full aspect-[3/4] bg-muted flex items-center justify-center">
           <div className="text-muted-foreground text-xs text-center p-2">
             <div>Image failed</div>
             <div className="text-[10px] mt-1 break-all">{imgSrc}</div>
