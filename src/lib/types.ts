@@ -59,6 +59,15 @@ export interface Board {
   id: number;
   name: string;
   createdAt: string;
+  latestVideoTask?: {
+    task: {
+      prompt: string;
+      status: string;
+    };
+    image?: {
+      url: string;
+    };
+  };
 }
 
 export interface BoardListResponse {

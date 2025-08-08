@@ -31,7 +31,7 @@ export function VideoCard({
     <div className={`max-w-2xl mx-auto mb-25 ${className}`}>
       {/* 비디오 파라미터 */}
       <VideoParameters 
-        lora={item.task.lora}
+        lora={item.task.lora || ""}
         taskId={item.task.id}
         width={item.task.width}
         height={item.task.height}
@@ -61,7 +61,7 @@ export function VideoCard({
         taskId={item.task.id}
         prompt={item.task.prompt}
         createdAt={item.task.createdAt}
-        lora={item.task.lora}
+        lora={item.task.lora || ""}
         onClick={handleVideoClick}
       />
     </div>

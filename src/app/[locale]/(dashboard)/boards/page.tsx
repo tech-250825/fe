@@ -133,103 +133,81 @@ export default function BoardsPage() {
         <>
           {/* Empty State */}
           {boards.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mb-6">
-                <Video className="w-10 h-10 text-muted-foreground" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2 text-foreground">{t("noBoards")}</h3>
-              <p className="text-muted-foreground mb-6 max-w-md">
-                {t("noBoardsDescription")}
-              </p>
-              <Button
-                onClick={() => setIsCreateModalOpen(true)}
-                className="gap-2"
-              >
-                <Plus className="w-4 h-4" />
-                {t("createFirstBoard")}
-              </Button>
-            </div>
+            <Card className="mx-auto max-w-md border-dashed border-2 border-border/50">
+              <CardContent className="flex flex-col items-center justify-center py-16 px-8 text-center">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                  <Video className="w-8 h-8 text-primary" />
+                </div>
+                <CardTitle className="text-xl mb-3 text-foreground">{t("noBoards")}</CardTitle>
+                <p className="text-muted-foreground mb-8 text-sm leading-relaxed">
+                  {t("noBoardsDescription")}
+                </p>
+                <Button
+                  onClick={() => setIsCreateModalOpen(true)}
+                  size="lg"
+                  className="gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  {t("createFirstBoard")}
+                </Button>
+              </CardContent>
+            </Card>
           ) : (
             /* Boards Grid */
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {boards.map((board) => (
-                <Card
-                  key={board.id}
-                  className="cursor-pointer hover:shadow-lg transition-all duration-200 group overflow-hidden"
-                  onClick={() => handleBoardClick(board.id)}
-                >
-                  {/* Board Image/Video Thumbnail */}
-                  <div className="relative aspect-video bg-muted">
-                    {board.latestVideoTask?.image?.url ? (
-                      <div className="relative w-full h-full">
-                        <video
-                          src={board.latestVideoTask.image.url}
-                          className="w-full h-full object-cover"
-                          muted
-                          loop
-                          onMouseEnter={(e) => e.currentTarget.play()}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.pause();
-                            e.currentTarget.currentTime = 0;
-                          }}
-                        />
-                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {boards.map((board) => {
+                return (
+                  <Card
+                    key={board.id}
+                    className="cursor-pointer group relative overflow-hidden border-2 border-border/50 hover:border-primary/50 hover:shadow-lg transition-all duration-300 ease-out hover:-translate-y-1"
+                    onClick={() => handleBoardClick(board.id)}
+                  >
+                    <CardHeader className="pb-4">
+                      <CardTitle className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors duration-200 line-clamp-2">
+                        {board.name}
+                      </CardTitle>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <Calendar className="w-3 h-3" />
+                        <span>{new Date(board.createdAt).toLocaleDateString()}</span>
                       </div>
-                    ) : (
-                      <div className="flex items-center justify-center w-full h-full">
-                        <Video className="w-12 h-12 text-muted-foreground/40" />
-                      </div>
-                    )}
-                  </div>
-                  
-                  <CardHeader className="pb-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1 min-w-0">
-                        <CardTitle className="text-lg font-semibold truncate group-hover:text-primary transition-colors">
-                          {board.name}
-                        </CardTitle>
-                        <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
-                          <Calendar className="w-4 h-4" />
-                          <span>
-                            {new Date(board.createdAt).toLocaleDateString()}
-                          </span>
+                    </CardHeader>
+
+                    <CardContent className="pt-0">
+                      {board.latestVideoTask?.image?.url ? (
+                        <div className="relative mb-4">
+                          <div className="rounded-lg overflow-hidden bg-muted/50 ring-1 ring-border">
+                            <video
+                              src={board.latestVideoTask.image.url}
+                              className="w-full aspect-video object-cover transition-all duration-300 group-hover:scale-105"
+                              muted
+                              loop
+                              onMouseEnter={(e) => e.currentTarget.play()}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.pause();
+                                e.currentTarget.currentTime = 0;
+                              }}
+                            />
+                          </div>
                         </div>
-                        {board.latestVideoTask && (
-                          <p className="text-sm text-muted-foreground mt-1 truncate">
-                            "{board.latestVideoTask.task.prompt}"
-                          </p>
-                        )}
+                      ) : (
+                        <div className="mb-4 aspect-video rounded-lg bg-muted/30 flex items-center justify-center border border-dashed border-border">
+                          <div className="text-center">
+                            <Video className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                            <p className="text-sm text-muted-foreground">No preview</p>
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div className="flex items-center justify-between">
+                        <div className="text-sm text-muted-foreground">
+                          {board.latestVideoTask ? 'Has content' : 'Empty board'}
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all duration-200" />
                       </div>
-                      <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
-                    </div>
-                  </CardHeader>
-                  
-                  <CardContent>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Video className="w-4 h-4" />
-                        <span>{t("board")} #{board.id}</span>
-                        {board.latestVideoTask && (
-                          <span className="text-green-600 font-medium">
-                            • {board.latestVideoTask.task.status}
-                          </span>
-                        )}
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleBoardClick(board.id);
-                        }}
-                      >
-                        {t("open")}
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           )}
         </>
