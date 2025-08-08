@@ -454,8 +454,7 @@ export default function CreatePage() {
             prompt: prompt,
             imageUrl: libraryImageData.imageUrl,
             resolutionProfile: resolutionProfile,
-            numFrames: frames,
-            loraId: loraId || 1 // Default loraId as specified
+            numFrames: frames
           };
           
           console.log("📦 I2V Library Request payload (JSON):", requestData);

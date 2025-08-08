@@ -885,8 +885,7 @@ export default function BoardPage() {
             prompt: prompt,
             imageUrl: libraryImageData.imageUrl,
             resolutionProfile: resolutionProfile,
-            numFrames: frames,
-            loraId: loraId || 1 // Default loraId as specified
+            numFrames: frames
           };
           
           console.log("📦 I2V Board Library Request payload (JSON for v2):", requestData);
@@ -1525,7 +1524,7 @@ export default function BoardPage() {
           
           // Use the same download method as create/video page
           const filename = `board_${boardId}_combined_${Date.now()}.mp4`;
-          const downloadApiUrl = `/api/download?url=${encodeURIComponent(exportData.downloadUrl)}&filename=${encodeURIComponent(filename)}`;
+          const downloadApiUrl = `https://download.hoit.ai.kr/api/download?url=${encodeURIComponent(exportData.downloadUrl)}&filename=${encodeURIComponent(filename)}`;
           
           const link = document.createElement('a');
           link.href = downloadApiUrl;
