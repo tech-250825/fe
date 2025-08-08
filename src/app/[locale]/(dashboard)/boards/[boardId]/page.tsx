@@ -1502,7 +1502,7 @@ export default function BoardPage() {
         includeTransitions: false
       };
 
-      const response = await api.post(`${config.apiUrl}/api/boards/${boardId}/export`, {
+      const response = await api.post(`https://download.hoit.ai.kr/api/boards/${boardId}/export`, {
         exportSettings
       });
 
