@@ -1270,60 +1270,38 @@ export default function BoardPage() {
       console.log("🖼️ Starting video extension with prompt:", prompt);
       setIsGenerating(true);
 
-      // Backend에서 비디오의 마지막 프레임 추출 후 I2V 생성
-      console.log("🎬 Sending video URL to backend for latest frame extraction and I2V");
+      // Use the new I2V v3 API endpoint
+      console.log("🎬 Calling new I2V v3 API with image URL and selected frames");
       console.log("📹 Video details:", {
         videoUrl: lastScene.src,
         prompt: prompt
       });
 
-      // FormData 생성하여 latest frame API로 전송
-      const formData = new FormData();
+      // Calculate selected number of frames based on duration
+      const selectedNumFrames = videoOptions.duration === 4 ? 81 : 101;
       
-      // 비디오 URL을 백엔드로 전송 (자동으로 마지막 프레임 추출)
-      formData.append("videoUrl", lastScene.src);
-      
-      // Get selected model
-      const selectedLoraModel = videoOptions.style || videoOptions.character;
-      
-      formData.append(
-        "request",
-        JSON.stringify({
-          loraId: selectedLoraModel?.id || 1,
-          prompt: prompt, 
-          resolutionProfile: getI2VResolutionProfile(
-            lastScene.taskItem.task.width || 1280,
-            lastScene.taskItem.task.height || 720,
-            videoOptions.quality
-          ),
-          numFrames: videoOptions.duration === 4 ? 81 : 101,
-        })
-      );
-
-      console.log("📤 Calling board-specific I2V-from-video API...");
-      console.log("🔍 Request details:", {
-        url: `${config.apiUrl}/api/videos/create/i2v-from-latest-frame/${boardId}`,
-        boardId: boardId,
-        videoUrl: lastScene.src,
-        captureTime: Math.max(0, (videoDurations[lastScene.id] || 5) - 0.1).toString(),
+      // Create JSON payload for the new API
+      const payload = {
         prompt: prompt,
-        loraId: selectedLoraModel?.id || 1,
-        numFrames: videoOptions.duration === 4 ? 81 : 101
+        imageUrl: lastScene.src, // Use the video URL as imageUrl
+        resolutionProfile: getI2VResolutionProfile(
+          lastScene.taskItem.task.width || 1280,
+          lastScene.taskItem.task.height || 720,
+          videoOptions.quality
+        ),
+        numFrames: selectedNumFrames
+      };
+
+      console.log("📤 Calling new I2V v3 API...");
+      console.log("🔍 Request details:", {
+        url: `http://localhost:8090/api/videos/create/i2v/v3/${boardId}`,
+        boardId: boardId,
+        payload: payload
       });
       
-      // Debug FormData contents
-      console.log("📦 FormData contents:");
-      for (let [key, value] of formData.entries()) {
-        if (key === 'request') {
-          console.log(`  ${key}:`, JSON.parse(value as string));
-        } else {
-          console.log(`  ${key}:`, value);
-        }
-      }
-      
-      const response = await api.postForm(
-        `${config.apiUrl}/api/videos/create/i2v-from-latest-frame/${boardId}`, 
-        formData
+      const response = await api.post(
+        `http://localhost:8090/api/videos/create/i2v/v3/${boardId}`, 
+        payload
       );
 
       if (response.ok) {
