@@ -214,7 +214,7 @@ export function ModelSelectionDropdown({
     };
 
     return (
-      <div className={cn("grid grid-cols-1 gap-4 pt-4", getGridCols())}>
+      <div className={cn("grid grid-cols-1 gap-2 sm:gap-4 pt-4", getGridCols())}>
         {isT2V && (
           <OptionGroup title={t("chatBar.settings.aspectRatio")}>
             <RadioGroup
@@ -316,13 +316,13 @@ export function ModelSelectionDropdown({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent 
-        className="w-[600px] max-h-[80vh] overflow-y-auto p-0" 
+        className="w-[95vw] sm:w-[500px] lg:w-[600px] max-h-[80vh] overflow-y-auto p-0" 
         align="start"
         side="bottom"
         sideOffset={8}
         onCloseAutoFocus={(e) => e.preventDefault()}
       >
-        <div className="p-6">
+        <div className="p-3 sm:p-6">
           {renderHeader()}
           
           {tempMode === "t2v" ? (
@@ -344,7 +344,7 @@ export function ModelSelectionDropdown({
                 </TabsList>
                 <TabsContent value="style">
                   <Card>
-                    <CardContent className="p-4 max-h-[250px] overflow-y-auto">
+                    <CardContent className="p-2 sm:p-4 max-h-[200px] sm:max-h-[250px] overflow-y-auto">
                       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
                         {styleModels && styleModels.length > 0 ? styleModels.map((style) => (
                           <VisualSelectButton
@@ -379,7 +379,7 @@ export function ModelSelectionDropdown({
                 </TabsContent>
                 <TabsContent value="character">
                   <Card>
-                    <CardContent className="p-4 max-h-[250px] overflow-y-auto">
+                    <CardContent className="p-2 sm:p-4 max-h-[200px] sm:max-h-[250px] overflow-y-auto">
                       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
                         {characterModels && characterModels.length > 0 ? characterModels.map((char) => (
                           <VisualSelectButton
