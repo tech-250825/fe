@@ -50,6 +50,7 @@ export interface BackendResponse<T> {
 export type ImageOptions = {
   style: any | null;
   character: any | null;
+  checkpoint: any | null;
   aspectRatio: "1:1" | "16:9" | "9:16";
   quality: "720p" | "480p";
 };

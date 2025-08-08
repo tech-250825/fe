@@ -16,6 +16,7 @@ import { useTranslations } from "next-intl";
 const defaultOptions: ImageOptions = {
   style: null,
   character: null,
+  checkpoint: null,
   aspectRatio: "16:9" as "1:1" | "16:9" | "9:16",
   quality: "720p" as "480p" | "720p",
 };
@@ -30,6 +31,7 @@ interface ImageChatInputUIProps {
   availableModels: any[];
   styleModels: any[];
   characterModels: any[];
+  checkpointModels: any[];
   onEnhancePrompt?: (prompt: string, selections: ImageOptions) => Promise<string>;
 }
 
@@ -39,6 +41,7 @@ export function ImageGenerationChatBar({
   availableModels,
   styleModels,
   characterModels,
+  checkpointModels,
   onEnhancePrompt,
 }: ImageChatInputUIProps) {
   const t = useTranslations("VideoCreation"); // Reuse VideoCreation translations for now
@@ -156,6 +159,7 @@ export function ImageGenerationChatBar({
                       setSelections({
                         style: videoOptions.style,
                         character: videoOptions.character,
+                        checkpoint: videoOptions.checkpoint || null, // Use checkpoint from videoOptions
                         aspectRatio: videoOptions.aspectRatio,
                         quality: videoOptions.quality,
                       });
@@ -165,6 +169,7 @@ export function ImageGenerationChatBar({
                     uploadedImageFile={null}
                     styleModels={styleModels}
                     characterModels={characterModels}
+                    checkpointModels={checkpointModels}
                     mediaType="image"
                   />
                 </div>

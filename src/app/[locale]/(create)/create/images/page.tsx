@@ -37,6 +37,7 @@ export default function CreateImagesPage() {
   const [selectedTab, setSelectedTab] = useState("STYLE");
   const [styleModels, setStyleModels] = useState<any[]>([]);
   const [characterModels, setCharacterModels] = useState<any[]>([]);
+  const [checkpointModels, setCheckpointModels] = useState<any[]>([]);
 
   // 무한 스크롤 관련 상태
   const [loading, setLoading] = useState(false);
@@ -84,6 +85,18 @@ export default function CreateImagesPage() {
         const characterModels = characterData.data || characterData;
         setCharacterModels(characterModels);
         console.log("👤 Character Models API Response:", characterData);
+      }
+
+      // CHECKPOINT 모델 조회 - IMAGE 타입으로 새로 추가
+      const checkpointResponse = await api.get(
+        `${config.apiUrl}/api/weights?mediaType=IMAGE&styleType=STYLE&modelType=CHECKPOINT`
+      );
+
+      if (checkpointResponse.ok) {
+        const checkpointData = await checkpointResponse.json();
+        const checkpointModels = checkpointData.data || checkpointData;
+        setCheckpointModels(checkpointModels);
+        console.log("🏗️ Checkpoint Models API Response:", checkpointData);
       }
 
       // 전체 모델 목록 설정 (현재 탭에 따라)
@@ -303,18 +316,26 @@ export default function CreateImagesPage() {
     setTaskList((prev) => [optimisticTask, ...prev]);
 
     try {
-      const loraId = selectedLoraModel?.id || 1; // Use lora ID instead of name
+      const selectedLoraModel = options.style || options.character;
+      const selectedCheckpointModel = options.checkpoint;
       const resolutionProfile = getResolutionProfile(options.aspectRatio, options.quality);
 
       const requestData = {
-        loraId: loraId,
+        checkpointId: selectedCheckpointModel?.id || 0,
+        loraId: selectedLoraModel?.id || 0,
         prompt: prompt,
         resolutionProfile: resolutionProfile,
       };
       
       console.log("📦 Image generation payload:", requestData);
       
-      const response = await api.post(`${config.apiUrl}/api/images/create`, requestData);
+      // Check if face detailer lora is selected
+      const isFaceDetailerSelected = selectedLoraModel?.name?.toLowerCase().includes('face detailer');
+      const apiEndpoint = isFaceDetailerSelected ? '/api/images/create/v2' : '/api/images/create';
+      
+      console.log("🎯 Using endpoint:", apiEndpoint, "Face detailer selected:", isFaceDetailerSelected);
+      
+      const response = await api.post(`${config.apiUrl}${apiEndpoint}`, requestData);
 
       if (response.ok) {
         const backendResponse: BackendResponse<any> = await response.json();
@@ -656,6 +677,7 @@ export default function CreateImagesPage() {
         availableModels={availableModels}
         styleModels={styleModels}
         characterModels={characterModels}
+        checkpointModels={checkpointModels}
         onEnhancePrompt={handleEnhancePrompt}
       />
       {/* URL 기반 모달 */}
