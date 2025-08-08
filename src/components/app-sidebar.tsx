@@ -152,9 +152,11 @@ export function AppSidebar() {
       {/* 사이드바 헤더 */}
       <SidebarHeader>
         <div className="flex items-center px-4 py-2">
-          <div className="text-3xl font-extrabold text-sidebar-foreground tracking-tight">
-            Hoit
-          </div>
+          <Link href="/home" className="cursor-pointer hover:opacity-80 transition-opacity">
+            <div className="text-3xl font-extrabold text-sidebar-foreground tracking-tight">
+              Hoit
+            </div>
+          </Link>
         </div>
       </SidebarHeader>
 
