@@ -77,9 +77,9 @@
 
 "use client";
 
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-// import { SSEProvider } from "@/components/SSEProvider";
+import { MobileIconSidebar } from "@/components/MobileIconSidebar";
 import dynamic from "next/dynamic";
 
 // SSEProvider를 동적 임포트로 변경
@@ -122,18 +122,21 @@ export default function CreateLayout({
       onImageComplete={handleImageComplete}
       onUpscaleComplete={handleUpscaleComplete}
     >
-      <SidebarProvider>
-        <div className="min-h-screen w-full flex bg-background">
-          <AppSidebar />
-          <main className="flex-1 flex flex-col h-screen">
-            {/* 모바일에서만 보이는 Sidebar Toggle */}
-            <div className="md:hidden flex items-center p-2 border-b">
-              <SidebarTrigger className="text-foreground hover:bg-secondary" />
-            </div>
-            {children}
-          </main>
+      <div className="min-h-screen w-full flex bg-background">
+        {/* Desktop sidebar - only show on desktop */}
+        <div className="hidden md:block">
+          <SidebarProvider>
+            <AppSidebar />
+          </SidebarProvider>
         </div>
-      </SidebarProvider>
+        
+        {/* Mobile icon sidebar - only show on mobile */}
+        <MobileIconSidebar />
+        
+        <main className="flex-1 flex flex-col h-screen md:ml-0 ml-16">
+          {children}
+        </main>
+      </div>
     </SSEProvider>
   );
 }

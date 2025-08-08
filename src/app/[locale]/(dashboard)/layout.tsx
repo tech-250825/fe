@@ -2,6 +2,7 @@
 
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import { MobileIconSidebar } from "@/components/MobileIconSidebar";
 import { usePathname } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import LocaleSwitcher from "@/components/LocaleSwitcher";
@@ -56,19 +57,25 @@ export default function DashboardLayout({
       onImageComplete={handleImageComplete}
       onUpscaleComplete={handleUpscaleComplete}
     >
-      <SidebarProvider>
-        <div className="flex min-h-screen w-full">
-          <AppSidebar />
-          <main className="flex-1">
-            {/* 모바일에서만 보이는 헤더 */}
-            <div className="md:hidden flex items-center gap-2 p-4 border-b bg-card">
-              <SidebarTrigger />
-              <h1 className="text-lg font-semibold text-foreground">{getPageTitle()}</h1>
-            </div>
-            <div className="flex-1 overflow-y-auto">{children}</div>
-          </main>
+      <div className="flex min-h-screen w-full">
+        {/* Desktop sidebar - only show on desktop */}
+        <div className="hidden md:block">
+          <SidebarProvider>
+            <AppSidebar />
+          </SidebarProvider>
         </div>
-      </SidebarProvider>
+        
+        {/* Mobile icon sidebar - only show on mobile */}
+        <MobileIconSidebar />
+        
+        <main className="flex-1 md:ml-0 ml-16">
+          {/* Mobile header with just title */}
+          <div className="md:hidden flex items-center justify-center p-4 border-b bg-card">
+            <h1 className="text-lg font-semibold text-foreground">{getPageTitle()}</h1>
+          </div>
+          <div className="flex-1 overflow-y-auto">{children}</div>
+        </main>
+      </div>
     </SSEProvider>
   );
 }
