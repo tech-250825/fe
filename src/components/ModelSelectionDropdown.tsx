@@ -27,6 +27,7 @@ interface ModelSelectionDropdownProps {
   uploadedImageFile: File | null;
   styleModels: any[];
   characterModels: any[];
+  checkpointModels?: any[];
   mediaType?: "video" | "image";
 }
 
@@ -39,6 +40,7 @@ export function ModelSelectionDropdown({
   uploadedImageFile,
   styleModels,
   characterModels,
+  checkpointModels = [],
   mediaType = "video",
 }: ModelSelectionDropdownProps) {
   const t = useTranslations("VideoCreation");
@@ -328,7 +330,7 @@ export function ModelSelectionDropdown({
           {tempMode === "t2v" ? (
             <>
               <Tabs defaultValue="style" className="w-full mt-4">
-                <TabsList className="grid w-full grid-cols-2">
+                <TabsList className={cn("grid w-full", mediaType === "image" ? "grid-cols-3" : "grid-cols-2")}>
                   <TabsTrigger
                     value="style"
                     className={cn(tempOptions.style?.name && "text-primary")}
@@ -341,6 +343,14 @@ export function ModelSelectionDropdown({
                   >
                     {t("chatBar.settings.character")}
                   </TabsTrigger>
+                  {mediaType === "image" && (
+                    <TabsTrigger
+                      value="checkpoint"
+                      className={cn(tempOptions.checkpoint?.name && "text-primary")}
+                    >
+                      Checkpoint
+                    </TabsTrigger>
+                  )}
                 </TabsList>
                 <TabsContent value="style">
                   <Card>
@@ -412,6 +422,42 @@ export function ModelSelectionDropdown({
                     </CardContent>
                   </Card>
                 </TabsContent>
+                {mediaType === "image" && (
+                  <TabsContent value="checkpoint">
+                    <Card>
+                      <CardContent className="p-2 sm:p-4 max-h-[200px] sm:max-h-[250px] overflow-y-auto">
+                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
+                          {checkpointModels && checkpointModels.length > 0 ? checkpointModels.map((checkpoint) => (
+                            <VisualSelectButton
+                              key={checkpoint.name || checkpoint.id}
+                              label={checkpoint.name || checkpoint.modelName || checkpoint.title}
+                              imgSrc={
+                                checkpoint.img || 
+                                checkpoint.image || 
+                                checkpoint.imageUrl || 
+                                checkpoint.thumbnailUrl || 
+                                checkpoint.url ||
+                                checkpoint.thumbnail ||
+                                "/placeholder.svg"
+                              }
+                              isSelected={tempOptions.checkpoint?.name === checkpoint.name}
+                              onClick={() =>
+                                setTempOptions((prev) => ({
+                                  ...prev,
+                                  checkpoint: checkpoint,
+                                }))
+                              }
+                            />
+                          )) : (
+                            <div className="col-span-full text-center py-8 text-muted-foreground">
+                              {checkpointModels ? "No checkpoint models available" : "Loading checkpoint models..."}
+                            </div>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+                )}
               </Tabs>
               {renderOptionSelectors(true)}
             </>

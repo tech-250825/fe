@@ -10,6 +10,7 @@ export interface LoraModel {
 export interface VideoOptions {
   style: LoraModel | null; // Style 대신 LoraModel
   character: LoraModel | null; // Character 대신 LoraModel
+  checkpoint?: LoraModel | null; // Checkpoint model for text-to-image
   aspectRatio: "1:1" | "16:9" | "9:16";
   duration: number; // in seconds
   quality: "480p" | "720p";
