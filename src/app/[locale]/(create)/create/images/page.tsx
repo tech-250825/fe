@@ -329,7 +329,13 @@ export default function CreateImagesPage() {
       
       console.log("📦 Image generation payload:", requestData);
       
-      const response = await api.post(`${config.apiUrl}/api/images/create`, requestData);
+      // Check if face detailer lora is selected
+      const isFaceDetailerSelected = selectedLoraModel?.name?.toLowerCase().includes('face detailer');
+      const apiEndpoint = isFaceDetailerSelected ? '/api/images/create/v2' : '/api/images/create';
+      
+      console.log("🎯 Using endpoint:", apiEndpoint, "Face detailer selected:", isFaceDetailerSelected);
+      
+      const response = await api.post(`${config.apiUrl}${apiEndpoint}`, requestData);
 
       if (response.ok) {
         const backendResponse: BackendResponse<any> = await response.json();
