@@ -75,17 +75,39 @@ on:
   pull_request:
     branches: [main]
 
+concurrency:
+  group: vercel-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   deploy:
     name: Deploy to Vercel
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Vercel CLI
-        run: npm install -g vercel
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20    # 로컬과 맞추기 (예: 20)
+          cache: 'npm'
 
-      - name: Deploy to Vercel
-        run: vercel --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Install deps (clean)
+        run: npm ci
+
+      # Vercel 프로젝트/환경변수 동기화 (production 기준)
+      - name: Pull Vercel env
+        run: npx vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      # 🔥 캐시 의심 시: 첫 시도는 캐시 끄고 빌드 (안정화되면 아래 env 블록 지워도 됨)
+      - name: Build (prebuilt)
+        run: npx vercel build --prod --debug --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_FORCE_NO_BUILD_CACHE: 1
+          NODE_OPTIONS: --max_old_space_size=4096
+
+      - name: Deploy (use prebuilt)
+        run: npx vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+
