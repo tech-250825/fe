@@ -353,7 +353,7 @@ export function ModelSelectionModal({
               <TabsContent value="style">
                 <Card>
                   <CardContent className="p-4 max-h-[300px] overflow-y-auto">
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
                       {styleModels && styleModels.length > 0 ? styleModels.map((style) => (
                         <VisualSelectButton
                           key={style.name || style.id}
@@ -388,7 +388,7 @@ export function ModelSelectionModal({
               <TabsContent value="character">
                 <Card>
                   <CardContent className="p-4 max-h-[300px] overflow-y-auto">
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
                       {characterModels && characterModels.length > 0 ? characterModels.map((char) => (
                         <VisualSelectButton
                           key={char.name || char.id}
