@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Play, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import VideoPopup from "@/components/VideoPopup";
+import HeroHlsVideo from "@/components/HeroHlsVideo";
 
 interface Work {
   id: number;
@@ -109,12 +110,8 @@ const HomePage: React.FC = () => {
       <section className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 md:gap-6 mb-8 md:mb-10 lg:mb-12">
         {/* 상단 박스 (전체 너비) */}
         <div className="md:col-span-2 relative aspect-[16/9] rounded-xl overflow-hidden shadow-2xl">
-          <video
-            src="https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/tomato_00523.mp4"
-            autoPlay
-            muted
-            loop
-            playsInline
+          <HeroHlsVideo
+            src="https://image.hoit.ai.kr/landingpage_video/hero1/hero1.m3u8"
             className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4 md:p-6 lg:p-8">
