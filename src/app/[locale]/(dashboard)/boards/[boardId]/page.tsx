@@ -1293,13 +1293,13 @@ export default function BoardPage() {
 
       console.log("📤 Calling new I2V v3 API...");
       console.log("🔍 Request details:", {
-        url: `http://localhost:8090/api/videos/create/i2v/v3/${boardId}`,
+        url: `${config.apiUrl}/api/videos/create/i2v/v3/${boardId}`,
         boardId: boardId,
         payload: payload
       });
       
       const response = await api.post(
-        `http://localhost:8090/api/videos/create/i2v/v3/${boardId}`, 
+        `${config.apiUrl}/api/videos/create/i2v/v3/${boardId}`, 
         payload
       );
 
@@ -1501,7 +1501,7 @@ export default function BoardPage() {
         includeTransitions: false
       };
 
-      const response = await api.post(`https://download.hoit.ai.kr/api/boards/${boardId}/export`, {
+      const response = await api.post(`${config.apiUrl}/api/boards/${boardId}/export`, {
         exportSettings
       });
 
@@ -1524,7 +1524,7 @@ export default function BoardPage() {
           
           // Use the same download method as create/video page
           const filename = `board_${boardId}_combined_${Date.now()}.mp4`;
-          const downloadApiUrl = `https://download.hoit.ai.kr/api/download?url=${encodeURIComponent(exportData.downloadUrl)}&filename=${encodeURIComponent(filename)}`;
+          const downloadApiUrl = `${config.apiUrl}/api/download?url=${encodeURIComponent(exportData.downloadUrl)}&filename=${encodeURIComponent(filename)}`;
           
           const link = document.createElement('a');
           link.href = downloadApiUrl;
