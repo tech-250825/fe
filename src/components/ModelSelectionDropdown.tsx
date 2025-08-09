@@ -329,20 +329,24 @@ export function ModelSelectionDropdown({
           
           {tempMode === "t2v" ? (
             <>
-              <Tabs defaultValue="style" className="w-full mt-4">
-                <TabsList className={cn("grid w-full", mediaType === "image" ? "grid-cols-3" : "grid-cols-2")}>
-                  <TabsTrigger
-                    value="style"
-                    className={cn(tempOptions.style?.name && "text-primary")}
-                  >
-                    {t("chatBar.settings.style")}
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="character"
-                    className={cn(tempOptions.character?.name && "text-primary")}
-                  >
-                    {t("chatBar.settings.character")}
-                  </TabsTrigger>
+              <Tabs defaultValue={mediaType === "image" ? "checkpoint" : "style"} className="w-full mt-4">
+                <TabsList className={cn("grid w-full", mediaType === "image" ? "grid-cols-1" : "grid-cols-2")}>
+                  {mediaType !== "image" && (
+                    <>
+                      <TabsTrigger
+                        value="style"
+                        className={cn(tempOptions.style?.name && "text-primary")}
+                      >
+                        {t("chatBar.settings.style")}
+                      </TabsTrigger>
+                      <TabsTrigger
+                        value="character"
+                        className={cn(tempOptions.character?.name && "text-primary")}
+                      >
+                        {t("chatBar.settings.character")}
+                      </TabsTrigger>
+                    </>
+                  )}
                   {mediaType === "image" && (
                     <TabsTrigger
                       value="checkpoint"
@@ -352,76 +356,80 @@ export function ModelSelectionDropdown({
                     </TabsTrigger>
                   )}
                 </TabsList>
-                <TabsContent value="style">
-                  <Card>
-                    <CardContent className="p-2 sm:p-4 max-h-[200px] sm:max-h-[250px] overflow-y-auto">
-                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
-                        {styleModels && styleModels.length > 0 ? styleModels.map((style) => (
-                          <VisualSelectButton
-                            key={style.name || style.id}
-                            label={style.name || style.modelName || style.title}
-                            imgSrc={
-                              style.img || 
-                              style.image || 
-                              style.imageUrl || 
-                              style.thumbnailUrl || 
-                              style.url ||
-                              style.thumbnail ||
-                              "/placeholder.svg"
-                            }
-                            isSelected={tempOptions.style?.name === style.name}
-                            onClick={() =>
-                              setTempOptions((prev) => ({
-                                ...prev,
-                                style: style,
-                                character: null,
-                              }))
-                            }
-                          />
-                        )) : (
-                          <div className="col-span-full text-center py-8 text-muted-foreground">
-                            {styleModels ? "No style models available" : "Loading style models..."}
+                {mediaType !== "image" && (
+                  <>
+                    <TabsContent value="style">
+                      <Card>
+                        <CardContent className="p-2 sm:p-4 max-h-[200px] sm:max-h-[250px] overflow-y-auto">
+                          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
+                            {styleModels && styleModels.length > 0 ? styleModels.map((style) => (
+                              <VisualSelectButton
+                                key={style.name || style.id}
+                                label={style.name || style.modelName || style.title}
+                                imgSrc={
+                                  style.img || 
+                                  style.image || 
+                                  style.imageUrl || 
+                                  style.thumbnailUrl || 
+                                  style.url ||
+                                  style.thumbnail ||
+                                  "/placeholder.svg"
+                                }
+                                isSelected={tempOptions.style?.name === style.name}
+                                onClick={() =>
+                                  setTempOptions((prev) => ({
+                                    ...prev,
+                                    style: style,
+                                    character: null,
+                                  }))
+                                }
+                              />
+                            )) : (
+                              <div className="col-span-full text-center py-8 text-muted-foreground">
+                                {styleModels ? "No style models available" : "Loading style models..."}
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </TabsContent>
-                <TabsContent value="character">
-                  <Card>
-                    <CardContent className="p-2 sm:p-4 max-h-[200px] sm:max-h-[250px] overflow-y-auto">
-                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
-                        {characterModels && characterModels.length > 0 ? characterModels.map((char) => (
-                          <VisualSelectButton
-                            key={char.name || char.id}
-                            label={char.name || char.modelName || char.title}
-                            imgSrc={
-                              char.img || 
-                              char.image || 
-                              char.imageUrl || 
-                              char.thumbnailUrl || 
-                              char.url ||
-                              char.thumbnail ||
-                              "/placeholder.svg"
-                            }
-                            isSelected={tempOptions.character?.name === char.name}
-                            onClick={() =>
-                              setTempOptions((prev) => ({
-                                ...prev,
-                                character: char,
-                                style: null,
-                              }))
-                            }
-                          />
-                        )) : (
-                          <div className="col-span-full text-center py-8 text-muted-foreground">
-                            {characterModels ? "No character models available" : "Loading character models..."}
+                        </CardContent>
+                      </Card>
+                    </TabsContent>
+                    <TabsContent value="character">
+                      <Card>
+                        <CardContent className="p-2 sm:p-4 max-h-[200px] sm:max-h-[250px] overflow-y-auto">
+                          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
+                            {characterModels && characterModels.length > 0 ? characterModels.map((char) => (
+                              <VisualSelectButton
+                                key={char.name || char.id}
+                                label={char.name || char.modelName || char.title}
+                                imgSrc={
+                                  char.img || 
+                                  char.image || 
+                                  char.imageUrl || 
+                                  char.thumbnailUrl || 
+                                  char.url ||
+                                  char.thumbnail ||
+                                  "/placeholder.svg"
+                                }
+                                isSelected={tempOptions.character?.name === char.name}
+                                onClick={() =>
+                                  setTempOptions((prev) => ({
+                                    ...prev,
+                                    character: char,
+                                    style: null,
+                                  }))
+                                }
+                              />
+                            )) : (
+                              <div className="col-span-full text-center py-8 text-muted-foreground">
+                                {characterModels ? "No character models available" : "Loading character models..."}
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </TabsContent>
+                        </CardContent>
+                      </Card>
+                    </TabsContent>
+                  </>
+                )}
                 {mediaType === "image" && (
                   <TabsContent value="checkpoint">
                     <Card>
@@ -606,49 +614,56 @@ function VisualSelectButton({
   return (
     <button
       className={cn(
-        "relative rounded-lg overflow-hidden border-2 transition-all bg-secondary",
+        "rounded-lg overflow-hidden border-2 transition-all bg-secondary flex flex-col",
         isSelected
           ? "border-primary"
           : "border-transparent hover:border-muted-foreground/50"
       )}
       onClick={onClick}
     >
-      {/* Loading placeholder */}
-      {imageLoading && (
-        <div className="w-full aspect-[3/4] bg-muted animate-pulse flex items-center justify-center">
-          <div className="text-muted-foreground text-xs">Loading...</div>
-        </div>
-      )}
-      
-      {/* Image */}
-      <img
-        src={imgSrc || "/placeholder.svg"}
-        alt={label}
-        className={cn(
-          "w-full h-auto object-cover aspect-[3/4]",
-          imageLoading && "hidden"
-        )}
-        onLoad={handleImageLoad}
-        onError={handleImageError}
-      />
-      
-      {/* Error state */}
-      {imageError && !imageLoading && (
-        <div className="w-full aspect-[3/4] bg-muted flex items-center justify-center">
-          <div className="text-muted-foreground text-xs text-center p-2">
-            <div>Image failed</div>
-            <div className="text-[10px] mt-1 break-all">{imgSrc}</div>
+      {/* Image container */}
+      <div className="relative">
+        {/* Loading placeholder */}
+        {imageLoading && (
+          <div className="w-full aspect-[3/4] bg-muted animate-pulse flex items-center justify-center">
+            <div className="text-muted-foreground text-xs">Loading...</div>
           </div>
-        </div>
-      )}
+        )}
+        
+        {/* Image */}
+        <img
+          src={imgSrc || "/placeholder.svg"}
+          alt={label}
+          className={cn(
+            "w-full h-auto object-cover aspect-[3/4]",
+            imageLoading && "hidden"
+          )}
+          onLoad={handleImageLoad}
+          onError={handleImageError}
+        />
+        
+        {/* Error state */}
+        {imageError && !imageLoading && (
+          <div className="w-full aspect-[3/4] bg-muted flex items-center justify-center">
+            <div className="text-muted-foreground text-xs text-center p-2">
+              <div>Image failed</div>
+              <div className="text-[10px] mt-1 break-all">{imgSrc}</div>
+            </div>
+          </div>
+        )}
+        
+        {/* Selection indicator */}
+        {isSelected && (
+          <CheckCircle2 className="absolute top-2 right-2 h-5 w-5 text-primary-foreground bg-primary rounded-full" />
+        )}
+      </div>
       
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-      <p className="absolute bottom-1 left-2 text-white text-sm font-semibold drop-shadow-sm">
-        {label}
-      </p>
-      {isSelected && (
-        <CheckCircle2 className="absolute top-1 right-1 h-5 w-5 text-primary-foreground bg-primary rounded-full" />
-      )}
+      {/* Label below image */}
+      <div className="p-2 bg-background min-h-[3rem] flex items-center justify-center">
+        <p className="text-xs font-medium text-center text-foreground line-clamp-2 leading-4">
+          {label}
+        </p>
+      </div>
     </button>
   );
 }

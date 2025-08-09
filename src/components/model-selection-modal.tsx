@@ -10,6 +10,11 @@ import {
   DialogFooter,
   DialogDescription,
 } from "@/components/ui/dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
@@ -17,7 +22,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import type { VideoOptions, GenerationMode } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { CheckCircle2, UploadCloud, X } from "lucide-react";
+import { CheckCircle2, UploadCloud, X, Settings } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 
@@ -30,9 +35,12 @@ interface ModelSelectionModalProps {
   onImageUpload: (file: File) => void;
   onModeChange: (newMode: GenerationMode) => void;
   uploadedImageFile: File | null;
-  styleModels: any[]; // 추가
-  characterModels: any[]; // 추가
-  mediaType?: "video" | "image"; // Add mediaType prop
+  styleModels: any[];
+  characterModels: any[];
+  mediaType?: "video" | "image";
+  displayMode?: "dialog" | "popover"; // 새로운 prop
+  triggerButton?: React.ReactNode; // Popover 모드일 때 사용할 버튼
+  className?: string;
 }
 
 // const styles = [
@@ -68,9 +76,12 @@ export function ModelSelectionModal({
   onImageUpload,
   onModeChange,
   uploadedImageFile,
-  styleModels, // 추가
-  characterModels, // 추가
-  mediaType = "video", // Default to video for backward compatibility
+  styleModels,
+  characterModels,
+  mediaType = "video",
+  displayMode = "dialog", // Default to dialog for backward compatibility
+  triggerButton,
+  className = "",
 }: ModelSelectionModalProps) {
   const t = useTranslations("VideoCreation");
   const [tempMode, setTempMode] = useState<GenerationMode>(mode);
@@ -329,195 +340,227 @@ export function ModelSelectionModal({
     );
   };
 
-  return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[625px]">
-        {renderHeader()}
-        {tempMode === "t2v" ? (
-          <>
-            <Tabs defaultValue="style" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger
-                  value="style"
-                  className={cn(tempOptions.style?.name && "text-primary")}
+  const renderContent = () => (
+    <>
+      {renderHeader()}
+      {tempMode === "t2v" ? (
+        <>
+          <Tabs defaultValue="style" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger
+                value="style"
+                className={cn(tempOptions.style?.name && "text-primary")}
+              >
+                {t("chatBar.settings.style")}
+              </TabsTrigger>
+              <TabsTrigger
+                value="character"
+                className={cn(tempOptions.character?.name && "text-primary")}
+              >
+                {t("chatBar.settings.character")}
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="style">
+              <Card>
+                <CardContent className="p-4 max-h-[300px] overflow-y-auto">
+                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
+                    {styleModels && styleModels.length > 0 ? styleModels.map((style) => (
+                      <VisualSelectButton
+                        key={style.name || style.id}
+                        label={style.name || style.modelName || style.title}
+                        imgSrc={
+                          style.img || 
+                          style.image || 
+                          style.imageUrl || 
+                          style.thumbnailUrl || 
+                          style.url ||
+                          style.thumbnail ||
+                          "/placeholder.svg"
+                        }
+                        isSelected={tempOptions.style?.name === style.name}
+                        onClick={() =>
+                          setTempOptions((prev) => ({
+                            ...prev,
+                            style: style,
+                            character: null,
+                          }))
+                        }
+                      />
+                    )) : (
+                      <div className="col-span-full text-center py-8 text-muted-foreground">
+                        {styleModels ? "No style models available" : "Loading style models..."}
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            <TabsContent value="character">
+              <Card>
+                <CardContent className="p-4 max-h-[300px] overflow-y-auto">
+                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
+                    {characterModels && characterModels.length > 0 ? characterModels.map((char) => (
+                      <VisualSelectButton
+                        key={char.name || char.id}
+                        label={char.name || char.modelName || char.title}
+                        imgSrc={
+                          char.img || 
+                          char.image || 
+                          char.imageUrl || 
+                          char.thumbnailUrl || 
+                          char.url ||
+                          char.thumbnail ||
+                          "/placeholder.svg"
+                        }
+                        isSelected={tempOptions.character?.name === char.name}
+                        onClick={() =>
+                          setTempOptions((prev) => ({
+                            ...prev,
+                            character: char,
+                            style: null,
+                          }))
+                        }
+                      />
+                    )) : (
+                      <div className="col-span-full text-center py-8 text-muted-foreground">
+                        {characterModels ? "No character models available" : "Loading character models..."}
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+          {renderOptionSelectors(true)}
+        </>
+      ) : (
+        <div className="py-4 space-y-6">
+          {!tempImageFile ? (
+            <div
+              className={cn(
+                "flex flex-col items-center justify-center w-full p-6 border-2 border-dashed rounded-lg cursor-pointer transition-colors",
+                isDragOver
+                  ? "border-primary bg-primary/10"
+                  : "border-muted-foreground/25 hover:bg-muted/50"
+              )}
+              onClick={() => fileInputRef.current?.click()}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+            >
+              <UploadCloud className={cn(
+                "w-10 h-10 transition-colors",
+                isDragOver ? "text-primary" : "text-muted-foreground"
+              )} />
+              <p className="mt-2 text-sm font-semibold">
+                {isDragOver ? "Drop image here" : "Click to upload or drag & drop"}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                JPG, PNG, WebP, GIF (Max 10MB)
+              </p>
+            </div>
+          ) : (
+            <div className="relative">
+              {/* Image Preview */}
+              <div className="relative w-full rounded-lg overflow-hidden border-2 border-muted">
+                {imagePreviewUrl && (
+                  <img
+                    src={imagePreviewUrl}
+                    alt="Upload preview"
+                    className="w-full h-48 object-contain bg-muted"
+                  />
+                )}
+                
+                {/* Remove button */}
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  className="absolute top-2 right-2 h-8 w-8 p-0"
+                  onClick={handleRemoveImage}
                 >
-                  {t("chatBar.settings.style")}
-                </TabsTrigger>
-                <TabsTrigger
-                  value="character"
-                  className={cn(tempOptions.character?.name && "text-primary")}
-                >
-                  {t("chatBar.settings.character")}
-                </TabsTrigger>
-              </TabsList>
-              <TabsContent value="style">
-                <Card>
-                  <CardContent className="p-4 max-h-[300px] overflow-y-auto">
-                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
-                      {styleModels && styleModels.length > 0 ? styleModels.map((style) => (
-                        <VisualSelectButton
-                          key={style.name || style.id}
-                          label={style.name || style.modelName || style.title}
-                          imgSrc={
-                            style.img || 
-                            style.image || 
-                            style.imageUrl || 
-                            style.thumbnailUrl || 
-                            style.url ||
-                            style.thumbnail ||
-                            "/placeholder.svg"
-                          }
-                          isSelected={tempOptions.style?.name === style.name}
-                          onClick={() =>
-                            setTempOptions((prev) => ({
-                              ...prev,
-                              style: style,
-                              character: null,
-                            }))
-                          }
-                        />
-                      )) : (
-                        <div className="col-span-full text-center py-8 text-muted-foreground">
-                          {styleModels ? "No style models available" : "Loading style models..."}
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              <TabsContent value="character">
-                <Card>
-                  <CardContent className="p-4 max-h-[300px] overflow-y-auto">
-                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
-                      {characterModels && characterModels.length > 0 ? characterModels.map((char) => (
-                        <VisualSelectButton
-                          key={char.name || char.id}
-                          label={char.name || char.modelName || char.title}
-                          imgSrc={
-                            char.img || 
-                            char.image || 
-                            char.imageUrl || 
-                            char.thumbnailUrl || 
-                            char.url ||
-                            char.thumbnail ||
-                            "/placeholder.svg"
-                          }
-                          isSelected={tempOptions.character?.name === char.name}
-                          onClick={() =>
-                            setTempOptions((prev) => ({
-                              ...prev,
-                              character: char,
-                              style: null,
-                            }))
-                          }
-                        />
-                      )) : (
-                        <div className="col-span-full text-center py-8 text-muted-foreground">
-                          {characterModels ? "No character models available" : "Loading character models..."}
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
-            {renderOptionSelectors(true)}
-          </>
-        ) : (
-          <div className="py-4 space-y-6">
-            {!tempImageFile ? (
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              
+              {/* File info */}
+              <div className="mt-3 p-3 bg-muted rounded-lg">
+                <p className="text-sm font-medium truncate">
+                  {tempImageFile.name}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {(tempImageFile.size / 1024 / 1024).toFixed(2)} MB
+                </p>
+              </div>
+              
+              {/* Change image button with drag and drop */}
               <div
                 className={cn(
-                  "flex flex-col items-center justify-center w-full p-6 border-2 border-dashed rounded-lg cursor-pointer transition-colors",
+                  "mt-2 rounded-lg border-2 border-dashed transition-colors",
                   isDragOver
                     ? "border-primary bg-primary/10"
-                    : "border-muted-foreground/25 hover:bg-muted/50"
+                    : "border-transparent"
                 )}
-                onClick={() => fileInputRef.current?.click()}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
               >
-                <UploadCloud className={cn(
-                  "w-10 h-10 transition-colors",
-                  isDragOver ? "text-primary" : "text-muted-foreground"
-                )} />
-                <p className="mt-2 text-sm font-semibold">
-                  {isDragOver ? "Drop image here" : "Click to upload or drag & drop"}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  JPG, PNG, WebP, GIF (Max 10MB)
-                </p>
-              </div>
-            ) : (
-              <div className="relative">
-                {/* Image Preview */}
-                <div className="relative w-full rounded-lg overflow-hidden border-2 border-muted">
-                  {imagePreviewUrl && (
-                    <img
-                      src={imagePreviewUrl}
-                      alt="Upload preview"
-                      className="w-full h-48 object-contain bg-muted"
-                    />
-                  )}
-                  
-                  {/* Remove button */}
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    className="absolute top-2 right-2 h-8 w-8 p-0"
-                    onClick={handleRemoveImage}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-                
-                {/* File info */}
-                <div className="mt-3 p-3 bg-muted rounded-lg">
-                  <p className="text-sm font-medium truncate">
-                    {tempImageFile.name}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {(tempImageFile.size / 1024 / 1024).toFixed(2)} MB
-                  </p>
-                </div>
-                
-                {/* Change image button with drag and drop */}
-                <div
-                  className={cn(
-                    "mt-2 rounded-lg border-2 border-dashed transition-colors",
-                    isDragOver
-                      ? "border-primary bg-primary/10"
-                      : "border-transparent"
-                  )}
-                  onDragOver={handleDragOver}
-                  onDragLeave={handleDragLeave}
-                  onDrop={handleDrop}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => fileInputRef.current?.click()}
                 >
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    <UploadCloud className="w-4 h-4 mr-2" />
-                    {isDragOver ? "Drop to change image" : "Change Image or Drag & Drop"}
-                  </Button>
-                </div>
+                  <UploadCloud className="w-4 h-4 mr-2" />
+                  {isDragOver ? "Drop to change image" : "Change Image or Drag & Drop"}
+                </Button>
               </div>
-            )}
-            
-            <input
-              type="file"
-              ref={fileInputRef}
-              className="hidden"
-              accept="image/*"
-              onChange={handleFileChange}
-            />
-            {renderOptionSelectors(false)}
+            </div>
+          )}
+          
+          <input
+            type="file"
+            ref={fileInputRef}
+            className="hidden"
+            accept="image/*"
+            onChange={handleFileChange}
+          />
+          {renderOptionSelectors(false)}
+        </div>
+      )}
+      {renderFooter()}
+    </>
+  );
+
+  if (displayMode === "popover") {
+    const defaultTrigger = (
+      <Button
+        variant="outline"
+        size="sm"
+        className={`bg-white/90 backdrop-blur-sm border-gray-200 text-gray-700 hover:bg-gray-50 ${className}`}
+      >
+        <Settings className="w-4 h-4 mr-2" />
+        모델
+      </Button>
+    );
+
+    return (
+      <Popover open={isOpen} onOpenChange={onOpenChange}>
+        <PopoverTrigger asChild>
+          {triggerButton || defaultTrigger}
+        </PopoverTrigger>
+        <PopoverContent className="w-[800px] max-h-[600px] p-0" align="end">
+          <div className="p-6">
+            {renderContent()}
           </div>
-        )}
-        {renderFooter()}
+        </PopoverContent>
+      </Popover>
+    );
+  }
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[625px]">
+        {renderContent()}
       </DialogContent>
     </Dialog>
   );
@@ -566,49 +609,56 @@ function VisualSelectButton({
   return (
     <button
       className={cn(
-        "relative rounded-lg overflow-hidden border-2 transition-all bg-secondary",
+        "rounded-lg overflow-hidden border-2 transition-all bg-secondary flex flex-col",
         isSelected
           ? "border-primary"
           : "border-transparent hover:border-muted-foreground/50"
       )}
       onClick={onClick}
     >
-      {/* Loading placeholder */}
-      {imageLoading && (
-        <div className="w-full aspect-[3/4] bg-muted animate-pulse flex items-center justify-center">
-          <div className="text-muted-foreground text-xs">Loading...</div>
-        </div>
-      )}
-      
-      {/* Image */}
-      <img
-        src={imgSrc || "/placeholder.svg"}
-        alt={label}
-        className={cn(
-          "w-full h-auto object-cover aspect-[3/4]",
-          imageLoading && "hidden"
-        )}
-        onLoad={handleImageLoad}
-        onError={handleImageError}
-      />
-      
-      {/* Error state */}
-      {imageError && !imageLoading && (
-        <div className="w-full aspect-[3/4] bg-muted flex items-center justify-center">
-          <div className="text-muted-foreground text-xs text-center p-2">
-            <div>Image failed</div>
-            <div className="text-[10px] mt-1 break-all">{imgSrc}</div>
+      {/* Image container */}
+      <div className="relative">
+        {/* Loading placeholder */}
+        {imageLoading && (
+          <div className="w-full aspect-[3/4] bg-muted animate-pulse flex items-center justify-center">
+            <div className="text-muted-foreground text-xs">Loading...</div>
           </div>
-        </div>
-      )}
+        )}
+        
+        {/* Image */}
+        <img
+          src={imgSrc || "/placeholder.svg"}
+          alt={label}
+          className={cn(
+            "w-full h-auto object-cover aspect-[3/4]",
+            imageLoading && "hidden"
+          )}
+          onLoad={handleImageLoad}
+          onError={handleImageError}
+        />
+        
+        {/* Error state */}
+        {imageError && !imageLoading && (
+          <div className="w-full aspect-[3/4] bg-muted flex items-center justify-center">
+            <div className="text-muted-foreground text-xs text-center p-2">
+              <div>Image failed</div>
+              <div className="text-[10px] mt-1 break-all">{imgSrc}</div>
+            </div>
+          </div>
+        )}
+        
+        {/* Selection indicator */}
+        {isSelected && (
+          <CheckCircle2 className="absolute top-2 right-2 h-5 w-5 text-primary-foreground bg-primary rounded-full" />
+        )}
+      </div>
       
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-      <p className="absolute bottom-1 left-2 text-white text-sm font-semibold drop-shadow-sm">
-        {label}
-      </p>
-      {isSelected && (
-        <CheckCircle2 className="absolute top-1 right-1 h-5 w-5 text-primary-foreground bg-primary rounded-full" />
-      )}
+      {/* Label below image */}
+      <div className="p-2 bg-background min-h-[3rem] flex items-center justify-center">
+        <p className="text-xs font-medium text-center text-foreground line-clamp-2 leading-4">
+          {label}
+        </p>
+      </div>
     </button>
   );
 }

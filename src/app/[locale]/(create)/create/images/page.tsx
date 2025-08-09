@@ -320,20 +320,69 @@ export default function CreateImagesPage() {
       const selectedCheckpointModel = options.checkpoint;
       const resolutionProfile = getResolutionProfile(options.aspectRatio, options.quality);
 
+      // Auto-select LoRA based on aspect ratio
+      let autoSelectedLoraId = 0;
+      let selectedLoraName = "None";
+      let useV2Endpoint = false;
+      
+      // Debug: 현재 사용 가능한 LoRA 모델들 확인
+      console.log("🔍 사용 가능한 LoRA 모델들:");
+      styleModels.forEach((model, index) => {
+        console.log(`  ${index + 1}. ${model.name} (ID: ${model.id})`);
+      });
+      
+      if (options.aspectRatio === "16:9") {
+        // Use Face Detailer LoRA for 16:9 ratio and v2 endpoint
+        const faceDetailerLora = styleModels.find(model => 
+          model.name?.toLowerCase().includes('facedetailer') ||
+          model.name?.toLowerCase().includes('face detailer') ||
+          model.name?.toLowerCase() === 'facedetailer'
+        );
+        if (faceDetailerLora) {
+          autoSelectedLoraId = faceDetailerLora.id;
+          selectedLoraName = faceDetailerLora.name;
+          useV2Endpoint = true;
+          console.log("🔷 16:9 비율 감지 → Face Detailer LoRA 자동 선택");
+          console.log("   LoRA Name:", faceDetailerLora.name);
+          console.log("   LoRA ID:", autoSelectedLoraId);
+          console.log("   Endpoint: v2 (/api/images/create/v2)");
+        } else {
+          console.warn("⚠️ Face Detailer LoRA를 찾을 수 없습니다!");
+        }
+      } else {
+        // Use Anime LoRA for other ratios and v1 endpoint
+        const animeLora = styleModels.find(model => 
+          model.name?.toLowerCase().includes('anime') || 
+          model.name?.toLowerCase().includes('아니메')
+        );
+        if (animeLora) {
+          autoSelectedLoraId = animeLora.id;
+          selectedLoraName = animeLora.name;
+          console.log(`🔸 ${options.aspectRatio} 비율 감지 → Anime LoRA 자동 선택`);
+          console.log("   LoRA Name:", animeLora.name);
+          console.log("   LoRA ID:", autoSelectedLoraId);
+          console.log("   Endpoint: v1 (/api/images/create)");
+        } else {
+          console.warn("⚠️ Anime LoRA를 찾을 수 없습니다!");
+        }
+      }
+
       const requestData = {
         checkpointId: selectedCheckpointModel?.id || 0,
-        loraId: selectedLoraModel?.id || 0,
+        loraId: autoSelectedLoraId,
         prompt: prompt,
         resolutionProfile: resolutionProfile,
       };
       
-      console.log("📦 Image generation payload:", requestData);
+      const apiEndpoint = useV2Endpoint ? '/api/images/create/v2' : '/api/images/create';
       
-      // Check if face detailer lora is selected
-      const isFaceDetailerSelected = selectedLoraModel?.name?.toLowerCase().includes('face detailer');
-      const apiEndpoint = isFaceDetailerSelected ? '/api/images/create/v2' : '/api/images/create';
-      
-      console.log("🎯 Using endpoint:", apiEndpoint, "Face detailer selected:", isFaceDetailerSelected);
+      console.log("🚀 === 이미지 생성 요청 정보 ===");
+      console.log("📐 Aspect Ratio:", options.aspectRatio);
+      console.log("🎨 Checkpoint:", selectedCheckpointModel?.name || "None", "(ID:", selectedCheckpointModel?.id || 0, ")");
+      console.log("✨ LoRA:", selectedLoraName, "(ID:", autoSelectedLoraId, ")");
+      console.log("🔗 API Endpoint:", apiEndpoint);
+      console.log("📦 Request Payload:", requestData);
+      console.log("==============================");
       
       const response = await api.post(`${config.apiUrl}${apiEndpoint}`, requestData);
 
