@@ -606,49 +606,56 @@ function VisualSelectButton({
   return (
     <button
       className={cn(
-        "relative rounded-lg overflow-hidden border-2 transition-all bg-secondary",
+        "rounded-lg overflow-hidden border-2 transition-all bg-secondary flex flex-col",
         isSelected
           ? "border-primary"
           : "border-transparent hover:border-muted-foreground/50"
       )}
       onClick={onClick}
     >
-      {/* Loading placeholder */}
-      {imageLoading && (
-        <div className="w-full aspect-[3/4] bg-muted animate-pulse flex items-center justify-center">
-          <div className="text-muted-foreground text-xs">Loading...</div>
-        </div>
-      )}
-      
-      {/* Image */}
-      <img
-        src={imgSrc || "/placeholder.svg"}
-        alt={label}
-        className={cn(
-          "w-full h-auto object-cover aspect-[3/4]",
-          imageLoading && "hidden"
-        )}
-        onLoad={handleImageLoad}
-        onError={handleImageError}
-      />
-      
-      {/* Error state */}
-      {imageError && !imageLoading && (
-        <div className="w-full aspect-[3/4] bg-muted flex items-center justify-center">
-          <div className="text-muted-foreground text-xs text-center p-2">
-            <div>Image failed</div>
-            <div className="text-[10px] mt-1 break-all">{imgSrc}</div>
+      {/* Image container */}
+      <div className="relative">
+        {/* Loading placeholder */}
+        {imageLoading && (
+          <div className="w-full aspect-[3/4] bg-muted animate-pulse flex items-center justify-center">
+            <div className="text-muted-foreground text-xs">Loading...</div>
           </div>
-        </div>
-      )}
+        )}
+        
+        {/* Image */}
+        <img
+          src={imgSrc || "/placeholder.svg"}
+          alt={label}
+          className={cn(
+            "w-full h-auto object-cover aspect-[3/4]",
+            imageLoading && "hidden"
+          )}
+          onLoad={handleImageLoad}
+          onError={handleImageError}
+        />
+        
+        {/* Error state */}
+        {imageError && !imageLoading && (
+          <div className="w-full aspect-[3/4] bg-muted flex items-center justify-center">
+            <div className="text-muted-foreground text-xs text-center p-2">
+              <div>Image failed</div>
+              <div className="text-[10px] mt-1 break-all">{imgSrc}</div>
+            </div>
+          </div>
+        )}
+        
+        {/* Selection indicator */}
+        {isSelected && (
+          <CheckCircle2 className="absolute top-2 right-2 h-5 w-5 text-primary-foreground bg-primary rounded-full" />
+        )}
+      </div>
       
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-      <p className="absolute bottom-1 left-2 text-white text-sm font-semibold drop-shadow-sm">
-        {label}
-      </p>
-      {isSelected && (
-        <CheckCircle2 className="absolute top-1 right-1 h-5 w-5 text-primary-foreground bg-primary rounded-full" />
-      )}
+      {/* Label below image */}
+      <div className="p-2 bg-background min-h-[3rem] flex items-center justify-center">
+        <p className="text-xs font-medium text-center text-foreground line-clamp-2 leading-4">
+          {label}
+        </p>
+      </div>
     </button>
   );
 }

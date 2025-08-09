@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { ArrowUp, Loader2 } from "lucide-react";
-import { ModelSelector } from "./ModelSelector";
+import { ModelSelectionModal } from "../model-selection-modal";
 import { SettingsPreview } from "./SettingsPreview";
+import type { VideoOptions, GenerationMode } from "@/lib/types";
 import {
   ChatInputProps,
   ModelData,
@@ -23,30 +24,20 @@ export function ChatInput({
   // 입력 관련 상태
   const [prompt, setPrompt] = useState("");
 
-  // 모델 선택 관련 상태
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [selectedModel, setSelectedModel] = useState("");
-  const [selectedModelData, setSelectedModelData] = useState<ModelData | null>(
-    null
-  );
-  const [tempSelectedModel, setTempSelectedModel] = useState<ModelData | null>(
-    null
-  );
-  const [selectedTab, setSelectedTab] = useState<"STYLE" | "CHARACTER">(
-    "STYLE"
-  );
-
-  // 비디오 모드 관련 상태
-  const [selectedMode, setSelectedMode] = useState<VideoMode>("t2v");
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-
-  // 비디오 설정 관련 상태
-  const [selectedResolution, setSelectedResolution] =
-    useState<Resolution>("720p");
-  const [selectedAspectRatio, setSelectedAspectRatio] =
-    useState<AspectRatio>("16:9");
-  const [selectedFrames, setSelectedFrames] = useState(81);
+  // 모달 관련 상태
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // 비디오 생성 옵션 (통합 모달 형식에 맞게)
+  const [mode, setMode] = useState<GenerationMode>("t2v");
+  const [options, setOptions] = useState<VideoOptions>({
+    style: null,
+    character: null,
+    checkpoint: null,
+    aspectRatio: "16:9",
+    duration: 4,
+    quality: "720p",
+  });
+  const [uploadedImageFile, setUploadedImageFile] = useState<File | null>(null);
 
   // UI 상태
   const [showSelectedSettings, setShowSelectedSettings] = useState(false);
@@ -67,59 +58,45 @@ export function ChatInput({
   };
 
   // 이벤트 핸들러들
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setSelectedImage(file);
-      const reader = new FileReader();
-      reader.onload = () => setImagePreview(reader.result as string);
-      reader.readAsDataURL(file);
-    }
+  const handleImageUpload = (file: File) => {
+    setUploadedImageFile(file);
   };
 
-  const handleConfirm = () => {
-    setSelectedModelData(tempSelectedModel);
-    setSelectedModel(tempSelectedModel?.modelName || "");
+  const handleOptionsSave = (newOptions: VideoOptions) => {
+    setOptions(newOptions);
     setShowSelectedSettings(true);
-    setIsPopoverOpen(false);
   };
 
-  const handleCancel = () => {
-    setTempSelectedModel(selectedModelData);
-    setIsPopoverOpen(false);
+  const handleModeChange = (newMode: GenerationMode) => {
+    setMode(newMode);
   };
 
   const handleSubmit = () => {
     if (!prompt.trim()) return;
 
-    if (selectedMode === "t2v" && !selectedModel) {
+    if (mode === "t2v" && !options.style && !options.character) {
       alert("모델을 선택해주세요.");
       return;
     }
 
-    if (selectedMode === "i2v" && !selectedImage) {
+    if (mode === "i2v" && !uploadedImageFile) {
       alert("이미지를 선택해주세요.");
       return;
     }
 
-    if (!selectedResolution || !selectedAspectRatio || !selectedFrames) {
-      alert("비디오 설정을 모두 선택해주세요.");
-      return;
-    }
-
     const [width, height] = getVideoSize(
-      selectedResolution,
-      selectedAspectRatio
+      options.quality,
+      options.aspectRatio
     );
 
     const params: VideoGenerationParams = {
       prompt,
-      mode: selectedMode,
-      selectedModel,
-      selectedImage,
-      resolution: selectedResolution,
-      aspectRatio: selectedAspectRatio,
-      frames: selectedFrames,
+      mode,
+      selectedModel: options.style?.name || options.character?.name || "",
+      selectedImage: uploadedImageFile,
+      resolution: options.quality,
+      aspectRatio: options.aspectRatio,
+      frames: options.duration === 4 ? 81 : 101,
       width,
       height,
     };
@@ -128,23 +105,22 @@ export function ChatInput({
     setPrompt("");
   };
 
-  const handleTabChange = (tab: "STYLE" | "CHARACTER") => {
-    setSelectedTab(tab);
-    onTabChange(tab);
-  };
-
   return (
     <div
       className={`fixed bottom-0 left-0 right-0 z-50 p-6 bg-transparent sm:left-64 ${className}`}
     >
       <div className="max-w-4xl mx-auto">
         {/* 설정 미리보기 */}
-        {showSelectedSettings && selectedModelData && (
+        {showSelectedSettings && (options.style || options.character) && (
           <SettingsPreview
-            selectedModelData={selectedModelData}
-            selectedResolution={selectedResolution}
-            selectedAspectRatio={selectedAspectRatio}
-            selectedFrames={selectedFrames}
+            selectedModelData={{
+              modelName: options.style?.name || options.character?.name || "",
+              name: options.style?.name || options.character?.name || "",
+              image: options.style?.image || options.character?.image || "",
+            }}
+            selectedResolution={options.quality}
+            selectedAspectRatio={options.aspectRatio}
+            selectedFrames={options.duration === 4 ? 81 : 101}
             onClose={() => setShowSelectedSettings(false)}
           />
         )}
@@ -160,27 +136,20 @@ export function ChatInput({
           />
 
           <div className="absolute right-4 top-1/2 transform -translate-y-1/2 flex items-center space-x-2">
-            {/* 모델 선택 버튼 */}
-            <ModelSelector
-              isOpen={isPopoverOpen}
-              onOpenChange={setIsPopoverOpen}
-              selectedMode={selectedMode}
-              onModeChange={setSelectedMode}
-              imagePreview={imagePreview}
+            {/* 모델 선택 모달 */}
+            <ModelSelectionModal
+              isOpen={isModalOpen}
+              onOpenChange={setIsModalOpen}
+              mode={mode}
+              options={options}
+              onSave={handleOptionsSave}
               onImageUpload={handleImageUpload}
-              selectedTab={selectedTab}
-              onTabChange={handleTabChange}
-              availableModels={availableModels}
-              tempSelectedModel={tempSelectedModel}
-              onModelSelect={setTempSelectedModel}
-              selectedResolution={selectedResolution}
-              selectedAspectRatio={selectedAspectRatio}
-              selectedFrames={selectedFrames}
-              onResolutionChange={setSelectedResolution}
-              onAspectRatioChange={setSelectedAspectRatio}
-              onFramesChange={setSelectedFrames}
-              onConfirm={handleConfirm}
-              onCancel={handleCancel}
+              onModeChange={handleModeChange}
+              uploadedImageFile={uploadedImageFile}
+              styleModels={styleModels || []}
+              characterModels={characterModels || []}
+              mediaType="video"
+              displayMode="popover"
             />
 
             {/* 전송 버튼 */}
