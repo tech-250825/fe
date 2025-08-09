@@ -1524,7 +1524,7 @@ export default function BoardPage() {
           
           // Use the same download method as create/video page
           const filename = `board_${boardId}_combined_${Date.now()}.mp4`;
-          const downloadApiUrl = `${config.apiUrl}/api/download?url=${encodeURIComponent(exportData.downloadUrl)}&filename=${encodeURIComponent(filename)}`;
+          const downloadApiUrl = `/api/download?url=${encodeURIComponent(exportData.downloadUrl)}&filename=${encodeURIComponent(filename)}`;
           
           const link = document.createElement('a');
           link.href = downloadApiUrl;
