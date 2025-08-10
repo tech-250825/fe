@@ -59,15 +59,6 @@ const MinimalistLandingPage: React.FC = () => {
             Hoit
           </div>
           <nav className="hidden md:flex items-center space-x-6 text-gray-300">
-            <a href="#" className="hover:text-white transition-colors">
-              {t("nav.features")}
-            </a>
-            <a href="#" className="hover:text-white transition-colors">
-              {t("nav.pricing")}
-            </a>
-            <a href="#" className="hover:text-white transition-colors">
-              {t("nav.api")}
-            </a>
           </nav>
           <div className="flex items-center space-x-4">
             <LocaleSwitcher />
