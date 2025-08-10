@@ -640,6 +640,21 @@
       "noDownloadUrl": "No download URL provided"
     }
   },
+  "CreditInsufficient": {
+    "title": "Credits Insufficient",
+    "subtitle": "All credits have been consumed",
+    "surveyTitle": "Get Free Credits",
+    "surveyDescription": "Your credits have been exhausted. If you participate in our survey, we will send you additional credits again.",
+    "benefits": {
+      "item1": "Complete simple survey",
+      "item2": "Get free credits instantly",
+      "item3": "Help improve our service"
+    },
+    "buttons": {
+      "close": "Later",
+      "getCredit": "Go Get Credit"
+    }
+  },
   "VideoCreation": {
     "title": "Video Creation",
     "subtitle": "Create new videos",

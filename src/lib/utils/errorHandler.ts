@@ -4,6 +4,7 @@ export interface ErrorHandlerOptions {
   t: (key: string) => string; // Translation function
   showToast?: boolean; // Whether to show toast notification (default: true)
   customMessages?: Record<number, string>; // Custom messages for specific status codes
+  onCreditInsufficient?: () => void; // Callback for credit insufficient (402) errors
 }
 
 /**
@@ -16,7 +17,7 @@ export function handleApiError(
   response: Response,
   options: ErrorHandlerOptions
 ): boolean {
-  const { t, showToast = true, customMessages = {} } = options;
+  const { t, showToast = true, customMessages = {}, onCreditInsufficient } = options;
 
   // Check for custom message first
   if (customMessages[response.status]) {
@@ -31,6 +32,10 @@ export function handleApiError(
     case 402:
       if (showToast) {
         toast.error(t("toast.creditInsufficient"));
+      }
+      // Show credit insufficient modal if callback is provided
+      if (onCreditInsufficient) {
+        onCreditInsufficient();
       }
       return true;
 

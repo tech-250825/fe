@@ -23,6 +23,7 @@ import { LoginModal } from "@/components/login-modal";
 import { LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { handleApiResponse, handleNetworkError } from "@/lib/utils/errorHandler";
+import { CreditInsufficientModal } from "@/components/CreditInsufficientModal";
 
 export default function CreateImagesPage() {
   const t = useTranslations("VideoCreation");
@@ -51,6 +52,7 @@ export default function CreateImagesPage() {
   // 모달 관련 상태
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImageResult, setSelectedImageResult] = useState<any>(null);
+  const [showCreditModal, setShowCreditModal] = useState(false);
 
   // ref들
   const taskListRef = useRef<ImageItem[]>([]);
@@ -409,7 +411,8 @@ export default function CreateImagesPage() {
           t,
           customMessages: {
             [response.status]: `Image generation failed (Error ${response.status}). Please try again.`
-          }
+          },
+          onCreditInsufficient: () => setShowCreditModal(true)
         });
         
         setTaskList((prev) => prev.filter((task) => task.task.id !== tempId));
@@ -740,6 +743,13 @@ export default function CreateImagesPage() {
         checkpointModels={checkpointModels}
         onEnhancePrompt={handleEnhancePrompt}
       />
+      
+      {/* Credit Insufficient Modal */}
+      <CreditInsufficientModal
+        isOpen={showCreditModal}
+        onClose={() => setShowCreditModal(false)}
+      />
+      
       {/* URL 기반 모달 */}
       {selectedTask && (() => {
         // 디버깅을 위한 콘솔 로그
