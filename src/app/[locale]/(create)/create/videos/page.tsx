@@ -21,6 +21,9 @@ import { api } from "@/lib/auth/apiClient";
 import type { ImageItem } from "@/services/types/image.types";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
+import { LoginModal } from "@/components/login-modal";
+import { LogIn } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function CreatePage() {
   const t = useTranslations("VideoCreation");
@@ -732,9 +735,15 @@ export default function CreatePage() {
 
   if (!isLoggedIn) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground">{t("loginRequired")}</p>
-      </div>
+      <>
+        <div className="flex items-center justify-center min-h-screen">
+          <p className="text-muted-foreground">{t("loginRequired")}</p>
+        </div>
+        <LoginModal
+          isOpen={true}
+          onClose={() => {}}
+        />
+      </>
     );
   }
 

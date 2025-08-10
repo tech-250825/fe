@@ -16,6 +16,7 @@ import { api } from "@/lib/auth/apiClient";
 import type { ImageItem } from "@/services/types/image.types";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
+import { LoginModal } from "@/components/login-modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
@@ -33,7 +34,8 @@ import {
   Film,
   Image,
   X,
-  FolderOpen
+  FolderOpen,
+  LogIn
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -1725,9 +1727,15 @@ export default function BoardPage() {
 
   if (!isLoggedIn) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground">{t("loginRequired")}</p>
-      </div>
+      <>
+        <div className="flex items-center justify-center min-h-screen">
+          <p className="text-muted-foreground">{t("loginRequired")}</p>
+        </div>
+        <LoginModal
+          isOpen={true}
+          onClose={() => {}}
+        />
+      </>
     );
   }
 

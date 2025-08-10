@@ -13,6 +13,8 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import type { Board, BoardListResponse, CreateBoardRequest, CreateBoardResponse } from "@/lib/types";
+import { LoginModal } from "@/components/login-modal";
+import { LogIn } from "lucide-react";
 
 export default function BoardsPage() {
   const { isLoggedIn } = useAuth();
@@ -100,9 +102,15 @@ export default function BoardsPage() {
 
   if (!isLoggedIn) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground">{t("loginRequired")}</p>
-      </div>
+      <>
+        <div className="flex items-center justify-center min-h-screen">
+          <p className="text-muted-foreground">{t("loginRequired")}</p>
+        </div>
+        <LoginModal
+          isOpen={true}
+          onClose={() => {}}
+        />
+      </>
     );
   }
 
