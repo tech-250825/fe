@@ -1733,7 +1733,7 @@ export default function BoardPage() {
         </div>
         <LoginModal
           isOpen={true}
-          onClose={() => router.push('/boards')}
+          onClose={() => {}}
         />
       </>
     );

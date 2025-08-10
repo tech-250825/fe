@@ -188,7 +188,7 @@ export default function LibraryPage() {
         </div>
         <LoginModal
           isOpen={true}
-          onClose={() => window.history.back()}
+          onClose={() => {}}
         />
       </>
     );

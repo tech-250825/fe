@@ -31,8 +31,13 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
               const urlParams = new URLSearchParams(window.location.search);
               const redirectUrl = urlParams.get('redirect') || window.location.href;
               
+              console.log('🔗 Login redirect URL:', redirectUrl);
+              
               // Encode the redirect URL
               const encodedRedirect = encodeURIComponent(redirectUrl);
+              
+              console.log('🔗 Encoded redirect URL:', encodedRedirect);
+              console.log('🔗 Full OAuth URL:', `${config.apiUrl}/oauth2/authorization/google?redirect_uri=${encodedRedirect}`);
               
               onClose();
               
