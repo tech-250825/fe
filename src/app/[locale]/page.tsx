@@ -176,7 +176,7 @@ const MinimalistLandingPage: React.FC = () => {
         </div>
       </section>
 
-      {selectedVideo && (
+      {/* {selectedVideo && (
         <div
           className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center"
           onClick={() => setSelectedVideo(null)}
@@ -199,7 +199,7 @@ const MinimalistLandingPage: React.FC = () => {
             />
           </div>
         </div>
-      )}
+      )} */}
 
       {/* How It Works Section */}
       <section className="py-28 px-6 bg-gray-50 text-black">
