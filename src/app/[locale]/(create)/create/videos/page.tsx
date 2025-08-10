@@ -741,7 +741,7 @@ export default function CreatePage() {
         </div>
         <LoginModal
           isOpen={true}
-          onClose={() => {}}
+          onClose={() => router.push('/home')}
         />
       </>
     );

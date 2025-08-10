@@ -712,7 +712,7 @@ export default function CreateImagesPage() {
         </div>
         <LoginModal
           isOpen={true}
-          onClose={() => {}}
+          onClose={() => router.push('/home')}
         />
       </>
     );

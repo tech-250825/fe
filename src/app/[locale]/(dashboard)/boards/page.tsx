@@ -108,7 +108,7 @@ export default function BoardsPage() {
         </div>
         <LoginModal
           isOpen={true}
-          onClose={() => {}}
+          onClose={() => router.push('/home')}
         />
       </>
     );
