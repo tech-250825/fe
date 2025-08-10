@@ -960,7 +960,9 @@ export default function BoardPage() {
       } else {
         console.error("❌ Board API request failed:", response.statusText);
         
-        if (response.status === 500) {
+        if (response.status === 402) {
+          toast.error(t("toast.creditInsufficient"));
+        } else if (response.status === 500) {
           toast.error(t("toast.serverError"));
         } else if (response.status === 400) {
           toast.error(t("toast.invalidRequest"));

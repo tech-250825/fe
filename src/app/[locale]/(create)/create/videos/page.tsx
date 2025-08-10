@@ -535,7 +535,9 @@ export default function CreatePage() {
         console.error("❌ API 요청 실패:", response.statusText);
         
         // Handle different error status codes
-        if (response.status === 500) {
+        if (response.status === 402) {
+          toast.error(t("toast.creditInsufficient"));
+        } else if (response.status === 500) {
           toast.error(t("toast.serverError"));
         } else if (response.status === 400) {
           toast.error(t("toast.invalidRequest"));

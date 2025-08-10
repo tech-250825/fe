@@ -22,6 +22,7 @@ import { getResolutionProfile } from "@/lib/types";
 import { LoginModal } from "@/components/login-modal";
 import { LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { handleApiResponse, handleNetworkError } from "@/lib/utils/errorHandler";
 
 export default function CreateImagesPage() {
   const t = useTranslations("VideoCreation");
@@ -403,25 +404,19 @@ export default function CreateImagesPage() {
         // Unlock the input immediately after successful submission
         setIsGenerating(false);
       } else {
-        console.error("❌ API 요청 실패:", response.statusText);
-        
-        // Handle different error status codes
-        if (response.status === 500) {
-          toast.error(t("toast.serverError"));
-        } else if (response.status === 400) {
-          toast.error(t("toast.invalidRequest"));
-        } else if (response.status === 401) {
-          toast.error(t("toast.authFailed"));
-        } else {
-          toast.error(`Image generation failed (Error ${response.status}). Please try again.`);
-        }
+        // Use the error handler utility
+        await handleApiResponse(response, {
+          t,
+          customMessages: {
+            [response.status]: `Image generation failed (Error ${response.status}). Please try again.`
+          }
+        });
         
         setTaskList((prev) => prev.filter((task) => task.task.id !== tempId));
         setIsGenerating(false);
       }
     } catch (e) {
-      console.error("❌ 네트워크 에러:", e);
-      toast.error(t("toast.networkError"));
+      handleNetworkError(e, { t });
       setTaskList((prev) => prev.filter((task) => task.task.id !== tempId));
       setIsGenerating(false);
     }
