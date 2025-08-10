@@ -36,9 +36,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSub, // 중첩 메뉴용 컴포넌트들
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
   Sidebar,
@@ -218,6 +215,21 @@ export function AppSidebar() {
               <span>{theme === "dark" ? t("user.lightMode") : t("user.darkMode")}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
+
+          {/* Language Switcher */}
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton className="w-full">
+                  <Languages className="w-4 h-4" />
+                  <span>{t("user.language")}</span>
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent side="top" className="w-[--radix-popper-anchor-width]">
+                <LocaleSwitcherDropdown showButton={false} />
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
           
           {/* Discord Button */}
           <SidebarMenuItem>
@@ -272,26 +284,6 @@ export function AppSidebar() {
                     <Settings className="w-4 h-4 mr-2" />
                     <span>{t("user.settings")}</span>
                   </DropdownMenuItem>
-
-                  {/* 언어 설정 중첩 메뉴 */}
-                  <DropdownMenuSub>
-                    <DropdownMenuSubTrigger>
-                      <Languages className="w-4 h-4 mr-2" />
-                      <span>{t("user.language")}</span>
-                    </DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent>
-                      <div className="min-w-[120px]">
-                        <LocaleSwitcherDropdown
-                          showButton={false}
-                          onLanguageChange={() => {
-                            // 언어 변경 후 드롭다운 닫기
-                            setIsDropdownOpen(false);
-                          }}
-                        />
-                      </div>
-                    </DropdownMenuSubContent>
-                  </DropdownMenuSub>
-
 
                   <DropdownMenuItem
                     onClick={handleLogout}
