@@ -58,6 +58,11 @@ class TokenManager {
       return false;
     }
 
+    // COMMENTED OUT: /auth/token/verify API disabled
+    console.log("🚫 Token refresh disabled - /auth/token/verify API is commented out");
+    return false;
+
+    /*
     try {
       this.isRefreshing = true;
       console.log("🔄 Attempting to refresh token...");
@@ -94,6 +99,7 @@ class TokenManager {
     } finally {
       this.isRefreshing = false;
     }
+    */
   }
 
   // Schedule automatic token refresh based on current token expiration

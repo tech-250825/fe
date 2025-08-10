@@ -100,7 +100,7 @@
       "library": "Library"
     },
     "tools": {
-      "videoBoards": "Video Boards",
+      "videoBoards": "Animation",
       "createImages": "Create Images",
       "createVideos": "Create Videos",
       "trainCharacters": "Train Characters"
@@ -520,24 +520,24 @@
     }
   },
   "Boards": {
-    "title": "My Video Boards",
-    "subtitle": "Organize your video projects with boards",
-    "loginRequired": "Please log in to view your boards.",
-    "createBoard": "Create Board",
-    "createFirstBoard": "Create Your First Board",
-    "noBoards": "No boards yet",
+    "title": "My Animation",
+    "subtitle": "Organize your video projects with animation",
+    "loginRequired": "Please log in to view your animation.",
+    "createBoard": "Create Animation",
+    "createFirstBoard": "Create Your First Animation",
+    "noBoards": "No animation yet",
     "noBoardsDescription": "Create your first board to start organizing your video projects. Each board can contain multiple video generations.",
-    "loading": "Loading boards...",
-    "createNewBoard": "Create New Board",
-    "enterBoardName": "Enter board name...",
+    "loading": "Loading animations...",
+    "createNewBoard": "Create New Animation",
+    "enterBoardName": "Enter Animation name...",
     "cancel": "Cancel",
     "creating": "Creating...",
     "open": "Open",
-    "board": "Board",
+    "board": "Animation",
     "messages": {
-      "createSuccess": "Board created successfully!",
-      "createFailed": "Failed to create board. Please try again.",
-      "loadFailed": "Failed to load boards. Please try again.",
+      "createSuccess": "Animation board created successfully!",
+      "createFailed": "Failed to create animation board. Please try again.",
+      "loadFailed": "Failed to load animation board. Please try again.",
       "nameRequired": "Please enter a board name"
     }
   },
@@ -616,7 +616,7 @@
     "messages": {
       "boardNotFound": "Board not found",
       "loadBoardFailed": "Failed to load board information",
-      "noBoardSelected": "No board selected",
+      "noBoardSelected": "No Animation board selected",
       "noActiveVideo": "No active video to extend from",
       "noCompletedVideo": "No completed video available to extend from",
       "enterExtendPrompt": "Please enter a prompt describing how to extend the video",
