@@ -25,6 +25,7 @@ import { LoginModal } from "@/components/login-modal";
 import { LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { VideoTutorial } from "@/components/VideoTutorial";
+import { CreditInsufficientModal } from "@/components/CreditInsufficientModal";
 
 export default function CreatePage() {
   const t = useTranslations("VideoCreation");
@@ -61,6 +62,7 @@ export default function CreatePage() {
   >("16:9");
   const [selectedFrames, setSelectedFrames] = useState(81);
   const [showTutorial, setShowTutorial] = useState(false);
+  const [showCreditModal, setShowCreditModal] = useState(false);
 
   // taskId가 있으면 해당 영상 찾기
   const selectedTask = taskId
@@ -535,7 +537,10 @@ export default function CreatePage() {
         console.error("❌ API 요청 실패:", response.statusText);
         
         // Handle different error status codes
-        if (response.status === 500) {
+        if (response.status === 402) {
+          toast.error(t("toast.creditInsufficient"));
+          setShowCreditModal(true);
+        } else if (response.status === 500) {
           toast.error(t("toast.serverError"));
         } else if (response.status === 400) {
           toast.error(t("toast.invalidRequest"));
@@ -788,6 +793,12 @@ export default function CreatePage() {
       <VideoTutorial
         isOpen={showTutorial}
         onClose={() => setShowTutorial(false)}
+      />
+      
+      {/* Credit Insufficient Modal */}
+      <CreditInsufficientModal
+        isOpen={showCreditModal}
+        onClose={() => setShowCreditModal(false)}
       />
       {/* ✅ URL 기반 모달 */}
       {selectedTask && (() => {

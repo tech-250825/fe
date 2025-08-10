@@ -180,7 +180,7 @@ export function ModelSelectionDropdown({
 
     const getDescription = () => {
       if (mediaType === "image") {
-        return "Choose a style or character for your image generation.";
+        return "Choose a style for your image generation.";
       }
       return tempMode === "t2v"
         ? "Choose a style or character for your video generation."
@@ -354,7 +354,7 @@ export function ModelSelectionDropdown({
                       value="checkpoint"
                       className={cn(tempOptions.checkpoint?.name && "text-primary")}
                     >
-                      Checkpoint
+                      Style
                     </TabsTrigger>
                   )}
                 </TabsList>

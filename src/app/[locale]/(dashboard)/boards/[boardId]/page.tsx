@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { LoginModal } from "@/components/login-modal";
 import { Button } from "@/components/ui/button";
+import { CreditInsufficientModal } from "@/components/CreditInsufficientModal";
 import { Input } from "@/components/ui/input";
 import { 
   ArrowLeft, 
@@ -91,6 +92,7 @@ export default function BoardPage() {
   const [isEnhancing, setIsEnhancing] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showCreditModal, setShowCreditModal] = useState(false);
   const [isExtending, setIsExtending] = useState(false);
   const [extendingFromVideoId, setExtendingFromVideoId] = useState<number | null>(null);
   const [isExporting, setIsExporting] = useState(false);
@@ -960,7 +962,10 @@ export default function BoardPage() {
       } else {
         console.error("❌ Board API request failed:", response.statusText);
         
-        if (response.status === 500) {
+        if (response.status === 402) {
+          toast.error(t("toast.creditInsufficient"));
+          setShowCreditModal(true);
+        } else if (response.status === 500) {
           toast.error(t("toast.serverError"));
         } else if (response.status === 400) {
           toast.error(t("toast.invalidRequest"));
@@ -2456,6 +2461,12 @@ export default function BoardPage() {
         accept="image/*"
         onChange={handleFileInputChange}
         className="hidden"
+      />
+      
+      {/* Credit Insufficient Modal */}
+      <CreditInsufficientModal
+        isOpen={showCreditModal}
+        onClose={() => setShowCreditModal(false)}
       />
     </div>
   );
