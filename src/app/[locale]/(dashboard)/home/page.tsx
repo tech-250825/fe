@@ -161,52 +161,42 @@ const resumeAutoplay = () => {
 
   return (
     <div className="p-10 bg-background">
-      {/* Hero Section - Side CTA + Carousel (equal height) */}
+      {/* Hero Section - Side CTA + Carousel (no fixed height, equalized) */}
       <section className="mb-8 md:mb-10 lg:mb-12">
-        {/* lg 이상에서 섹션 고정 높이; 화면 크기에 따라 유연하게 */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch lg:h-[clamp(420px,40vw,640px)]">
-          
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:h-[500px]">
           {/* LEFT: CTA Panel */}
-          <aside className="lg:col-span-4 h-full">
-            {/* 두 개 카드를 같은 높이로 꽉 채우기 */}
-            <div className="grid grid-rows-2 gap-6 h-full">
-              <div className="h-full rounded-2xl bg-black/55 backdrop-blur-md border border-white/10 p-5 shadow-2xl flex flex-col justify-between">
+          <aside className="lg:col-span-4 flex">
+            {/* ← 오른쪽 히어로 높이에 맞춰 커리도록 h-full + flex-1 */}
+            <div className="flex flex-col gap-3 w-full h-full">
+              <div className="flex-1 rounded-2xl bg-black/55 backdrop-blur-md border border-white/10 p-4 shadow-2xl flex flex-col justify-between">
                 <div>
-                  <h3 className="text-white/90 text-sm font-medium mb-2">Quick Start</h3>
-                  <p className="text-white text-2xl font-extrabold leading-tight">Create Videos</p>
-                  <p className="text-white/70 text-sm mt-1">Turn prompts into animation</p>
+                  <h3 className="text-white/90 text-xs font-medium mb-1">Quick Start</h3>
+                  <p className="text-white text-lg font-extrabold leading-tight">Create Videos</p>
+                  <p className="text-white/70 text-xs mt-1">Turn prompts into animation</p>
                 </div>
-                <a
-                  href="/create/videos"
-                  className="mt-4 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-5 py-3 transition"
-                >
+                <a href="/create/videos" className="mt-3 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-4 py-2 text-sm transition">
                   Create Videos
                 </a>
               </div>
-               <div className="h-full rounded-2xl bg-black/55 backdrop-blur-md border border-white/10 p-5 shadow-2xl flex flex-col justify-between">
+
+              <div className="flex-1 rounded-2xl bg-black/55 backdrop-blur-md border border-white/10 p-4 shadow-2xl flex flex-col justify-between">
                 <div>
-                  <h3 className="text-white/90 text-sm font-medium mb-2">Workflow</h3>
-                  <p className="text-white text-2xl font-extrabold leading-tight">Create with Boards</p>
-                  <p className="text-white/70 text-sm mt-1">Plan scenes then generate</p>
+                  <h3 className="text-white/90 text-xs font-medium mb-1">Generate</h3>
+                  <p className="text-white text-lg font-extrabold leading-tight">Create Images</p>
+                  <p className="text-white/70 text-xs mt-1">AI-powered image creation</p>
                 </div>
-                <a
-                  href="/boards" // 라우트 맞게 수정
-                  className="mt-4 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-5 py-3 transition"
-                >
+                <a href="/create/images" className="mt-3 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-4 py-2 text-sm transition">
                   Create Images
                 </a>
               </div>
 
-              <div className="h-full rounded-2xl bg-black/55 backdrop-blur-md border border-white/10 p-5 shadow-2xl flex flex-col justify-between">
+              <div className="flex-1 rounded-2xl bg-black/55 backdrop-blur-md border border-white/10 p-4 shadow-2xl flex flex-col justify-between">
                 <div>
-                  <h3 className="text-white/90 text-sm font-medium mb-2">Workflow</h3>
-                  <p className="text-white text-2xl font-extrabold leading-tight">Create with Boards</p>
-                  <p className="text-white/70 text-sm mt-1">Plan scenes then generate</p>
+                  <h3 className="text-white/90 text-xs font-medium mb-1">Workflow</h3>
+                  <p className="text-white text-lg font-extrabold leading-tight">Create with Boards</p>
+                  <p className="text-white/70 text-xs mt-1">Plan scenes then generate</p>
                 </div>
-                <a
-                  href="/boards" // 라우트 맞게 수정
-                  className="mt-4 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-5 py-3 transition"
-                >
+                <a href="/boards" className="mt-3 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-4 py-2 text-sm transition">
                   Create with Boards
                 </a>
               </div>
@@ -214,10 +204,10 @@ const resumeAutoplay = () => {
           </aside>
 
           {/* RIGHT: Hero Carousel */}
-          <div className="lg:col-span-8 h-full">
-            {/* 높이를 비율로 주지 말고 h-full로 섹션 높이에 맞춤 */}
+          <div className="lg:col-span-8 flex">
+            {/* ← 높이는 비율로 결정 (그리드 행 높이의 기준) */}
             <div
-              className="relative h-full rounded-xl overflow-hidden shadow-2xl bg-black"
+              className="relative w-full h-full rounded-xl overflow-hidden shadow-2xl bg-black"
               onMouseEnter={pauseAutoplay}
               onMouseLeave={resumeAutoplay}
             >
@@ -265,8 +255,6 @@ const resumeAutoplay = () => {
           </div>
         </div>
       </section>
-
-
 
       {/* Works Grid */}
       <section>
