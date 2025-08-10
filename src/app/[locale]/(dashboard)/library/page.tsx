@@ -21,6 +21,8 @@ import { config } from "@/config";
 import VideoPopup from "@/components/VideoPopup";
 import ImagePopup from "@/components/ImagePopup";
 import { useTranslations } from "next-intl";
+import { LoginModal } from "@/components/login-modal";
+import { LogIn } from "lucide-react";
 
 // 백엔드 응답에 맞게 수정된 MediaItem
 interface MediaItem {
@@ -180,9 +182,15 @@ export default function LibraryPage() {
 
   if (!isLoggedIn) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground">{t("loginRequired")}</p>
-      </div>
+      <>
+        <div className="flex items-center justify-center min-h-screen">
+          <p className="text-muted-foreground">{t("loginRequired")}</p>
+        </div>
+        <LoginModal
+          isOpen={true}
+          onClose={() => {}}
+        />
+      </>
     );
   }
 

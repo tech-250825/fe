@@ -57,6 +57,8 @@ export function ModelSelectionDropdown({
     setTempOptions(options);
     setTempImageFile(uploadedImageFile);
     
+    console.log("🔄 ModelSelectionDropdown options updated:", options);
+    
     // Create preview URL for uploaded image
     if (uploadedImageFile) {
       const url = URL.createObjectURL(uploadedImageFile);
@@ -69,7 +71,7 @@ export function ModelSelectionDropdown({
     } else {
       setImagePreviewUrl(null);
     }
-  }, [isOpen, mode, options, uploadedImageFile]);
+  }, [mode, options, uploadedImageFile, isOpen]);
 
   const handleSave = () => {
     onSave(tempOptions);
@@ -435,28 +437,33 @@ export function ModelSelectionDropdown({
                     <Card>
                       <CardContent className="p-2 sm:p-4 max-h-[200px] sm:max-h-[250px] overflow-y-auto">
                         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
-                          {checkpointModels && checkpointModels.length > 0 ? checkpointModels.map((checkpoint) => (
-                            <VisualSelectButton
-                              key={checkpoint.name || checkpoint.id}
-                              label={checkpoint.name || checkpoint.modelName || checkpoint.title}
-                              imgSrc={
-                                checkpoint.img || 
-                                checkpoint.image || 
-                                checkpoint.imageUrl || 
-                                checkpoint.thumbnailUrl || 
-                                checkpoint.url ||
-                                checkpoint.thumbnail ||
-                                "/placeholder.svg"
-                              }
-                              isSelected={tempOptions.checkpoint?.name === checkpoint.name}
-                              onClick={() =>
-                                setTempOptions((prev) => ({
-                                  ...prev,
-                                  checkpoint: checkpoint,
-                                }))
-                              }
-                            />
-                          )) : (
+                          {checkpointModels && checkpointModels.length > 0 ? checkpointModels.map((checkpoint) => {
+                            const isSelected = tempOptions.checkpoint?.name === checkpoint.name;
+                            console.log(`🏗️ Checkpoint ${checkpoint.name} isSelected:`, isSelected, "tempOptions.checkpoint:", tempOptions.checkpoint);
+                            
+                            return (
+                              <VisualSelectButton
+                                key={checkpoint.name || checkpoint.id}
+                                label={checkpoint.name || checkpoint.modelName || checkpoint.title}
+                                imgSrc={
+                                  checkpoint.img || 
+                                  checkpoint.image || 
+                                  checkpoint.imageUrl || 
+                                  checkpoint.thumbnailUrl || 
+                                  checkpoint.url ||
+                                  checkpoint.thumbnail ||
+                                  "/placeholder.svg"
+                                }
+                                isSelected={isSelected}
+                                onClick={() =>
+                                  setTempOptions((prev) => ({
+                                    ...prev,
+                                    checkpoint: checkpoint,
+                                  }))
+                                }
+                              />
+                            );
+                          }) : (
                             <div className="col-span-full text-center py-8 text-muted-foreground">
                               {checkpointModels ? "No checkpoint models available" : "Loading checkpoint models..."}
                             </div>

@@ -21,6 +21,10 @@ import { api } from "@/lib/auth/apiClient";
 import type { ImageItem } from "@/services/types/image.types";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
+import { LoginModal } from "@/components/login-modal";
+import { LogIn } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { VideoTutorial } from "@/components/VideoTutorial";
 
 export default function CreatePage() {
   const t = useTranslations("VideoCreation");
@@ -56,6 +60,7 @@ export default function CreatePage() {
     "1:1" | "16:9" | "9:16"
   >("16:9");
   const [selectedFrames, setSelectedFrames] = useState(81);
+  const [showTutorial, setShowTutorial] = useState(false);
 
   // taskId가 있으면 해당 영상 찾기
   const selectedTask = taskId
@@ -562,6 +567,21 @@ export default function CreatePage() {
     }
   }, [isLoggedIn]);
 
+  // Tutorial logic - show only once per user
+  useEffect(() => {
+    if (isLoggedIn) {
+      // Check if user has seen the tutorial before
+      const tutorialSeen = localStorage.getItem('videoTutorialSeen');
+      if (!tutorialSeen) {
+        // Show tutorial after a short delay to let the page load
+        const timer = setTimeout(() => {
+          setShowTutorial(true);
+        }, 1000);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [isLoggedIn]);
+
   // 탭 변경 시 모델 목록 업데이트
   useEffect(() => {
     const currentModels =
@@ -732,9 +752,15 @@ export default function CreatePage() {
 
   if (!isLoggedIn) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground">{t("loginRequired")}</p>
-      </div>
+      <>
+        <div className="flex items-center justify-center min-h-screen">
+          <p className="text-muted-foreground">{t("loginRequired")}</p>
+        </div>
+        <LoginModal
+          isOpen={true}
+          onClose={() => {}}
+        />
+      </>
     );
   }
 
@@ -756,6 +782,12 @@ export default function CreatePage() {
         styleModels={styleModels}
         characterModels={characterModels}
         onEnhancePrompt={handleEnhancePrompt}
+      />
+      
+      {/* Tutorial Modal */}
+      <VideoTutorial
+        isOpen={showTutorial}
+        onClose={() => setShowTutorial(false)}
       />
       {/* ✅ URL 기반 모달 */}
       {selectedTask && (() => {

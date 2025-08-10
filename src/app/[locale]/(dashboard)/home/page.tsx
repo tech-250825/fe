@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Play, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import VideoPopup from "@/components/VideoPopup";
@@ -104,57 +104,169 @@ const HomePage: React.FC = () => {
     };
   }, [selectedVideo]);
 
+  // Hero 슬라이드 데이터 (상단 1개 + 하단 2개 재활용)
+const heroSlides = [
+  {
+    id: "hero1",
+    type: "hls",
+    src: "https://image.hoit.ai.kr/landingpage_video/hero1/hero1.m3u8",
+    titleKey: "hero.consistentCharacter",
+  },
+  {
+    id: "hero2",
+    type: "mp4",
+    src: "https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/tomato_00582.mp4",
+    titleKey: "hero.unifiedStyle",
+  },
+  {
+    id: "hero3",
+    type: "mp4",
+    src: "https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/tomato_00467.mp4",
+    titleKey: "hero.continuousStories",
+  },
+];
+
+const [currentSlide, setCurrentSlide] = useState(0);
+const autoplayRef = useRef<NodeJS.Timeout | null>(null);
+
+// 자동 넘김 (5초)
+useEffect(() => {
+  if (autoplayRef.current) clearInterval(autoplayRef.current);
+  autoplayRef.current = setInterval(() => {
+    setCurrentSlide((i) => (i + 1) % heroSlides.length);
+  }, 5000);
+  return () => {
+    if (autoplayRef.current) clearInterval(autoplayRef.current);
+  };
+}, [heroSlides.length]);
+
+const goTo = (i: number) => setCurrentSlide((i + heroSlides.length) % heroSlides.length);
+const next = () => goTo(currentSlide + 1);
+const prev = () => goTo(currentSlide - 1);
+
+const pauseAutoplay = () => {
+  if (autoplayRef.current) {
+    clearInterval(autoplayRef.current);
+    autoplayRef.current = null;
+  }
+};
+const resumeAutoplay = () => {
+  if (!autoplayRef.current) {
+    autoplayRef.current = setInterval(() => {
+      setCurrentSlide((i) => (i + 1) % heroSlides.length);
+    }, 5000);
+  }
+};
+
+
   return (
     <div className="p-10 bg-background">
-      {/* Hero Section - 3개 박스 */}
-      <section className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 md:gap-6 mb-8 md:mb-10 lg:mb-12">
-        {/* 상단 박스 (전체 너비) */}
-        <div className="md:col-span-2 relative aspect-[16/9] rounded-xl overflow-hidden shadow-2xl">
-          <HeroHlsVideo
-            src="https://image.hoit.ai.kr/landingpage_video/hero1/hero1.m3u8"
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4 md:p-6 lg:p-8">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
-              {t("hero.consistentCharacter")}
-            </h2>
-          </div>
-        </div>
+      {/* Hero Section - Side CTA + Carousel (equal height) */}
+      <section className="mb-8 md:mb-10 lg:mb-12">
+        {/* lg 이상에서 섹션 고정 높이; 화면 크기에 따라 유연하게 */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch lg:h-[clamp(420px,40vw,640px)]">
+          
+          {/* LEFT: CTA Panel */}
+          <aside className="lg:col-span-4 h-full">
+            {/* 두 개 카드를 같은 높이로 꽉 채우기 */}
+            <div className="grid grid-rows-2 gap-6 h-full">
+              <div className="h-full rounded-2xl bg-black/55 backdrop-blur-md border border-white/10 p-5 shadow-2xl flex flex-col justify-between">
+                <div>
+                  <h3 className="text-white/90 text-sm font-medium mb-2">Quick Start</h3>
+                  <p className="text-white text-2xl font-extrabold leading-tight">Create Videos</p>
+                  <p className="text-white/70 text-sm mt-1">Turn prompts into animation</p>
+                </div>
+                <a
+                  href="/create/videos"
+                  className="mt-4 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-5 py-3 transition"
+                >
+                  Create Videos
+                </a>
+              </div>
+               <div className="h-full rounded-2xl bg-black/55 backdrop-blur-md border border-white/10 p-5 shadow-2xl flex flex-col justify-between">
+                <div>
+                  <h3 className="text-white/90 text-sm font-medium mb-2">Workflow</h3>
+                  <p className="text-white text-2xl font-extrabold leading-tight">Create with Boards</p>
+                  <p className="text-white/70 text-sm mt-1">Plan scenes then generate</p>
+                </div>
+                <a
+                  href="/boards" // 라우트 맞게 수정
+                  className="mt-4 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-5 py-3 transition"
+                >
+                  Create Images
+                </a>
+              </div>
 
-        {/* 하단 왼쪽 박스 */}
-        <div className="relative aspect-[16/9] rounded-xl overflow-hidden shadow-2xl">
-          <video
-            src="https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/tomato_00582.mp4"
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4 md:p-6">
-            <h3 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
-              {t("hero.unifiedStyle")}
-            </h3>
-          </div>
-        </div>
+              <div className="h-full rounded-2xl bg-black/55 backdrop-blur-md border border-white/10 p-5 shadow-2xl flex flex-col justify-between">
+                <div>
+                  <h3 className="text-white/90 text-sm font-medium mb-2">Workflow</h3>
+                  <p className="text-white text-2xl font-extrabold leading-tight">Create with Boards</p>
+                  <p className="text-white/70 text-sm mt-1">Plan scenes then generate</p>
+                </div>
+                <a
+                  href="/boards" // 라우트 맞게 수정
+                  className="mt-4 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-5 py-3 transition"
+                >
+                  Create with Boards
+                </a>
+              </div>
+            </div>
+          </aside>
 
-        {/* 하단 오른쪽 박스 */}
-        <div className="relative aspect-[16/9] rounded-xl overflow-hidden shadow-2xl">
-          <video
-            src="https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/tomato_00467.mp4"
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4 md:p-6">
-            <h3 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
-              {t("hero.continuousStories")}
-            </h3>
+          {/* RIGHT: Hero Carousel */}
+          <div className="lg:col-span-8 h-full">
+            {/* 높이를 비율로 주지 말고 h-full로 섹션 높이에 맞춤 */}
+            <div
+              className="relative h-full rounded-xl overflow-hidden shadow-2xl bg-black"
+              onMouseEnter={pauseAutoplay}
+              onMouseLeave={resumeAutoplay}
+            >
+              {(() => {
+                const slide = heroSlides[currentSlide];
+                return (
+                  <div className="absolute inset-0">
+                    {slide.type === "hls" ? (
+                      <HeroHlsVideo
+                        key={slide.id}
+                        src={slide.src}
+                        className="absolute inset-0 w-full h-full object-cover"
+                      />
+                    ) : (
+                      <video
+                        key={slide.id}
+                        src={slide.src}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        preload="metadata"
+                        className="absolute inset-0 w-full h-full object-cover"
+                      />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4 md:p-6 lg:p-8">
+                      <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
+                        {t(slide.titleKey as any)}
+                      </h2>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Prev / Next / Indicators 그대로 */}
+              <button onClick={prev} className="absolute left-3 top-1/2 -translate-y-1/2 z-10 rounded-full bg-black/40 hover:bg-black/60 px-3 py-2 text-white">‹</button>
+              <button onClick={next} className="absolute right-3 top-1/2 -translate-y-1/2 z-10 rounded-full bg-black/40 hover:bg-black/60 px-3 py-2 text-white">›</button>
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex gap-2">
+                {heroSlides.map((s, i) => (
+                  <button key={s.id} onClick={() => goTo(i)} className={`h-2.5 rounded-full transition-all ${i === currentSlide ? "w-6 bg-white" : "w-2.5 bg-white/50 hover:bg-white/70"}`} />
+                ))}
+              </div>
+              <button className="absolute inset-0 z-0" onClick={next} aria-label="Next slide" />
+            </div>
           </div>
         </div>
       </section>
+
+
 
       {/* Works Grid */}
       <section>

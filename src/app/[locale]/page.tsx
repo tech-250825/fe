@@ -22,6 +22,7 @@ import {
 import LocaleSwitcher from "@/components/LocaleSwitcher";
 import { StructuredData, generateWebSiteSchema, generateWebApplicationSchema, generateOrganizationSchema } from "@/components/seo/StructuredData";
 import { useLocale } from "next-intl";
+import { Button } from "@/components/ui/button";
 
 // Discord Icon Component
 const DiscordIcon = ({ className }: { className?: string }) => (
@@ -59,15 +60,6 @@ const MinimalistLandingPage: React.FC = () => {
             Hoit
           </div>
           <nav className="hidden md:flex items-center space-x-6 text-gray-300">
-            <a href="#" className="hover:text-white transition-colors">
-              {t("nav.features")}
-            </a>
-            <a href="#" className="hover:text-white transition-colors">
-              {t("nav.pricing")}
-            </a>
-            <a href="#" className="hover:text-white transition-colors">
-              {t("nav.api")}
-            </a>
           </nav>
           <div className="flex items-center space-x-4">
             <LocaleSwitcher />
@@ -109,18 +101,13 @@ const MinimalistLandingPage: React.FC = () => {
           <p className="text-lg md:text-xl text-gray-200 max-w-3xl mx-auto mb-10">
             {t("hero.description")}
           </p>
-          <div className="max-w-2xl w-full mx-auto">
-            <div className="relative">
-              <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300" />
-              <input
-                type="text"
-                placeholder={t("hero.placeholder")}
-                className="w-full bg-white/20 backdrop-blur-sm border border-gray-500 rounded-full pl-14 pr-4 py-4 text-white placeholder-gray-300 focus:ring-2 focus:ring-white focus:outline-none transition-colors"
-              />
-            </div>
-            <p className="text-sm text-gray-300 mt-3">
-              {t("hero.noCreditCard")}
-            </p>
+          <div className="flex justify-center">
+            <a 
+              href="/create/videos"
+              className="bg-white/10 backdrop-blur-sm border border-white/20 text-white px-8 py-4 rounded-full hover:bg-white/20 transition-colors flex items-center text-lg font-medium"
+            >
+              Create Hoit Animation <ArrowRight className="w-5 h-5 ml-2" />
+            </a>
           </div>
         </main>
       </div>
@@ -189,7 +176,7 @@ const MinimalistLandingPage: React.FC = () => {
         </div>
       </section>
 
-      {selectedVideo && (
+      {/* {selectedVideo && (
         <div
           className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center"
           onClick={() => setSelectedVideo(null)}
@@ -212,7 +199,7 @@ const MinimalistLandingPage: React.FC = () => {
             />
           </div>
         </div>
-      )}
+      )} */}
 
       {/* How It Works Section */}
       <section className="py-28 px-6 bg-gray-50 text-black">

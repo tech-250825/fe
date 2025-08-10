@@ -19,6 +19,9 @@ import { api } from "@/lib/auth/apiClient";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { getResolutionProfile } from "@/lib/types";
+import { LoginModal } from "@/components/login-modal";
+import { LogIn } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function CreateImagesPage() {
   const t = useTranslations("VideoCreation");
@@ -63,6 +66,9 @@ export default function CreateImagesPage() {
   // 모델 목록 불러오기
   const fetchAvailableModels = async () => {
     try {
+      let fetchedStyleModels: any[] = [];
+      let fetchedCharacterModels: any[] = [];
+
       // STYLE 모델 조회 - IMAGE 타입으로 변경
       const styleResponse = await api.get(
         `${config.apiUrl}/api/weights?mediaType=IMAGE&styleType=STYLE&modelType=LORA`
@@ -70,8 +76,8 @@ export default function CreateImagesPage() {
 
       if (styleResponse.ok) {
         const styleData = await styleResponse.json();
-        const styleModels = styleData.data || styleData;
-        setStyleModels(styleModels);
+        fetchedStyleModels = styleData.data || styleData;
+        setStyleModels(fetchedStyleModels);
         console.log("🎨 Style Models API Response:", styleData);
       }
 
@@ -82,8 +88,8 @@ export default function CreateImagesPage() {
 
       if (characterResponse.ok) {
         const characterData = await characterResponse.json();
-        const characterModels = characterData.data || characterData;
-        setCharacterModels(characterModels);
+        fetchedCharacterModels = characterData.data || characterData;
+        setCharacterModels(fetchedCharacterModels);
         console.log("👤 Character Models API Response:", characterData);
       }
 
@@ -94,14 +100,18 @@ export default function CreateImagesPage() {
 
       if (checkpointResponse.ok) {
         const checkpointData = await checkpointResponse.json();
-        const checkpointModels = checkpointData.data || checkpointData;
-        setCheckpointModels(checkpointModels);
+        const fetchedCheckpointModels = checkpointData.data || checkpointData;
+        setCheckpointModels(fetchedCheckpointModels);
         console.log("🏗️ Checkpoint Models API Response:", checkpointData);
+        console.log("🏗️ Checkpoint Models Array:", fetchedCheckpointModels);
+        if (fetchedCheckpointModels.length > 0) {
+          console.log("🏗️ First Checkpoint Model Structure:", fetchedCheckpointModels[0]);
+        }
       }
 
       // 전체 모델 목록 설정 (현재 탭에 따라)
       const currentModels =
-        selectedTab === "STYLE" ? styleModels : characterModels;
+        selectedTab === "STYLE" ? fetchedStyleModels : fetchedCharacterModels;
       setAvailableModels(currentModels);
     } catch (error) {
       console.error("❌ 모델 목록 로드 실패:", error);
@@ -703,9 +713,15 @@ export default function CreateImagesPage() {
 
   if (!isLoggedIn) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-muted-foreground">{t("loginRequired")}</p>
-      </div>
+      <>
+        <div className="flex items-center justify-center min-h-screen">
+          <p className="text-muted-foreground">{t("loginRequired")}</p>
+        </div>
+        <LoginModal
+          isOpen={true}
+          onClose={() => {}}
+        />
+      </>
     );
   }
 

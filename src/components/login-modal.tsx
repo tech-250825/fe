@@ -1,6 +1,6 @@
 "use client";
 
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { config } from "@/config";
 
@@ -13,6 +13,7 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md p-6">
+        <DialogTitle className="sr-only">Login</DialogTitle>
         <div className="flex flex-col gap-6">
           <div className="flex flex-col items-center text-center">
             <h1 className="text-2xl font-bold">Welcome</h1>
@@ -31,8 +32,13 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
               const urlParams = new URLSearchParams(window.location.search);
               const redirectUrl = urlParams.get('redirect') || window.location.href;
               
+              console.log('🔗 Login redirect URL:', redirectUrl);
+              
               // Encode the redirect URL
               const encodedRedirect = encodeURIComponent(redirectUrl);
+              
+              console.log('🔗 Encoded redirect URL:', encodedRedirect);
+              console.log('🔗 Full OAuth URL:', `${config.apiUrl}/oauth2/authorization/google?redirect_uri=${encodedRedirect}`);
               
               onClose();
               
