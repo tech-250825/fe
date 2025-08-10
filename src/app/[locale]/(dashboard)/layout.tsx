@@ -31,7 +31,7 @@ export default function DashboardLayout({
     if (pathname.includes("/home")) return t("pageTitle.home");
     if (pathname.includes("/profile")) return t("pageTitle.profile");
     if (pathname.includes("/create")) return t("pageTitle.create");
-    if (pathname.includes("/boards")) return "Video Boards";
+    if (pathname.includes("/boards")) return "Animation";
     return t("pageTitle.dashboard");
   };
 

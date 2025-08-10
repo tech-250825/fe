@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertTriangle, Gift, ExternalLink } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
 interface CreditInsufficientModalProps {
   isOpen: boolean;
@@ -24,11 +24,19 @@ export function CreditInsufficientModal({
   onClose,
 }: CreditInsufficientModalProps) {
   const t = useTranslations("CreditInsufficient");
+  const locale = useLocale();
 
   const handleGetCredit = () => {
-    // 설문조사 링크로 이동하거나 크레딧 구매 페이지로 이동
-    // TODO: 실제 설문조사 링크나 크레딧 구매 페이지 URL로 변경
-    window.open("https://forms.gle/your-survey-link", "_blank");
+    // Redirect to different Google Forms based on locale
+    const surveyUrls = {
+      ko: "https://docs.google.com/forms/d/e/1FAIpQLSekEeMmQLpgY7FHhcjYHsSjOrFMrYx6rn1suceGfRzwPBaORA/viewform",
+      en: "https://docs.google.com/forms/d/e/1FAIpQLSd397OfDdxatcxvscResZKCpMkxFzVUKMCp5-5AWM3lqlaHUg/viewform?usp=dialog",
+      ja: "https://docs.google.com/forms/d/e/1FAIpQLSd397OfDdxatcxvscResZKCpMkxFzVUKMCp5-5AWM3lqlaHUg/viewform?usp=dialog", // Japanese -> English survey
+      zh: "https://docs.google.com/forms/d/e/1FAIpQLSd397OfDdxatcxvscResZKCpMkxFzVUKMCp5-5AWM3lqlaHUg/viewform?usp=dialog" // Chinese -> English survey
+    };
+
+    const surveyUrl = surveyUrls[locale as keyof typeof surveyUrls] || surveyUrls.en;
+    window.open(surveyUrl, "_blank");
   };
 
   return (
