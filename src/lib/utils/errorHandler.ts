@@ -19,47 +19,63 @@ export function handleApiError(
 ): boolean {
   const { t, showToast = true, customMessages = {}, onCreditInsufficient } = options;
 
-  // Check for custom message first
-  if (customMessages[response.status]) {
-    if (showToast) {
-      toast.error(customMessages[response.status]);
-    }
-    return true;
-  }
-
-  // Handle common error status codes
+  // Handle common error status codes first, then check for custom messages
   switch (response.status) {
     case 402:
-      if (showToast) {
-        toast.error(t("toast.creditInsufficient"));
-      }
-      // Show credit insufficient modal if callback is provided
+      // For 402, always show the modal regardless of custom message
       if (onCreditInsufficient) {
         onCreditInsufficient();
+      }
+      
+      // Use custom message if provided, otherwise use default
+      if (customMessages[response.status]) {
+        if (showToast) {
+          toast.error(customMessages[response.status]);
+        }
+      } else if (showToast) {
+        toast.error(t("toast.creditInsufficient"));
       }
       return true;
 
     case 400:
-      if (showToast) {
+      if (customMessages[response.status]) {
+        if (showToast) {
+          toast.error(customMessages[response.status]);
+        }
+      } else if (showToast) {
         toast.error(t("toast.invalidRequest"));
       }
       return true;
 
     case 401:
-      if (showToast) {
+      if (customMessages[response.status]) {
+        if (showToast) {
+          toast.error(customMessages[response.status]);
+        }
+      } else if (showToast) {
         toast.error(t("toast.authFailed"));
       }
       return true;
 
     case 500:
-      if (showToast) {
+      if (customMessages[response.status]) {
+        if (showToast) {
+          toast.error(customMessages[response.status]);
+        }
+      } else if (showToast) {
         toast.error(t("toast.serverError"));
       }
       return true;
 
     default:
+      // Check for custom message for other status codes
+      if (customMessages[response.status]) {
+        if (showToast) {
+          toast.error(customMessages[response.status]);
+        }
+        return true;
+      }
       // Return false to indicate that this error wasn't handled
-      // The caller can provide custom error handling
       return false;
   }
 }
