@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, ChevronLeft, X, Play, Upload, Sparkles } from "lucide-react";
 
@@ -67,6 +67,7 @@ export function VideoTutorial({ isOpen, onClose }: VideoTutorialProps) {
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-md p-0 overflow-hidden">
+        <DialogTitle className="sr-only">Video Creation Tutorial</DialogTitle>
         {/* Header */}
         <div className="relative bg-gradient-to-r from-blue-500 to-purple-600 text-white p-6">
           <button

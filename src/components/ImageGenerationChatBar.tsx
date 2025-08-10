@@ -60,6 +60,23 @@ export function ImageGenerationChatBar({
     }
   }, [styleModels, selections.style, selections.character]);
 
+  // Set first checkpoint model as default when checkpointModels are loaded
+  useEffect(() => {
+    console.log("🏗️ Checkpoint useEffect triggered:", {
+      checkpointModelsLength: checkpointModels.length,
+      hasCheckpoint: !!selections.checkpoint,
+      checkpointModels: checkpointModels
+    });
+    
+    if (checkpointModels.length > 0 && !selections.checkpoint) {
+      console.log("🏗️ Setting first checkpoint as default:", checkpointModels[0]);
+      setSelections(prev => ({
+        ...prev,
+        checkpoint: checkpointModels[0]
+      }));
+    }
+  }, [checkpointModels, selections.checkpoint]);
+
   const handleSubmit = () => {
     if (prompt.trim() && !isGenerating) {
       onSubmit(prompt, mode, selections);
@@ -150,6 +167,7 @@ export function ImageGenerationChatBar({
                     options={{
                       style: selections.style,
                       character: selections.character,
+                      checkpoint: selections.checkpoint, // Pass checkpoint through
                       aspectRatio: selections.aspectRatio,
                       duration: 4, // Dummy value for compatibility
                       quality: selections.quality,
