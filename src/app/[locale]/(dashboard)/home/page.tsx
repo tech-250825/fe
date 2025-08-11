@@ -1,10 +1,14 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Play, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import VideoPopup from "@/components/VideoPopup";
 import HeroHlsVideo from "@/components/HeroHlsVideo";
+import { config } from "@/config";
+import { api } from "@/lib/auth/apiClient";
+import { Card } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Work {
   id: number;
@@ -16,13 +20,61 @@ interface Work {
   created_at: string;
 }
 
+// Public API interfaces - matching actual API structure
+interface PublicTask {
+  id: number;
+  prompt: string;
+  lora: string | null;
+  imageUrl: string | null;
+  height: number;
+  width: number;
+  numFrames?: number;
+  status: string;
+  runpodId: string;
+  createdAt: string;
+}
+
+interface PublicImage {
+  id: number;
+  url: string;
+  index: number;
+  createdAt: string;
+}
+
+interface PublicItem {
+  type: "video" | "image";
+  task: PublicTask;
+  image: PublicImage;
+}
+
+interface PublicApiResponseData {
+  content: PublicItem[];
+  previousPageCursor: string | null;
+  nextPageCursor: string | null;
+}
+
+interface PublicApiResponse {
+  timestamp: string;
+  statusCode: number;
+  message: string;
+  data: PublicApiResponseData;
+}
+
 const HomePage: React.FC = () => {
   const t = useTranslations("HomePage");
-  const [works, setWorks] = useState<Work[]>([]);
-  const [loading, setLoading] = useState(true);
+  // DISABLED: Database connection removed
+  // const [works, setWorks] = useState<Work[]>([]);
+  // const [loading, setLoading] = useState(true);
   const [selectedVideo, setSelectedVideo] = useState<Work | null>(null);
   const [isVideoPopupOpen, setIsVideoPopupOpen] = useState(false);
   const [currentVideoUrl, setCurrentVideoUrl] = useState("");
+
+  // Explore section state
+  const [activeTab, setActiveTab] = useState<"all" | "videos" | "images">("all");
+  const [publicContent, setPublicContent] = useState<PublicItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(true);
 
   // 번역된 배너 텍스트
   const bannerTexts = [t("banner.createAnimation"), t("banner.createImages")];
@@ -38,7 +90,8 @@ const HomePage: React.FC = () => {
     return () => clearInterval(interval);
   }, [bannerTexts.length]);
 
-  // DB에서 작품 데이터 가져오기
+  // DISABLED: DB에서 작품 데이터 가져오기 - Database connection removed
+  /*
   useEffect(() => {
     const fetchWorks = async () => {
       try {
@@ -58,6 +111,7 @@ const HomePage: React.FC = () => {
 
     fetchWorks();
   }, []);
+  */
 
   // VideoPopup 열기
   const openVideoPopup = (work: Work) => {
@@ -139,6 +193,122 @@ useEffect(() => {
     if (autoplayRef.current) clearInterval(autoplayRef.current);
   };
 }, [heroSlides.length]);
+
+// Fetch public content based on active tab
+const fetchPublicContent = useCallback(async (reset = false) => {
+  setLoading(true);
+  try {
+    const params = new URLSearchParams({ size: "6" }); // Smaller size for "all" tab since we're fetching from 2 APIs
+    const currentCursor = reset ? null : nextCursor;
+    if (currentCursor) {
+      params.append("nextPageCursor", currentCursor);
+    }
+    
+    if (activeTab === "all") {
+      // For "all" tab, fetch from both APIs
+      const [videosResponse, imagesResponse] = await Promise.all([
+        api.get(`${config.apiUrl}/api/videos/public?${params}`),
+        api.get(`${config.apiUrl}/api/images/public?${params}`)
+      ]);
+      
+      let combinedContent: PublicItem[] = [];
+      let combinedNextCursor = null;
+      
+      if (videosResponse.ok) {
+        const videosData: PublicApiResponse = await videosResponse.json();
+        combinedContent = [...combinedContent, ...videosData.data.content];
+        if (videosData.data.nextPageCursor) {
+          combinedNextCursor = videosData.data.nextPageCursor;
+        }
+      }
+      
+      if (imagesResponse.ok) {
+        const imagesData: PublicApiResponse = await imagesResponse.json();
+        combinedContent = [...combinedContent, ...imagesData.data.content];
+        if (imagesData.data.nextPageCursor) {
+          combinedNextCursor = imagesData.data.nextPageCursor;
+        }
+      }
+      
+      // Sort combined content by creation date
+      combinedContent.sort((a, b) => new Date(b.task.createdAt).getTime() - new Date(a.task.createdAt).getTime());
+      
+      if (reset) {
+        setPublicContent(combinedContent);
+      } else {
+        setPublicContent(prev => [...prev, ...combinedContent]);
+      }
+      
+      setNextCursor(combinedNextCursor);
+      setHasMore(!!combinedNextCursor);
+      
+    } else {
+      // For specific tabs, fetch from single API
+      const endpoint = activeTab === "images" ? "/api/images/public" : "/api/videos/public";
+      const response = await api.get(`${config.apiUrl}${endpoint}?${params}`);
+      
+      if (response.ok) {
+        const apiResponse: PublicApiResponse = await response.json();
+        
+        if (reset) {
+          setPublicContent(apiResponse.data.content);
+        } else {
+          setPublicContent(prev => [...prev, ...apiResponse.data.content]);
+        }
+        
+        setNextCursor(apiResponse.data.nextPageCursor);
+        setHasMore(!!apiResponse.data.nextPageCursor);
+      }
+    }
+  } catch (error) {
+    console.error("Failed to fetch public content:", error);
+  } finally {
+    setLoading(false);
+  }
+}, [activeTab]);
+
+// Load more content for infinite scroll  
+const loadMoreContent = useCallback(() => {
+  if (hasMore && !loading) {
+    fetchPublicContent(false);
+  }
+}, [hasMore, loading, fetchPublicContent]);
+
+// Get content based on active tab - now just returns filtered content
+const getTabContent = () => {
+  if (!publicContent) return [];
+  
+  switch (activeTab) {
+    case "images":
+      return publicContent.filter(item => item.type === "image");
+    case "videos":
+      return publicContent.filter(item => item.type === "video");
+    case "all":
+    default:
+      return publicContent;
+  }
+};
+
+// Handle scroll for infinite loading
+const handleScroll = useCallback(() => {
+  if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 1000) {
+    loadMoreContent();
+  }
+}, [loadMoreContent]);
+
+// Initialize public content on mount and handle tab changes
+useEffect(() => {
+  setPublicContent([]);
+  setNextCursor(null);
+  setHasMore(true);
+  fetchPublicContent(true);
+}, [activeTab]);
+
+// Handle scroll events
+useEffect(() => {
+  window.addEventListener('scroll', handleScroll);
+  return () => window.removeEventListener('scroll', handleScroll);
+}, [handleScroll]);
 
 const goTo = (i: number) => setCurrentSlide((i + heroSlides.length) % heroSlides.length);
 const next = () => goTo(currentSlide + 1);
@@ -256,7 +426,113 @@ const resumeAutoplay = () => {
         </div>
       </section>
 
-      {/* Works Grid */}
+      {/* Explore Section */}
+      <section className="mb-8 md:mb-10 lg:mb-12">
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold mb-4 text-foreground">
+            {t("explore.title")}
+          </h2>
+          <p className="text-muted-foreground">
+            Discover amazing content created by our community
+          </p>
+        </div>
+
+        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "all" | "videos" | "images")} className="w-full">
+          <TabsList className="grid w-full grid-cols-3 mb-6">
+            <TabsTrigger value="all" className="text-sm font-medium">
+              All ({publicContent?.length || 0})
+            </TabsTrigger>
+            <TabsTrigger value="videos" className="text-sm font-medium">
+              Videos ({publicContent?.filter(item => item.type === "video").length || 0})
+            </TabsTrigger>
+            <TabsTrigger value="images" className="text-sm font-medium">
+              Images ({publicContent?.filter(item => item.type === "image").length || 0})
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value={activeTab} className="mt-0">
+            {getTabContent().length > 0 && (
+              <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4 space-y-4">
+                {getTabContent().map((item) => {
+                  const isVideo = item.type === 'video';
+                  // Skip items without image data
+                  if (!item.image || !item.image.url) return null;
+                  
+                  return (
+                    <Card key={`${item.type}-${item.task.id}-${item.image.id}`} className="break-inside-avoid mb-4 overflow-hidden hover:shadow-lg transition-shadow group">
+                      <div className="relative aspect-auto">
+                        {isVideo ? (
+                          <video
+                            src={item.image.url}
+                            className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300"
+                            muted
+                            loop
+                            playsInline
+                            onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.pause();
+                              e.currentTarget.currentTime = 0;
+                            }}
+                          />
+                        ) : (
+                          <img
+                            src={item.image.url}
+                            alt={item.task.prompt}
+                            className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300"
+                            loading="lazy"
+                          />
+                        )}
+                        
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-end p-3">
+                          <div className="text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300 line-clamp-2">
+                            {item.task.prompt}
+                          </div>
+                        </div>
+                        
+                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            isVideo ? 'bg-red-500 text-white' : 'bg-blue-500 text-white'
+                          }`}>
+                            {isVideo ? 'Video' : 'Image'}
+                          </div>
+                        </div>
+                        
+                        {item.task.lora && (
+                          <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <div className="px-2 py-1 rounded-full text-xs font-medium bg-purple-500 text-white">
+                              {item.task.lora}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
+            
+            {loading && (
+              <div className="text-center py-8">
+                <div className="inline-flex items-center gap-2 text-muted-foreground">
+                  <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                  Loading more content...
+                </div>
+              </div>
+            )}
+            
+            {!hasMore && getTabContent().length > 0 && (
+              <div className="text-center py-8">
+                <div className="text-sm text-muted-foreground">
+                  You've reached the end!
+                </div>
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
+      </section>
+
+      {/* DISABLED: Works Grid - Database connection removed */}
+      {/*
       <section>
         <h3 className="text-3xl font-bold mb-8 text-foreground">
           {t("explore.title")}
@@ -271,14 +547,8 @@ const resumeAutoplay = () => {
             <div className="text-lg text-muted-foreground">{t("explore.noWorks")}</div>
           </div>
         ) : (
-          /* Masonry Grid */
           <div className="columns-2 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-4 gap-4 space-y-4">
             {works.map((work, index) => {
-              // 랜덤 높이 생성
-              // const heights = ["h-48", "h-64", "h-80", "h-56", "h-72", "h-44"];
-              // const randomHeight = heights[index % heights.length];
-
-              // 이미지 또는 비디오가 있는지 확인
               const hasImage = work.image_url;
               const hasVideo = work.video_url;
               const mediaUrl = hasImage
@@ -320,14 +590,12 @@ const resumeAutoplay = () => {
                 >
                   <div className="relative w-full h-full">
                     {hasImage ? (
-                      // 이미지 표시
                       <img
                         src={work.image_url}
                         alt={work.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     ) : (
-                      // 비디오 표시 (호버 시 재생)
                       <video
                         id={`video-${work.id}`}
                         src={work.video_url}
@@ -338,7 +606,6 @@ const resumeAutoplay = () => {
                       />
                     )}
 
-                    {/* 호버 오버레이 */}
                     <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       {hasVideo && (
                         <div className="text-white text-sm font-medium">
@@ -354,6 +621,7 @@ const resumeAutoplay = () => {
           </div>
         )}
       </section>
+      */}
 
       {/* VideoPopup */}
       <VideoPopup
