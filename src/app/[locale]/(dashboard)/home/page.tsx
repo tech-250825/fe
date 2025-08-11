@@ -450,7 +450,7 @@ const resumeAutoplay = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "all" | "videos" | "images")} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-6">
+          <TabsList className="flex gap-4">
             <TabsTrigger value="all" className="text-sm font-medium">
               All ({publicContent?.length || 0})
             </TabsTrigger>
