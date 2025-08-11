@@ -1,10 +1,17 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Play, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import VideoPopup from "@/components/VideoPopup";
 import HeroHlsVideo from "@/components/HeroHlsVideo";
+import { config } from "@/config";
+import { api } from "@/lib/auth/apiClient";
+import { Card } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Copy } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface Work {
   id: number;
@@ -16,13 +23,62 @@ interface Work {
   created_at: string;
 }
 
+// Public API interfaces - matching actual API structure
+interface PublicTask {
+  id: number;
+  prompt: string;
+  lora: string | null;
+  imageUrl: string | null;
+  height: number;
+  width: number;
+  numFrames?: number;
+  status: string;
+  runpodId: string;
+  createdAt: string;
+}
+
+interface PublicImage {
+  id: number;
+  url: string;
+  index: number;
+  createdAt: string;
+}
+
+interface PublicItem {
+  type: "video" | "image";
+  task: PublicTask;
+  image: PublicImage;
+}
+
+interface PublicApiResponseData {
+  content: PublicItem[];
+  previousPageCursor: string | null;
+  nextPageCursor: string | null;
+}
+
+interface PublicApiResponse {
+  timestamp: string;
+  statusCode: number;
+  message: string;
+  data: PublicApiResponseData;
+}
+
 const HomePage: React.FC = () => {
   const t = useTranslations("HomePage");
-  const [works, setWorks] = useState<Work[]>([]);
-  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  // DISABLED: Database connection removed
+  // const [works, setWorks] = useState<Work[]>([]);
+  // const [loading, setLoading] = useState(true);
   const [selectedVideo, setSelectedVideo] = useState<Work | null>(null);
   const [isVideoPopupOpen, setIsVideoPopupOpen] = useState(false);
   const [currentVideoUrl, setCurrentVideoUrl] = useState("");
+
+  // Explore section state
+  const [activeTab, setActiveTab] = useState<"all" | "videos" | "images">("all");
+  const [publicContent, setPublicContent] = useState<PublicItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(true);
 
   // 번역된 배너 텍스트
   const bannerTexts = [t("banner.createAnimation"), t("banner.createImages")];
@@ -38,7 +94,8 @@ const HomePage: React.FC = () => {
     return () => clearInterval(interval);
   }, [bannerTexts.length]);
 
-  // DB에서 작품 데이터 가져오기
+  // DISABLED: DB에서 작품 데이터 가져오기 - Database connection removed
+  /*
   useEffect(() => {
     const fetchWorks = async () => {
       try {
@@ -58,6 +115,7 @@ const HomePage: React.FC = () => {
 
     fetchWorks();
   }, []);
+  */
 
   // VideoPopup 열기
   const openVideoPopup = (work: Work) => {
@@ -140,6 +198,130 @@ useEffect(() => {
   };
 }, [heroSlides.length]);
 
+// Fetch public content - always fetch both images and videos
+const fetchPublicContent = useCallback(async (reset = false) => {
+  setLoading(true);
+  try {
+    const params = new URLSearchParams({ size: "50" });
+    const currentCursor = reset ? null : nextCursor;
+    if (currentCursor) {
+      params.append("nextPageCursor", currentCursor);
+    }
+    
+    // Always fetch from both APIs to have complete data for tab counts
+    const [videosResponse, imagesResponse] = await Promise.all([
+      api.get(`${config.apiUrl}/api/videos/public?${params}`),
+      api.get(`${config.apiUrl}/api/images/public?${params}`)
+    ]);
+    
+    let combinedContent: PublicItem[] = [];
+    let combinedNextCursor = null;
+    
+    if (videosResponse.ok) {
+      const videosData: PublicApiResponse = await videosResponse.json();
+      combinedContent = [...combinedContent, ...videosData.data.content];
+      if (videosData.data.nextPageCursor) {
+        combinedNextCursor = videosData.data.nextPageCursor;
+      }
+    }
+    
+    if (imagesResponse.ok) {
+      const imagesData: PublicApiResponse = await imagesResponse.json();
+      combinedContent = [...combinedContent, ...imagesData.data.content];
+      if (imagesData.data.nextPageCursor) {
+        combinedNextCursor = imagesData.data.nextPageCursor;
+      }
+    }
+    
+    // Sort combined content by creation date
+    combinedContent.sort((a, b) => new Date(b.task.createdAt).getTime() - new Date(a.task.createdAt).getTime());
+    
+    if (reset) {
+      setPublicContent(combinedContent);
+    } else {
+      setPublicContent(prev => [...prev, ...combinedContent]);
+    }
+    
+    setNextCursor(combinedNextCursor);
+    setHasMore(!!combinedNextCursor);
+    
+  } catch (error) {
+    console.error("Failed to fetch public content:", error);
+  } finally {
+    setLoading(false);
+  }
+}, []);
+
+// Load more content for infinite scroll  
+const loadMoreContent = useCallback(() => {
+  if (hasMore && !loading) {
+    fetchPublicContent(false);
+  }
+}, [hasMore, loading, fetchPublicContent]);
+
+// Get content based on active tab - now just returns filtered content
+const getTabContent = () => {
+  if (!publicContent) return [];
+  
+  switch (activeTab) {
+    case "images":
+      return publicContent.filter(item => item.type === "image");
+    case "videos":
+      return publicContent.filter(item => item.type === "video");
+    case "all":
+    default:
+      return publicContent;
+  }
+};
+
+// Handle scroll for infinite loading
+const handleScroll = useCallback(() => {
+  if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 1000) {
+    loadMoreContent();
+  }
+}, [loadMoreContent]);
+
+// Initialize public content on mount
+useEffect(() => {
+  fetchPublicContent(true);
+}, []);
+
+// Only reset when changing tabs if we don't have content
+useEffect(() => {
+  if (publicContent.length === 0) {
+    fetchPublicContent(true);
+  }
+}, [activeTab]);
+
+// Handle scroll events
+useEffect(() => {
+  window.addEventListener('scroll', handleScroll);
+  return () => window.removeEventListener('scroll', handleScroll);
+}, [handleScroll]);
+
+// Recreate function - save item data to localStorage and navigate to create page
+const handleRecreate = (item: PublicItem) => {
+  const recreateData = {
+    prompt: item.task.prompt,
+    lora: item.task.lora,
+    imageUrl: item.task.imageUrl,
+    type: item.type,
+    aspectRatio: item.task.width > item.task.height ? "16:9" : item.task.width < item.task.height ? "9:16" : "1:1",
+    quality: item.task.height >= 720 ? "720p" : "480p",
+    duration: item.task.numFrames && item.task.numFrames > 90 ? 6 : 4,
+    timestamp: Date.now()
+  };
+  
+  localStorage.setItem('recreateData', JSON.stringify(recreateData));
+  
+  // Navigate to appropriate create page
+  if (item.type === "video") {
+    router.push("/create/videos");
+  } else {
+    router.push("/create/images");
+  }
+};
+
 const goTo = (i: number) => setCurrentSlide((i + heroSlides.length) % heroSlides.length);
 const next = () => goTo(currentSlide + 1);
 const prev = () => goTo(currentSlide - 1);
@@ -161,52 +343,42 @@ const resumeAutoplay = () => {
 
   return (
     <div className="p-10 bg-background">
-      {/* Hero Section - Side CTA + Carousel (equal height) */}
+      {/* Hero Section - Side CTA + Carousel (no fixed height, equalized) */}
       <section className="mb-8 md:mb-10 lg:mb-12">
-        {/* lg 이상에서 섹션 고정 높이; 화면 크기에 따라 유연하게 */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch lg:h-[clamp(420px,40vw,640px)]">
-          
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:h-[500px]">
           {/* LEFT: CTA Panel */}
-          <aside className="lg:col-span-4 h-full">
-            {/* 두 개 카드를 같은 높이로 꽉 채우기 */}
-            <div className="grid grid-rows-2 gap-6 h-full">
-              <div className="h-full rounded-2xl bg-black/55 backdrop-blur-md border border-white/10 p-5 shadow-2xl flex flex-col justify-between">
+          <aside className="lg:col-span-4 flex">
+            {/* ← 오른쪽 히어로 높이에 맞춰 커리도록 h-full + flex-1 */}
+            <div className="flex flex-col gap-3 w-full h-full">
+              <div className="flex-1 rounded-2xl bg-black/55 backdrop-blur-md border border-white/10 p-4 shadow-2xl flex flex-col justify-between">
                 <div>
-                  <h3 className="text-white/90 text-sm font-medium mb-2">Quick Start</h3>
-                  <p className="text-white text-2xl font-extrabold leading-tight">Create Videos</p>
-                  <p className="text-white/70 text-sm mt-1">Turn prompts into animation</p>
+                  <h3 className="text-white/90 text-xs font-medium mb-1">Quick Start</h3>
+                  <p className="text-white text-lg font-extrabold leading-tight">Create Videos</p>
+                  <p className="text-white/70 text-xs mt-1">Turn prompts into animation</p>
                 </div>
-                <a
-                  href="/create/videos"
-                  className="mt-4 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-5 py-3 transition"
-                >
+                <a href="/create/videos" className="mt-3 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-4 py-2 text-sm transition">
                   Create Videos
                 </a>
               </div>
-               <div className="h-full rounded-2xl bg-black/55 backdrop-blur-md border border-white/10 p-5 shadow-2xl flex flex-col justify-between">
+
+              <div className="flex-1 rounded-2xl bg-black/55 backdrop-blur-md border border-white/10 p-4 shadow-2xl flex flex-col justify-between">
                 <div>
-                  <h3 className="text-white/90 text-sm font-medium mb-2">Workflow</h3>
-                  <p className="text-white text-2xl font-extrabold leading-tight">Create with Boards</p>
-                  <p className="text-white/70 text-sm mt-1">Plan scenes then generate</p>
+                  <h3 className="text-white/90 text-xs font-medium mb-1">Generate</h3>
+                  <p className="text-white text-lg font-extrabold leading-tight">Create Images</p>
+                  <p className="text-white/70 text-xs mt-1">AI-powered image creation</p>
                 </div>
-                <a
-                  href="/boards" // 라우트 맞게 수정
-                  className="mt-4 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-5 py-3 transition"
-                >
+                <a href="/create/images" className="mt-3 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-4 py-2 text-sm transition">
                   Create Images
                 </a>
               </div>
 
-              <div className="h-full rounded-2xl bg-black/55 backdrop-blur-md border border-white/10 p-5 shadow-2xl flex flex-col justify-between">
+              <div className="flex-1 rounded-2xl bg-black/55 backdrop-blur-md border border-white/10 p-4 shadow-2xl flex flex-col justify-between">
                 <div>
-                  <h3 className="text-white/90 text-sm font-medium mb-2">Workflow</h3>
-                  <p className="text-white text-2xl font-extrabold leading-tight">Create with Boards</p>
-                  <p className="text-white/70 text-sm mt-1">Plan scenes then generate</p>
+                  <h3 className="text-white/90 text-xs font-medium mb-1">Workflow</h3>
+                  <p className="text-white text-lg font-extrabold leading-tight">Create with Boards</p>
+                  <p className="text-white/70 text-xs mt-1">Plan scenes then generate</p>
                 </div>
-                <a
-                  href="/boards" // 라우트 맞게 수정
-                  className="mt-4 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-5 py-3 transition"
-                >
+                <a href="/boards" className="mt-3 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-4 py-2 text-sm transition">
                   Create with Boards
                 </a>
               </div>
@@ -214,10 +386,10 @@ const resumeAutoplay = () => {
           </aside>
 
           {/* RIGHT: Hero Carousel */}
-          <div className="lg:col-span-8 h-full">
-            {/* 높이를 비율로 주지 말고 h-full로 섹션 높이에 맞춤 */}
+          <div className="lg:col-span-8 flex">
+            {/* ← 높이는 비율로 결정 (그리드 행 높이의 기준) */}
             <div
-              className="relative h-full rounded-xl overflow-hidden shadow-2xl bg-black"
+              className="relative w-full h-full rounded-xl overflow-hidden shadow-2xl bg-black"
               onMouseEnter={pauseAutoplay}
               onMouseLeave={resumeAutoplay}
             >
@@ -266,9 +438,129 @@ const resumeAutoplay = () => {
         </div>
       </section>
 
+      {/* Explore Section */}
+      <section className="mb-8 md:mb-10 lg:mb-12">
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold mb-4 text-foreground">
+            {t("explore.title")}
+          </h2>
+          <p className="text-muted-foreground">
+            Discover amazing content created by our community
+          </p>
+        </div>
 
+        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "all" | "videos" | "images")} className="w-full">
+          <TabsList className="flex gap-4">
+            <TabsTrigger value="all" className="text-sm font-medium">
+              All ({publicContent?.length || 0})
+            </TabsTrigger>
+            <TabsTrigger value="videos" className="text-sm font-medium">
+              Videos ({publicContent?.filter(item => item.type === "video").length || 0})
+            </TabsTrigger>
+            <TabsTrigger value="images" className="text-sm font-medium">
+              Images ({publicContent?.filter(item => item.type === "image").length || 0})
+            </TabsTrigger>
+          </TabsList>
 
-      {/* Works Grid */}
+          <TabsContent value={activeTab} className="mt-0">
+            {getTabContent().length > 0 && (
+              <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4 space-y-4">
+                {getTabContent().map((item) => {
+                  const isVideo = item.type === 'video';
+                  // Skip items without image data
+                  if (!item.image || !item.image.url) return null;
+                  
+                  return (
+                    <div 
+                      key={`${item.type}-${item.task.id}-${item.image.id}`} 
+                      className="break-inside-avoid mb-4 relative group cursor-pointer overflow-hidden rounded-lg"
+                    >
+                      {isVideo ? (
+                        <video
+                          src={item.image.url}
+                          className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300"
+                          muted
+                          loop
+                          playsInline
+                          onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.pause();
+                            e.currentTarget.currentTime = 0;
+                          }}
+                        />
+                      ) : (
+                        <img
+                          src={item.image.url}
+                          alt={item.task.prompt}
+                          className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300"
+                          loading="lazy"
+                        />
+                      )}
+                      
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-end p-3">
+                        <div className="text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300 line-clamp-2">
+                          {item.task.prompt}
+                        </div>
+                      </div>
+                      
+                      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          isVideo ? 'bg-red-500 text-white' : 'bg-blue-500 text-white'
+                        }`}>
+                          {isVideo ? 'Video' : 'Image'}
+                        </div>
+                      </div>
+                      
+                      {item.task.lora && (
+                        <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <div className="px-2 py-1 rounded-full text-xs font-medium bg-purple-500 text-white">
+                            {item.task.lora}
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRecreate(item);
+                          }}
+                          className="text-xs h-7 px-2 bg-white/90 hover:bg-white text-black font-medium"
+                        >
+                          <Copy className="w-3 h-3 mr-1" />
+                          Recreate
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            
+            {loading && (
+              <div className="text-center py-8">
+                <div className="inline-flex items-center gap-2 text-muted-foreground">
+                  <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                  Loading more content...
+                </div>
+              </div>
+            )}
+            
+            {!hasMore && getTabContent().length > 0 && (
+              <div className="text-center py-8">
+                <div className="text-sm text-muted-foreground">
+                  You've reached the end!
+                </div>
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
+      </section>
+
+      {/* DISABLED: Works Grid - Database connection removed */}
+      {/*
       <section>
         <h3 className="text-3xl font-bold mb-8 text-foreground">
           {t("explore.title")}
@@ -283,14 +575,8 @@ const resumeAutoplay = () => {
             <div className="text-lg text-muted-foreground">{t("explore.noWorks")}</div>
           </div>
         ) : (
-          /* Masonry Grid */
           <div className="columns-2 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-4 gap-4 space-y-4">
             {works.map((work, index) => {
-              // 랜덤 높이 생성
-              // const heights = ["h-48", "h-64", "h-80", "h-56", "h-72", "h-44"];
-              // const randomHeight = heights[index % heights.length];
-
-              // 이미지 또는 비디오가 있는지 확인
               const hasImage = work.image_url;
               const hasVideo = work.video_url;
               const mediaUrl = hasImage
@@ -332,14 +618,12 @@ const resumeAutoplay = () => {
                 >
                   <div className="relative w-full h-full">
                     {hasImage ? (
-                      // 이미지 표시
                       <img
                         src={work.image_url}
                         alt={work.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     ) : (
-                      // 비디오 표시 (호버 시 재생)
                       <video
                         id={`video-${work.id}`}
                         src={work.video_url}
@@ -350,7 +634,6 @@ const resumeAutoplay = () => {
                       />
                     )}
 
-                    {/* 호버 오버레이 */}
                     <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       {hasVideo && (
                         <div className="text-white text-sm font-medium">
@@ -366,6 +649,7 @@ const resumeAutoplay = () => {
           </div>
         )}
       </section>
+      */}
 
       {/* VideoPopup */}
       <VideoPopup

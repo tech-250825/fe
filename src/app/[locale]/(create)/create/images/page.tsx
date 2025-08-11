@@ -53,6 +53,7 @@ export default function CreateImagesPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImageResult, setSelectedImageResult] = useState<any>(null);
   const [showCreditModal, setShowCreditModal] = useState(false);
+  const [recreateData, setRecreateData] = useState<any>(null);
 
   // ref들
   const taskListRef = useRef<ImageItem[]>([]);
@@ -435,6 +436,29 @@ export default function CreateImagesPage() {
     }
   }, [isLoggedIn]);
 
+  // Check for recreate data from localStorage
+  useEffect(() => {
+    const recreateDataStr = localStorage.getItem('recreateData');
+    if (recreateDataStr) {
+      try {
+        const parsedData = JSON.parse(recreateDataStr);
+        // Only use data if it's for image and not too old (within 5 minutes)
+        if (parsedData.type === 'image' && Date.now() - parsedData.timestamp < 300000) {
+          console.log('Found recreate data for image:', parsedData);
+          setRecreateData(parsedData);
+          // Clear the data after using it
+          localStorage.removeItem('recreateData');
+        } else {
+          // Clean up old or irrelevant data
+          localStorage.removeItem('recreateData');
+        }
+      } catch (error) {
+        console.error('Failed to parse recreate data:', error);
+        localStorage.removeItem('recreateData');
+      }
+    }
+  }, []);
+
   // 탭 변경 시 모델 목록 업데이트
   useEffect(() => {
     const currentModels =
@@ -742,6 +766,7 @@ export default function CreateImagesPage() {
         characterModels={characterModels}
         checkpointModels={checkpointModels}
         onEnhancePrompt={handleEnhancePrompt}
+        recreateData={recreateData}
       />
       
       {/* Credit Insufficient Modal */}

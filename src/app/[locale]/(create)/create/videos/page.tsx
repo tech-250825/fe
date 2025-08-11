@@ -63,6 +63,7 @@ export default function CreatePage() {
   const [selectedFrames, setSelectedFrames] = useState(81);
   const [showTutorial, setShowTutorial] = useState(false);
   const [showCreditModal, setShowCreditModal] = useState(false);
+  const [recreateData, setRecreateData] = useState<any>(null);
 
   // taskId가 있으면 해당 영상 찾기
   const selectedTask = taskId
@@ -587,6 +588,29 @@ export default function CreatePage() {
     }
   }, [isLoggedIn]);
 
+  // Check for recreate data from localStorage
+  useEffect(() => {
+    const recreateDataStr = localStorage.getItem('recreateData');
+    if (recreateDataStr) {
+      try {
+        const parsedData = JSON.parse(recreateDataStr);
+        // Only use data if it's for video and not too old (within 5 minutes)
+        if (parsedData.type === 'video' && Date.now() - parsedData.timestamp < 300000) {
+          console.log('Found recreate data for video:', parsedData);
+          setRecreateData(parsedData);
+          // Clear the data after using it
+          localStorage.removeItem('recreateData');
+        } else {
+          // Clean up old or irrelevant data
+          localStorage.removeItem('recreateData');
+        }
+      } catch (error) {
+        console.error('Failed to parse recreate data:', error);
+        localStorage.removeItem('recreateData');
+      }
+    }
+  }, []);
+
   // 탭 변경 시 모델 목록 업데이트
   useEffect(() => {
     const currentModels =
@@ -787,6 +811,7 @@ export default function CreatePage() {
         styleModels={styleModels}
         characterModels={characterModels}
         onEnhancePrompt={handleEnhancePrompt}
+        recreateData={recreateData}
       />
       
       {/* Tutorial Modal */}

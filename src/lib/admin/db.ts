@@ -1,3 +1,5 @@
+// DISABLED: Database connection removed - No longer needed
+/*
 import mysql from "mysql2/promise";
 
 const dbConfig = {
@@ -26,3 +28,12 @@ export async function query(sql: string, params?: any[]): Promise<any> {
 }
 
 export default pool;
+*/
+
+// Placeholder exports to prevent import errors
+export async function query(sql: string, params?: any[]): Promise<any> {
+  console.log("🚫 Database connection disabled - query() called but not executed");
+  return [];
+}
+
+export default null;
