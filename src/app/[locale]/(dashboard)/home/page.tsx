@@ -74,7 +74,7 @@ const HomePage: React.FC = () => {
   const [currentVideoUrl, setCurrentVideoUrl] = useState("");
 
   // Explore section state
-  const [activeTab, setActiveTab] = useState<"all" | "videos" | "images">("all");
+  const [activeTab, setActiveTab] = useState<"all" | "animation" | "videos" | "images">("all");
   const [publicContent, setPublicContent] = useState<PublicItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
@@ -266,6 +266,8 @@ const getTabContent = () => {
   switch (activeTab) {
     case "images":
       return publicContent.filter(item => item.type === "image");
+    case "animation":
+      return publicContent.filter(item => item.type === "video");
     case "videos":
       return publicContent.filter(item => item.type === "video");
     case "all":
@@ -449,10 +451,13 @@ const resumeAutoplay = () => {
           </p>
         </div>
 
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "all" | "videos" | "images")} className="w-full">
+        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "all" | "animation" | "videos" | "images")} className="w-full">
           <TabsList className="flex gap-4">
             <TabsTrigger value="all" className="text-sm font-medium">
               All ({publicContent?.length || 0})
+            </TabsTrigger>
+            <TabsTrigger value="animation" className="text-sm font-medium">
+              Animation ({publicContent?.filter(item => item.type === "video").length || 0})
             </TabsTrigger>
             <TabsTrigger value="videos" className="text-sm font-medium">
               Videos ({publicContent?.filter(item => item.type === "video").length || 0})
