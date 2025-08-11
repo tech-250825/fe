@@ -371,8 +371,7 @@ const CinematicVideoCard: React.FC<VideoCardProps> = ({
       return {
         className: "",
         style: { 
-          width: '280px', // 고정 폭
-          maxWidth: '90vw' // 모바일에서는 화면 폭의 90%를 넘지 않음
+          width: 'min(240px, 70vw)', // 240px와 화면 폭의 70% 중 작은 값
         }
       };
     }
