@@ -451,10 +451,39 @@ const resumeAutoplay = () => {
                   // Skip items without image data
                   if (!item.image || !item.image.url) return null;
                   
+                  // Debug: Log video URLs
+                  if (isVideo) {
+                    console.log('Rendering video item:', item.image.url);
+                  }
+                  
                   return (
                     <div 
                       key={`${item.type}-${item.task.id}-${item.image.id}`} 
                       className="break-inside-avoid mb-4 relative group cursor-pointer overflow-hidden rounded-lg"
+                      onMouseEnter={(e) => {
+                        if (isVideo) {
+                          const video = e.currentTarget.querySelector('video');
+                          if (video) {
+                            console.log('Div hover - attempting to play video:', video.src);
+                            video.muted = true;
+                            video.play().then(() => {
+                              console.log('Video started playing from div hover');
+                            }).catch((error) => {
+                              console.error('Video play failed from div hover:', error);
+                            });
+                          }
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (isVideo) {
+                          const video = e.currentTarget.querySelector('video');
+                          if (video) {
+                            console.log('Div leave - pausing video');
+                            video.pause();
+                            video.currentTime = 0;
+                          }
+                        }
+                      }}
                     >
                       {isVideo ? (
                         <video
@@ -463,10 +492,36 @@ const resumeAutoplay = () => {
                           muted
                           loop
                           playsInline
-                          onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
+                          preload="metadata"
+                          onMouseEnter={(e) => {
+                            const video = e.currentTarget;
+                            console.log('Mouse entered, attempting to play video:', video.src);
+                            console.log('Video readyState:', video.readyState);
+                            console.log('Video muted:', video.muted);
+                            video.muted = true; // Ensure it's muted for autoplay
+                            video.play().then(() => {
+                              console.log('Video started playing successfully');
+                            }).catch((error) => {
+                              console.error('Video play failed:', error);
+                              console.log('Error details:', error.name, error.message);
+                            });
+                          }}
                           onMouseLeave={(e) => {
-                            e.currentTarget.pause();
-                            e.currentTarget.currentTime = 0;
+                            const video = e.currentTarget;
+                            video.pause();
+                            video.currentTime = 0;
+                          }}
+                          onCanPlay={(e) => {
+                            // Ensure video is ready to play
+                            const video = e.currentTarget;
+                            console.log('Video can play:', video.src);
+                            video.muted = true;
+                          }}
+                          onLoadedData={(e) => {
+                            console.log('Video loaded data:', e.currentTarget.src);
+                          }}
+                          onError={(e) => {
+                            console.error('Video error:', e.currentTarget.error);
                           }}
                         />
                       ) : (
@@ -478,13 +533,13 @@ const resumeAutoplay = () => {
                         />
                       )}
                       
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-end p-3">
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-end p-3 pointer-events-none">
                         <div className="text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300 line-clamp-2">
                           {item.task.prompt}
                         </div>
                       </div>
                       
-                      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
                         <div className={`px-2 py-1 rounded-full text-xs font-medium ${
                           isVideo ? 'bg-red-500 text-white' : 'bg-blue-500 text-white'
                         }`}>
@@ -493,14 +548,14 @@ const resumeAutoplay = () => {
                       </div>
                       
                       {item.task.lora && (
-                        <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
                           <div className="px-2 py-1 rounded-full text-xs font-medium bg-purple-500 text-white">
                             {item.task.lora}
                           </div>
                         </div>
                       )}
                       
-                      <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-auto">
                         <Button
                           size="sm"
                           variant="secondary"
@@ -508,7 +563,7 @@ const resumeAutoplay = () => {
                             e.stopPropagation();
                             handleRecreate(item);
                           }}
-                          className="text-xs h-7 px-2 bg-white/90 hover:bg-white text-black font-medium"
+                          className="text-xs h-7 px-2 bg-white/90 hover:bg-white text-black font-medium pointer-events-auto"
                         >
                           <Copy className="w-3 h-3 mr-1" />
                           Recreate
