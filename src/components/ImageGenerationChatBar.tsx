@@ -160,24 +160,8 @@ export function ImageGenerationChatBar({
     console.log("🎯 Style model:", selections.style);
     console.log("🎯 Character model:", selections.character);
     
-    // Show checkpoint badge (prioritize checkpoint, then style, then character)
-    if (selections.checkpoint) {
-      badges.push(
-        <Badge
-          key="checkpoint"
-          variant="secondary"
-          className="flex items-center gap-1"
-        >
-          Checkpoint: {selections.checkpoint?.name}
-          <button
-            onClick={() => handleBadgeRemove("style")}
-            className="rounded-full hover:bg-muted-foreground/20"
-          >
-            <X className="h-3 w-3" />
-          </button>
-        </Badge>
-      );
-    } else if (selections.style) {
+    // Always show lora badge (style or character)
+    if (selections.style) {
       badges.push(
         <Badge
           key="style"
