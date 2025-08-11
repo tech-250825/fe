@@ -74,7 +74,7 @@ const HomePage: React.FC = () => {
   const [currentVideoUrl, setCurrentVideoUrl] = useState("");
 
   // Explore section state
-  const [activeTab, setActiveTab] = useState<"all" | "videos" | "images">("all");
+  const [activeTab, setActiveTab] = useState<"all" | "animation" | "videos" | "images">("all");
   const [publicContent, setPublicContent] = useState<PublicItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
@@ -166,8 +166,8 @@ const HomePage: React.FC = () => {
 const heroSlides = [
   {
     id: "hero1",
-    type: "hls",
-    src: "https://image.hoit.ai.kr/landingpage_video/hero1/hero1.m3u8",
+    type: "mp4",
+    src: "/hero/hero_1.mp4",
     titleKey: "hero.consistentCharacter",
   },
   {
@@ -266,6 +266,8 @@ const getTabContent = () => {
   switch (activeTab) {
     case "images":
       return publicContent.filter(item => item.type === "image");
+    case "animation":
+      return publicContent.filter(item => item.type === "video");
     case "videos":
       return publicContent.filter(item => item.type === "video");
     case "all":
@@ -343,53 +345,13 @@ const resumeAutoplay = () => {
 
   return (
     <div className="p-10 bg-background">
-      {/* Hero Section - Side CTA + Carousel (no fixed height, equalized) */}
+      {/* Hero Section - Video on top, 2 CTAs below */}
       <section className="mb-8 md:mb-10 lg:mb-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:h-[500px]">
-          {/* LEFT: CTA Panel */}
-          <aside className="lg:col-span-4 flex">
-            {/* ← 오른쪽 히어로 높이에 맞춰 커리도록 h-full + flex-1 */}
-            <div className="flex flex-col gap-3 w-full h-full">
-              <div className="flex-1 rounded-2xl bg-black/55 backdrop-blur-md border border-white/10 p-4 shadow-2xl flex flex-col justify-between">
-                <div>
-                  <h3 className="text-white/90 text-xs font-medium mb-1">Quick Start</h3>
-                  <p className="text-white text-lg font-extrabold leading-tight">Create Videos</p>
-                  <p className="text-white/70 text-xs mt-1">Turn prompts into animation</p>
-                </div>
-                <a href="/create/videos" className="mt-3 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-4 py-2 text-sm transition">
-                  Create Videos
-                </a>
-              </div>
-
-              <div className="flex-1 rounded-2xl bg-black/55 backdrop-blur-md border border-white/10 p-4 shadow-2xl flex flex-col justify-between">
-                <div>
-                  <h3 className="text-white/90 text-xs font-medium mb-1">Generate</h3>
-                  <p className="text-white text-lg font-extrabold leading-tight">Create Images</p>
-                  <p className="text-white/70 text-xs mt-1">AI-powered image creation</p>
-                </div>
-                <a href="/create/images" className="mt-3 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-4 py-2 text-sm transition">
-                  Create Images
-                </a>
-              </div>
-
-              <div className="flex-1 rounded-2xl bg-black/55 backdrop-blur-md border border-white/10 p-4 shadow-2xl flex flex-col justify-between">
-                <div>
-                  <h3 className="text-white/90 text-xs font-medium mb-1">Workflow</h3>
-                  <p className="text-white text-lg font-extrabold leading-tight">Create with Boards</p>
-                  <p className="text-white/70 text-xs mt-1">Plan scenes then generate</p>
-                </div>
-                <a href="/boards" className="mt-3 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-4 py-2 text-sm transition">
-                  Create with Boards
-                </a>
-              </div>
-            </div>
-          </aside>
-
-          {/* RIGHT: Hero Carousel */}
-          <div className="lg:col-span-8 flex">
-            {/* ← 높이는 비율로 결정 (그리드 행 높이의 기준) */}
+        <div className="flex flex-col gap-6">
+          {/* TOP: Hero Carousel */}
+          <div className="w-full">
             <div
-              className="relative w-full h-full rounded-xl overflow-hidden shadow-2xl bg-black"
+              className="relative w-full h-[400px] lg:h-[500px] rounded-xl overflow-hidden shadow-2xl bg-black"
               onMouseEnter={pauseAutoplay}
               onMouseLeave={resumeAutoplay}
             >
@@ -424,7 +386,7 @@ const resumeAutoplay = () => {
                 );
               })()}
 
-              {/* Prev / Next / Indicators 그대로 */}
+              {/* Prev / Next / Indicators */}
               <button onClick={prev} className="absolute left-3 top-1/2 -translate-y-1/2 z-10 rounded-full bg-black/40 hover:bg-black/60 px-3 py-2 text-white">‹</button>
               <button onClick={next} className="absolute right-3 top-1/2 -translate-y-1/2 z-10 rounded-full bg-black/40 hover:bg-black/60 px-3 py-2 text-white">›</button>
               <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex gap-2">
@@ -435,24 +397,43 @@ const resumeAutoplay = () => {
               <button className="absolute inset-0 z-0" onClick={next} aria-label="Next slide" />
             </div>
           </div>
+
+          {/* BOTTOM: 2 CTA Panels side by side */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="rounded-2xl bg-black/55 backdrop-blur-md border border-white/10 p-6 shadow-2xl flex flex-col justify-between h-[200px]">
+              <div>
+                <h3 className="text-white/90 text-sm font-medium mb-2">Quick Start</h3>
+                <p className="text-white text-2xl font-extrabold leading-tight mb-1">Create Videos</p>
+                <p className="text-white/70 text-sm">Turn prompts into animation</p>
+              </div>
+              <a href="/create/videos" className="mt-4 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-6 py-3 text-sm transition">
+                Create Videos
+              </a>
+            </div>
+
+            <div className="rounded-2xl bg-black/55 backdrop-blur-md border border-white/10 p-6 shadow-2xl flex flex-col justify-between h-[200px]">
+              <div>
+                <h3 className="text-white/90 text-sm font-medium mb-2">Generate</h3>
+                <p className="text-white text-2xl font-extrabold leading-tight mb-1">Create Images</p>
+                <p className="text-white/70 text-sm">AI-powered image creation</p>
+              </div>
+              <a href="/create/images" className="mt-4 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-6 py-3 text-sm transition">
+                Create Images
+              </a>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Explore Section */}
+      {/* Content Section */}
       <section className="mb-8 md:mb-10 lg:mb-12">
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold mb-4 text-foreground">
-            {t("explore.title")}
-          </h2>
-          <p className="text-muted-foreground">
-            Discover amazing content created by our community
-          </p>
-        </div>
-
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "all" | "videos" | "images")} className="w-full">
+        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "all" | "animation" | "videos" | "images")} className="w-full">
           <TabsList className="flex gap-4">
             <TabsTrigger value="all" className="text-sm font-medium">
               All ({publicContent?.length || 0})
+            </TabsTrigger>
+            <TabsTrigger value="animation" className="text-sm font-medium">
+              Animation ({publicContent?.filter(item => item.type === "video").length || 0})
             </TabsTrigger>
             <TabsTrigger value="videos" className="text-sm font-medium">
               Videos ({publicContent?.filter(item => item.type === "video").length || 0})

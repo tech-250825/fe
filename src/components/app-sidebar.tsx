@@ -16,6 +16,7 @@ import {
   Sun,
   Moon,
   Folder, // 보드 아이콘 추가
+  Gift, // Get Credits 아이콘 추가
 } from "lucide-react";
 import { MessageCircle } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -60,6 +61,7 @@ import LocaleSwitcherDropdown from "@/components/LocaleSwitcher"; // 언어 스�
 import { useState } from "react"; // 드롭다운 상태 관리용
 import { useTheme } from "@/contexts/ThemeContext"; // 테마 컨텍스트 추가
 import { LoginModal } from "@/components/login-modal";
+import { GetCreditsModal } from "@/components/GetCreditsModal"; // Get Credits 모달 추가
 
 export function AppSidebar() {
   const t = useTranslations("Sidebar");
@@ -70,6 +72,7 @@ export function AppSidebar() {
   // 드롭다운 열림/닫힘 상태 관리
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isGetCreditsModalOpen, setIsGetCreditsModalOpen] = useState(false); // Get Credits 모달 상태
 
   // 네비게이션 메뉴 아이템들
   const navigationItems = [
@@ -93,11 +96,6 @@ export function AppSidebar() {
   // 도구 메뉴 아이템들 (번역 적용)
   const toolItems = [
     {
-      title: t("tools.videoBoards"),
-      url: "/boards",
-      icon: Folder,
-    },
-    {
       title: t("tools.createImages"),
       url: "/create/images",
       icon: ImageIcon,
@@ -106,6 +104,11 @@ export function AppSidebar() {
       title: t("tools.createVideos"),
       url: "/create/videos",
       icon: Video,
+    },
+    {
+      title: t("tools.videoBoards"),
+      url: "/boards",
+      icon: Folder,
     },
     // {
     //   title: t("tools.trainCharacters"),
@@ -203,8 +206,19 @@ export function AppSidebar() {
 
       {/* 사이드바 푸터 - 테마 체인저와 사용자 프로필 */}
       <SidebarFooter>
-        {/* 테마 체인저 */}
+        {/* Get Credits 버튼 */}
         <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton 
+              onClick={() => setIsGetCreditsModalOpen(true)} 
+              className="w-full"
+            >
+              <Gift className="w-4 h-4" />
+              <span>Get Credits</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+
+          {/* 테마 체인저 */}
           <SidebarMenuItem>
             <SidebarMenuButton onClick={toggleTheme} className="w-full">
               {theme === "dark" ? (
@@ -332,6 +346,12 @@ export function AppSidebar() {
       <LoginModal
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
+      />
+
+      {/* Get Credits Modal */}
+      <GetCreditsModal
+        isOpen={isGetCreditsModalOpen}
+        onClose={() => setIsGetCreditsModalOpen(false)}
       />
     </Sidebar>
   );
