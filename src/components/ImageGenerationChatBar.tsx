@@ -157,7 +157,7 @@ export function ImageGenerationChatBar({
           variant="secondary"
           className="flex items-center gap-1"
         >
-          Checkpoint: {selections.checkpoint?.name}
+          Style: {selections.checkpoint?.name}
         </Badge>
       );
     } else if (selections.style) {
