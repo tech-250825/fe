@@ -471,71 +471,69 @@ const resumeAutoplay = () => {
                   if (!item.image || !item.image.url) return null;
                   
                   return (
-                    <Card 
+                    <div 
                       key={`${item.type}-${item.task.id}-${item.image.id}`} 
-                      className="break-inside-avoid mb-4 overflow-hidden hover:shadow-lg transition-shadow group"
+                      className="break-inside-avoid mb-4 relative group cursor-pointer overflow-hidden rounded-lg"
                     >
-                      <div className="relative aspect-auto">
-                        {isVideo ? (
-                          <video
-                            src={item.image.url}
-                            className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300"
-                            muted
-                            loop
-                            playsInline
-                            onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.pause();
-                              e.currentTarget.currentTime = 0;
-                            }}
-                          />
-                        ) : (
-                          <img
-                            src={item.image.url}
-                            alt={item.task.prompt}
-                            className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300"
-                            loading="lazy"
-                          />
-                        )}
-                        
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-end p-3">
-                          <div className="text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300 line-clamp-2">
-                            {item.task.prompt}
-                          </div>
-                        </div>
-                        
-                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            isVideo ? 'bg-red-500 text-white' : 'bg-blue-500 text-white'
-                          }`}>
-                            {isVideo ? 'Video' : 'Image'}
-                          </div>
-                        </div>
-                        
-                        {item.task.lora && (
-                          <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <div className="px-2 py-1 rounded-full text-xs font-medium bg-purple-500 text-white">
-                              {item.task.lora}
-                            </div>
-                          </div>
-                        )}
-                        
-                        <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          <Button
-                            size="sm"
-                            variant="secondary"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleRecreate(item);
-                            }}
-                            className="text-xs h-7 px-2 bg-white/90 hover:bg-white text-black font-medium"
-                          >
-                            <Copy className="w-3 h-3 mr-1" />
-                            Recreate
-                          </Button>
+                      {isVideo ? (
+                        <video
+                          src={item.image.url}
+                          className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300"
+                          muted
+                          loop
+                          playsInline
+                          onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.pause();
+                            e.currentTarget.currentTime = 0;
+                          }}
+                        />
+                      ) : (
+                        <img
+                          src={item.image.url}
+                          alt={item.task.prompt}
+                          className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300"
+                          loading="lazy"
+                        />
+                      )}
+                      
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-end p-3">
+                        <div className="text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300 line-clamp-2">
+                          {item.task.prompt}
                         </div>
                       </div>
-                    </Card>
+                      
+                      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          isVideo ? 'bg-red-500 text-white' : 'bg-blue-500 text-white'
+                        }`}>
+                          {isVideo ? 'Video' : 'Image'}
+                        </div>
+                      </div>
+                      
+                      {item.task.lora && (
+                        <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <div className="px-2 py-1 rounded-full text-xs font-medium bg-purple-500 text-white">
+                            {item.task.lora}
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRecreate(item);
+                          }}
+                          className="text-xs h-7 px-2 bg-white/90 hover:bg-white text-black font-medium"
+                        >
+                          <Copy className="w-3 h-3 mr-1" />
+                          Recreate
+                        </Button>
+                      </div>
+                    </div>
                   );
                 })}
               </div>
