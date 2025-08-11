@@ -377,7 +377,7 @@ export function ModelSelectionDropdown({
                                   style.thumbnail ||
                                   "/placeholder.svg"
                                 }
-                                isSelected={tempOptions.style?.name === style.name}
+                                isSelected={tempOptions.style?.id === style.id}
                                 onClick={() =>
                                   setTempOptions((prev) => ({
                                     ...prev,
@@ -412,7 +412,7 @@ export function ModelSelectionDropdown({
                                   char.thumbnail ||
                                   "/placeholder.svg"
                                 }
-                                isSelected={tempOptions.character?.name === char.name}
+                                isSelected={tempOptions.character?.id === char.id}
                                 onClick={() =>
                                   setTempOptions((prev) => ({
                                     ...prev,
@@ -438,7 +438,7 @@ export function ModelSelectionDropdown({
                       <CardContent className="p-2 sm:p-4 max-h-[200px] sm:max-h-[250px] overflow-y-auto">
                         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
                           {checkpointModels && checkpointModels.length > 0 ? checkpointModels.map((checkpoint) => {
-                            const isSelected = tempOptions.checkpoint?.name === checkpoint.name;
+                            const isSelected = tempOptions.checkpoint?.id === checkpoint.id;
                             console.log(`🏗️ Checkpoint ${checkpoint.name} isSelected:`, isSelected, "tempOptions.checkpoint:", tempOptions.checkpoint);
                             
                             return (

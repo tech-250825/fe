@@ -290,8 +290,8 @@ export default function CreateImagesPage() {
   ) => {
     setIsGenerating(true);
 
-    // Get lora model with fallback
-    const selectedLoraModel = options.style || options.character;
+    // Get checkpoint model with fallback to ensure compatibility
+    const selectedCheckpointModel = options.checkpoint || options.style || options.character;
     
     const tempId = Date.now();
     
@@ -317,7 +317,7 @@ export default function CreateImagesPage() {
       task: {
         id: tempId,
         prompt: prompt,
-        lora: selectedLoraModel?.name || "studio ghibli style",
+        lora: selectedCheckpointModel?.name || "studio ghibli style",
         width: dimensions.width,
         height: dimensions.height,
         status: "IN_PROGRESS",
@@ -330,8 +330,7 @@ export default function CreateImagesPage() {
     setTaskList((prev) => [optimisticTask, ...prev]);
 
     try {
-      const selectedLoraModel = options.style || options.character;
-      const selectedCheckpointModel = options.checkpoint;
+      // Use the same selectedCheckpointModel variable for consistency
       const resolutionProfile = getResolutionProfile(options.aspectRatio, options.quality);
 
       // Auto-select LoRA based on aspect ratio
@@ -387,6 +386,11 @@ export default function CreateImagesPage() {
         prompt: prompt,
         resolutionProfile: resolutionProfile,
       };
+      
+      // Validation check - ensure we have a valid checkpoint model
+      if (!selectedCheckpointModel?.id) {
+        console.warn("⚠️ No checkpoint model selected - using fallback ID 0");
+      }
       
       const apiEndpoint = useV2Endpoint ? '/api/images/create/v2' : '/api/images/create';
       
