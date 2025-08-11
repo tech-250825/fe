@@ -287,7 +287,7 @@ const ProfilePage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex flex-col items-start justify-between gap-3 border-b py-3 last:border-0 sm:flex-row sm:items-center">
+              {/* <div className="flex flex-col items-start justify-between gap-3 border-b py-3 last:border-0 sm:flex-row sm:items-center">
                 <div className="flex items-center gap-3">
                   <div className="bg-red-50 rounded-md p-2">
                     <UserX className="text-red-500 size-4" />
@@ -307,7 +307,7 @@ const ProfilePage: React.FC = () => {
                     {t("account.withdraw.button")}
                   </Button>
                 </div>
-              </div>
+              </div> */}
             </div>
           </CardContent>
         </Card>
