@@ -345,16 +345,18 @@ const resumeAutoplay = () => {
 
   return (
     <div className="p-10 bg-background">
-      {/* Hero Section - Video on top, 2 CTAs below */}
-      <section className="mb-8 md:mb-10 lg:mb-12">
-        <div className="flex flex-col gap-6">
-          {/* TOP: Hero Carousel */}
-          <div className="w-full">
-            <div
-              className="relative w-full h-[400px] lg:h-[500px] rounded-xl overflow-hidden shadow-2xl bg-black"
-              onMouseEnter={pauseAutoplay}
-              onMouseLeave={resumeAutoplay}
-            >
+      {/* Container with max width */}
+      <div className="max-w-7xl mx-auto">
+        {/* Hero Section - Video on top, 2 CTAs below */}
+        <section className="mb-8 md:mb-10 lg:mb-12">
+          <div className="flex flex-col gap-6">
+            {/* TOP: Hero Carousel */}
+            <div className="w-full">
+              <div
+                className="relative w-full aspect-video rounded-xl overflow-hidden shadow-2xl bg-black"
+                onMouseEnter={pauseAutoplay}
+                onMouseLeave={resumeAutoplay}
+              >
               {(() => {
                 const slide = heroSlides[currentSlide];
                 return (
@@ -693,6 +695,7 @@ const resumeAutoplay = () => {
         onClose={closeVideoPopup}
         videoSrc={currentVideoUrl}
       />
+      </div>
     </div>
   );
 };
