@@ -363,20 +363,49 @@ const CinematicVideoCard: React.FC<VideoCardProps> = ({
     }
   };
 
+  const getContainerStyle = () => {
+    if (!aspectRatio) return { className: "max-w-md", style: {} };
+    
+    // 9:16 같은 세로 비율일 때는 고정 크기 (비율 유지하되 최대 크기 제한)
+    if (aspectRatio < 0.8) {
+      return {
+        className: "",
+        style: { 
+          width: '280px', // 고정 폭
+          maxWidth: '90vw' // 모바일에서는 화면 폭의 90%를 넘지 않음
+        }
+      };
+    }
+    // 1:1 비율
+    else if (aspectRatio >= 0.8 && aspectRatio <= 1.2) {
+      return { className: "max-w-sm sm:max-w-md", style: {} };
+    }
+    // 16:9 같은 가로 비율일 때는 반응형으로 폭을 넓게
+    else {
+      return { className: "max-w-md sm:max-w-lg md:max-w-xl", style: {} };
+    }
+  };
+
+  const containerConfig = getContainerStyle();
+
   return (
     <div
-      className={`relative overflow-hidden rounded-xl bg-black shadow-lg transition-all duration-300 cursor-pointer w-full max-w-xs sm:max-w-sm md:max-w-md mx-auto ${
+      className={`relative overflow-hidden rounded-xl bg-black shadow-lg transition-all duration-300 cursor-pointer w-full ${containerConfig.className} mx-auto ${
         isHovered ? "scale-105 shadow-2xl" : "scale-100"
       }`}
+      style={containerConfig.style}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       {/* Dynamic container based on video aspect ratio */}
-      <div className="relative w-full" style={aspectRatio ? { aspectRatio: `${aspectRatio}` } : { aspectRatio: '16/9' }}>
+      <div 
+        className="relative w-full" 
+        style={aspectRatio ? { aspectRatio: `${aspectRatio}` } : { aspectRatio: '16/9' }}
+      >
         <video
           ref={videoRef}
           src={videoUrl}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain"
           muted
           loop
           playsInline
