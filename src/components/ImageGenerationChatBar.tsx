@@ -149,8 +149,18 @@ export function ImageGenerationChatBar({
   const selectionBadges = useMemo(() => {
     const badges = [];
     
-    // Always show lora badge (style or character)
-    if (selections.style) {
+    // Show checkpoint badge (prioritize checkpoint over style/character)
+    if (selections.checkpoint) {
+      badges.push(
+        <Badge
+          key="checkpoint"
+          variant="secondary"
+          className="flex items-center gap-1"
+        >
+          Checkpoint: {selections.checkpoint?.name}
+        </Badge>
+      );
+    } else if (selections.style) {
       badges.push(
         <Badge
           key="style"
