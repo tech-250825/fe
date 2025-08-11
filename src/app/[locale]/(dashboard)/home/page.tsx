@@ -166,8 +166,8 @@ const HomePage: React.FC = () => {
 const heroSlides = [
   {
     id: "hero1",
-    type: "hls",
-    src: "https://image.hoit.ai.kr/landingpage_video/hero1/hero1.m3u8",
+    type: "mp4",
+    src: "/hero/hero_1.mp4",
     titleKey: "hero.consistentCharacter",
   },
   {
