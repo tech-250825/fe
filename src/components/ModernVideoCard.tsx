@@ -154,7 +154,7 @@ export const ModernVideoCard: React.FC<VideoCardProps> = ({
           <video
             ref={videoRef}
             src={videoUrl}
-            className="w-full aspect-video object-cover"
+            className="w-full h-auto object-contain"
             muted={isMuted}
             loop
             playsInline
@@ -298,7 +298,7 @@ const CompactVideoCard: React.FC<VideoCardProps> = ({
           <video
             ref={videoRef}
             src={videoUrl}
-            className="w-full aspect-video object-cover"
+            className="w-full h-auto object-contain"
             muted
             loop
             playsInline
@@ -363,37 +363,16 @@ const CinematicVideoCard: React.FC<VideoCardProps> = ({
     }
   };
 
-  // Calculate dynamic width based on aspect ratio
-  const getCardStyles = () => {
-    if (!aspectRatio) return { width: '320px', height: '320px' }; // Default square
-    
-    const baseHeight = 320; // Fixed height in pixels
-    const calculatedWidth = baseHeight * aspectRatio;
-    
-    // Set min/max widths to prevent extreme sizes
-    const minWidth = 200;
-    const maxWidth = 500;
-    const finalWidth = Math.max(minWidth, Math.min(maxWidth, calculatedWidth));
-    
-    return {
-      width: `${finalWidth}px`,
-      height: `${baseHeight}px`
-    };
-  };
-
-  const cardStyles = getCardStyles();
-
   return (
     <div
-      className={`relative overflow-hidden rounded-xl bg-black shadow-lg transition-all duration-300 cursor-pointer ${
+      className={`relative overflow-hidden rounded-xl bg-black shadow-lg transition-all duration-300 cursor-pointer w-full max-w-xs sm:max-w-sm md:max-w-md mx-auto ${
         isHovered ? "scale-105 shadow-2xl" : "scale-100"
       }`}
-      style={cardStyles}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       {/* Dynamic container based on video aspect ratio */}
-      <div className="relative w-full h-full flex items-center justify-center">
+      <div className="relative w-full" style={aspectRatio ? { aspectRatio: `${aspectRatio}` } : { aspectRatio: '16/9' }}>
         <video
           ref={videoRef}
           src={videoUrl}
@@ -480,15 +459,15 @@ const InstagramVideoCard: React.FC<VideoCardProps> = ({
           </Button>
         </div>
 
-        {/* 비디오 (정사각형) */}
+        {/* 비디오 (원본 비율 유지) */}
         <div
-          className="relative aspect-square cursor-pointer"
+          className="relative cursor-pointer"
           onClick={handlePlayPause}
         >
           <video
             ref={videoRef}
             src={videoUrl}
-            className="w-full h-full object-cover"
+            className="w-full h-auto object-contain"
             muted
             loop
             playsInline

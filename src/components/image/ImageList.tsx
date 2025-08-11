@@ -31,7 +31,7 @@ export function ImageList({
 
   if (taskList.length === 0 && !loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
         <div className="text-6xl mb-4">🎨</div>
         <h3 className="text-lg font-medium text-foreground mb-2">
           {t("list.empty.title")}
@@ -44,9 +44,9 @@ export function ImageList({
   }
 
   return (
-    <div className="w-full space-y-8 pb-32 pt-40">
+    <div className="flex flex-col items-center w-full space-y-8 pb-32 pt-40">
       {taskList.map((item) => (
-        <div key={item.task.id} className="max-w-2xl mx-auto">
+        <div key={item.task.id} className="w-full max-w-2xl">
           {/* Image Parameters */}
           <ImageParameters
             lora={item.task.lora}
