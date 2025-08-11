@@ -21,6 +21,17 @@ const defaultOptions: ImageOptions = {
   quality: "720p" as "480p" | "720p",
 };
 
+interface RecreateData {
+  prompt: string;
+  lora: string | null;
+  imageUrl: string | null;
+  type: "video" | "image";
+  aspectRatio: "1:1" | "16:9" | "9:16";
+  quality: "480p" | "720p";
+  duration: number;
+  timestamp: number;
+}
+
 interface ImageChatInputUIProps {
   onSubmit: (
     prompt: string,
@@ -33,6 +44,7 @@ interface ImageChatInputUIProps {
   characterModels: any[];
   checkpointModels: any[];
   onEnhancePrompt?: (prompt: string, selections: ImageOptions) => Promise<string>;
+  recreateData?: RecreateData | null;
 }
 
 export function ImageGenerationChatBar({
@@ -43,6 +55,7 @@ export function ImageGenerationChatBar({
   characterModels,
   checkpointModels,
   onEnhancePrompt,
+  recreateData,
 }: ImageChatInputUIProps) {
   const t = useTranslations("VideoCreation"); // Reuse VideoCreation translations for now
   const [mode] = useState<ImageGenerationMode>("t2i"); // Fixed to text-to-image
@@ -76,6 +89,33 @@ export function ImageGenerationChatBar({
       }));
     }
   }, [checkpointModels, selections.checkpoint]);
+
+  // Handle recreate data - set initial values from recreate data
+  useEffect(() => {
+    if (recreateData) {
+      console.log('Setting recreate data for images:', recreateData);
+      
+      // Set prompt
+      setPrompt(recreateData.prompt);
+      
+      // Set selections
+      setSelections(prev => ({
+        ...prev,
+        aspectRatio: recreateData.aspectRatio,
+        quality: recreateData.quality,
+        // Find the lora model by name in appropriate models
+        style: recreateData.lora && styleModels.length > 0 
+          ? styleModels.find(model => model.name === recreateData.lora) || prev.style
+          : prev.style,
+        character: recreateData.lora && characterModels.length > 0
+          ? characterModels.find(model => model.name === recreateData.lora) || prev.character
+          : prev.character,
+        checkpoint: recreateData.lora && checkpointModels.length > 0
+          ? checkpointModels.find(model => model.name === recreateData.lora) || prev.checkpoint
+          : prev.checkpoint
+      }));
+    }
+  }, [recreateData, styleModels, characterModels, checkpointModels]);
 
   const handleSubmit = () => {
     if (prompt.trim() && !isGenerating) {

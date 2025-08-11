@@ -30,6 +30,17 @@ const defaultOptions: VideoOptions = {
   quality: "720p" as "480p" | "720p",
 };
 
+interface RecreateData {
+  prompt: string;
+  lora: string | null;
+  imageUrl: string | null;
+  type: "video" | "image";
+  aspectRatio: "1:1" | "16:9" | "9:16";
+  quality: "480p" | "720p";
+  duration: number;
+  timestamp: number;
+}
+
 interface ChatInputUIProps {
   onSubmit: (
     prompt: string,
@@ -43,6 +54,7 @@ interface ChatInputUIProps {
   styleModels: any[];
   characterModels: any[];
   onEnhancePrompt?: (prompt: string, selections: VideoOptions) => Promise<string>;
+  recreateData?: RecreateData | null;
 }
 
 export function VideoGenerationChatBar({
@@ -52,6 +64,7 @@ export function VideoGenerationChatBar({
   styleModels,
   characterModels,
   onEnhancePrompt,
+  recreateData,
 }: ChatInputUIProps) {
   const t = useTranslations("VideoCreation");
   const [mode, setMode] = useState<GenerationMode>("t2v");
@@ -66,6 +79,7 @@ export function VideoGenerationChatBar({
     imageItem: ImageItem;
     imageUrl: string;
   } | null>(null);
+  const [recreateImageUrl, setRecreateImageUrl] = useState<string | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -78,6 +92,50 @@ export function VideoGenerationChatBar({
       }));
     }
   }, [styleModels, selections.style, selections.character]);
+
+  // Handle recreate data - set initial values from recreate data
+  useEffect(() => {
+    if (recreateData) {
+      console.log('Setting recreate data:', recreateData);
+      
+      // Set prompt
+      setPrompt(recreateData.prompt);
+      
+      // Set mode based on whether there's an imageUrl
+      if (recreateData.imageUrl) {
+        setMode("i2v");
+        // Load the image for i2v mode
+        setUploadedImage(recreateData.imageUrl);
+        setRecreateImageUrl(recreateData.imageUrl); // Track the recreate image URL
+        // Clear other image sources
+        setUploadedImageFile(null);
+        setSelectedImageFromLibrary(null);
+        console.log('🖼️ Setting I2V mode with recreate image:', recreateData.imageUrl);
+      } else {
+        setMode("t2v");
+        // Clear any existing images for t2v mode
+        setUploadedImage(null);
+        setUploadedImageFile(null);
+        setRecreateImageUrl(null);
+        setSelectedImageFromLibrary(null);
+      }
+      
+      // Set selections
+      setSelections(prev => ({
+        ...prev,
+        aspectRatio: recreateData.aspectRatio,
+        quality: recreateData.quality,
+        duration: recreateData.duration,
+        // Find the lora model by name
+        style: recreateData.lora && styleModels.length > 0 
+          ? styleModels.find(model => model.name === recreateData.lora) || prev.style
+          : prev.style,
+        character: recreateData.lora && characterModels.length > 0
+          ? characterModels.find(model => model.name === recreateData.lora) || prev.character
+          : prev.character
+      }));
+    }
+  }, [recreateData, styleModels, characterModels]);
 
   const handleImageUpload = useCallback((file: File) => {
     if (file && file.type.startsWith("image/")) {
@@ -104,6 +162,7 @@ export function VideoGenerationChatBar({
     setUploadedImage(null);
     setUploadedImageFile(null);
     setSelectedImageFromLibrary(null);
+    setRecreateImageUrl(null); // Clear recreate image URL as well
     setMode("t2v");
     setSelections((prev) => ({
       ...prev,
@@ -208,15 +267,35 @@ export function VideoGenerationChatBar({
 
   const handleSubmit = () => {
     if (prompt.trim() && !isGenerating) {
+      let libraryImageData = selectedImageFromLibrary;
+      
+      // If we have a recreate image URL, create a fake library image data structure
+      if (recreateImageUrl && !selectedImageFromLibrary && !uploadedImageFile) {
+        libraryImageData = {
+          imageItem: {
+            task: {
+              id: -1, // Fake ID for recreate
+              prompt: "Recreated image",
+              width: 0, // Will be determined by backend
+              height: 0, // Will be determined by backend
+            }
+          } as ImageItem,
+          imageUrl: recreateImageUrl
+        };
+        console.log('🔄 Using recreate image URL for I2V:', recreateImageUrl);
+      }
+      
       onSubmit(
         prompt, 
         mode, 
         selections, 
         uploadedImageFile || undefined,
-        selectedImageFromLibrary || undefined
+        libraryImageData || undefined
       );
-      // Clear the prompt after successful submission
+      
+      // Clear the prompt and recreate state after successful submission
       setPrompt("");
+      setRecreateImageUrl(null);
     }
   };
 

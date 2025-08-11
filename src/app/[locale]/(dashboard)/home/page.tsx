@@ -9,6 +9,9 @@ import { config } from "@/config";
 import { api } from "@/lib/auth/apiClient";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Copy } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface Work {
   id: number;
@@ -62,6 +65,7 @@ interface PublicApiResponse {
 
 const HomePage: React.FC = () => {
   const t = useTranslations("HomePage");
+  const router = useRouter();
   // DISABLED: Database connection removed
   // const [works, setWorks] = useState<Work[]>([]);
   // const [loading, setLoading] = useState(true);
@@ -194,78 +198,59 @@ useEffect(() => {
   };
 }, [heroSlides.length]);
 
-// Fetch public content based on active tab
+// Fetch public content - always fetch both images and videos
 const fetchPublicContent = useCallback(async (reset = false) => {
   setLoading(true);
   try {
-    const params = new URLSearchParams({ size: "6" }); // Smaller size for "all" tab since we're fetching from 2 APIs
+    const params = new URLSearchParams({ size: "50" });
     const currentCursor = reset ? null : nextCursor;
     if (currentCursor) {
       params.append("nextPageCursor", currentCursor);
     }
     
-    if (activeTab === "all") {
-      // For "all" tab, fetch from both APIs
-      const [videosResponse, imagesResponse] = await Promise.all([
-        api.get(`${config.apiUrl}/api/videos/public?${params}`),
-        api.get(`${config.apiUrl}/api/images/public?${params}`)
-      ]);
-      
-      let combinedContent: PublicItem[] = [];
-      let combinedNextCursor = null;
-      
-      if (videosResponse.ok) {
-        const videosData: PublicApiResponse = await videosResponse.json();
-        combinedContent = [...combinedContent, ...videosData.data.content];
-        if (videosData.data.nextPageCursor) {
-          combinedNextCursor = videosData.data.nextPageCursor;
-        }
-      }
-      
-      if (imagesResponse.ok) {
-        const imagesData: PublicApiResponse = await imagesResponse.json();
-        combinedContent = [...combinedContent, ...imagesData.data.content];
-        if (imagesData.data.nextPageCursor) {
-          combinedNextCursor = imagesData.data.nextPageCursor;
-        }
-      }
-      
-      // Sort combined content by creation date
-      combinedContent.sort((a, b) => new Date(b.task.createdAt).getTime() - new Date(a.task.createdAt).getTime());
-      
-      if (reset) {
-        setPublicContent(combinedContent);
-      } else {
-        setPublicContent(prev => [...prev, ...combinedContent]);
-      }
-      
-      setNextCursor(combinedNextCursor);
-      setHasMore(!!combinedNextCursor);
-      
-    } else {
-      // For specific tabs, fetch from single API
-      const endpoint = activeTab === "images" ? "/api/images/public" : "/api/videos/public";
-      const response = await api.get(`${config.apiUrl}${endpoint}?${params}`);
-      
-      if (response.ok) {
-        const apiResponse: PublicApiResponse = await response.json();
-        
-        if (reset) {
-          setPublicContent(apiResponse.data.content);
-        } else {
-          setPublicContent(prev => [...prev, ...apiResponse.data.content]);
-        }
-        
-        setNextCursor(apiResponse.data.nextPageCursor);
-        setHasMore(!!apiResponse.data.nextPageCursor);
+    // Always fetch from both APIs to have complete data for tab counts
+    const [videosResponse, imagesResponse] = await Promise.all([
+      api.get(`${config.apiUrl}/api/videos/public?${params}`),
+      api.get(`${config.apiUrl}/api/images/public?${params}`)
+    ]);
+    
+    let combinedContent: PublicItem[] = [];
+    let combinedNextCursor = null;
+    
+    if (videosResponse.ok) {
+      const videosData: PublicApiResponse = await videosResponse.json();
+      combinedContent = [...combinedContent, ...videosData.data.content];
+      if (videosData.data.nextPageCursor) {
+        combinedNextCursor = videosData.data.nextPageCursor;
       }
     }
+    
+    if (imagesResponse.ok) {
+      const imagesData: PublicApiResponse = await imagesResponse.json();
+      combinedContent = [...combinedContent, ...imagesData.data.content];
+      if (imagesData.data.nextPageCursor) {
+        combinedNextCursor = imagesData.data.nextPageCursor;
+      }
+    }
+    
+    // Sort combined content by creation date
+    combinedContent.sort((a, b) => new Date(b.task.createdAt).getTime() - new Date(a.task.createdAt).getTime());
+    
+    if (reset) {
+      setPublicContent(combinedContent);
+    } else {
+      setPublicContent(prev => [...prev, ...combinedContent]);
+    }
+    
+    setNextCursor(combinedNextCursor);
+    setHasMore(!!combinedNextCursor);
+    
   } catch (error) {
     console.error("Failed to fetch public content:", error);
   } finally {
     setLoading(false);
   }
-}, [activeTab]);
+}, []);
 
 // Load more content for infinite scroll  
 const loadMoreContent = useCallback(() => {
@@ -296,12 +281,16 @@ const handleScroll = useCallback(() => {
   }
 }, [loadMoreContent]);
 
-// Initialize public content on mount and handle tab changes
+// Initialize public content on mount
 useEffect(() => {
-  setPublicContent([]);
-  setNextCursor(null);
-  setHasMore(true);
   fetchPublicContent(true);
+}, []);
+
+// Only reset when changing tabs if we don't have content
+useEffect(() => {
+  if (publicContent.length === 0) {
+    fetchPublicContent(true);
+  }
 }, [activeTab]);
 
 // Handle scroll events
@@ -309,6 +298,29 @@ useEffect(() => {
   window.addEventListener('scroll', handleScroll);
   return () => window.removeEventListener('scroll', handleScroll);
 }, [handleScroll]);
+
+// Recreate function - save item data to localStorage and navigate to create page
+const handleRecreate = (item: PublicItem) => {
+  const recreateData = {
+    prompt: item.task.prompt,
+    lora: item.task.lora,
+    imageUrl: item.task.imageUrl,
+    type: item.type,
+    aspectRatio: item.task.width > item.task.height ? "16:9" : item.task.width < item.task.height ? "9:16" : "1:1",
+    quality: item.task.height >= 720 ? "720p" : "480p",
+    duration: item.task.numFrames && item.task.numFrames > 90 ? 6 : 4,
+    timestamp: Date.now()
+  };
+  
+  localStorage.setItem('recreateData', JSON.stringify(recreateData));
+  
+  // Navigate to appropriate create page
+  if (item.type === "video") {
+    router.push("/create/videos");
+  } else {
+    router.push("/create/images");
+  }
+};
 
 const goTo = (i: number) => setCurrentSlide((i + heroSlides.length) % heroSlides.length);
 const next = () => goTo(currentSlide + 1);
@@ -459,7 +471,10 @@ const resumeAutoplay = () => {
                   if (!item.image || !item.image.url) return null;
                   
                   return (
-                    <Card key={`${item.type}-${item.task.id}-${item.image.id}`} className="break-inside-avoid mb-4 overflow-hidden hover:shadow-lg transition-shadow group">
+                    <Card 
+                      key={`${item.type}-${item.task.id}-${item.image.id}`} 
+                      className="break-inside-avoid mb-4 overflow-hidden hover:shadow-lg transition-shadow group"
+                    >
                       <div className="relative aspect-auto">
                         {isVideo ? (
                           <video
@@ -504,6 +519,21 @@ const resumeAutoplay = () => {
                             </div>
                           </div>
                         )}
+                        
+                        <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRecreate(item);
+                            }}
+                            className="text-xs h-7 px-2 bg-white/90 hover:bg-white text-black font-medium"
+                          >
+                            <Copy className="w-3 h-3 mr-1" />
+                            Recreate
+                          </Button>
+                        </div>
                       </div>
                     </Card>
                   );
