@@ -445,7 +445,7 @@ const resumeAutoplay = () => {
 
           <TabsContent value={activeTab} className="mt-0">
             {getTabContent().length > 0 && (
-              <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4 space-y-4">
+              <div className="columns-2 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4 space-y-4">
                 {getTabContent().map((item) => {
                   const isVideo = item.type === 'video';
                   // Skip items without image data
