@@ -75,7 +75,7 @@ export default function CreateImagesPage() {
 
       // STYLE 모델 조회 - IMAGE 타입으로 변경
       const styleResponse = await api.get(
-        `${config.apiUrl}/api/weights?mediaType=IMAGE&styleType=STYLE&modelType=LORA`
+        `${config.apiUrl}/api/weights?mediaType=IMAGE&styleType=STYLE&modelType=CHECKPOINT`
       );
 
       if (styleResponse.ok) {
@@ -87,7 +87,7 @@ export default function CreateImagesPage() {
 
       // CHARACTER 모델 조회 - IMAGE 타입으로 변경
       const characterResponse = await api.get(
-        `${config.apiUrl}/api/weights?mediaType=IMAGE&styleType=CHARACTER&modelType=LORA`
+        `${config.apiUrl}/api/weights?mediaType=IMAGE&styleType=CHARACTER&modelType=CHECKPOINT`
       );
 
       if (characterResponse.ok) {

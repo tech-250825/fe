@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import type { ImageOptions, ImageGenerationMode } from "@/services/types/image.types";
 import { cn } from "@/lib/utils";
-import { Settings2, Send, Sparkles } from "lucide-react";
+import { Settings2, Send, Sparkles, X } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 
@@ -139,6 +139,12 @@ export function ImageGenerationChatBar({
     }
   };
 
+  const handleBadgeRemove = (key: keyof ImageOptions) => {
+    if (key === "style" || key === "character") {
+      setSelections((prev) => ({ ...prev, [key]: null }));
+    }
+  };
+
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -149,6 +155,11 @@ export function ImageGenerationChatBar({
   const selectionBadges = useMemo(() => {
     const badges = [];
     
+    // Debug: selections 상태 확인
+    console.log("🎯 ImageGenerationChatBar selections:", selections);
+    console.log("🎯 Style model:", selections.style);
+    console.log("🎯 Character model:", selections.character);
+    
     // Always show lora badge (style or character)
     if (selections.style) {
       badges.push(
@@ -158,6 +169,12 @@ export function ImageGenerationChatBar({
           className="flex items-center gap-1"
         >
           Style: {selections.style?.name}
+          <button
+            onClick={() => handleBadgeRemove("style")}
+            className="rounded-full hover:bg-muted-foreground/20"
+          >
+            <X className="h-3 w-3" />
+          </button>
         </Badge>
       );
     } else if (selections.character) {
@@ -168,6 +185,12 @@ export function ImageGenerationChatBar({
           className="flex items-center gap-1"
         >
           Character: {selections.character?.name}
+          <button
+            onClick={() => handleBadgeRemove("character")}
+            className="rounded-full hover:bg-muted-foreground/20"
+          >
+            <X className="h-3 w-3" />
+          </button>
         </Badge>
       );
     }
@@ -214,6 +237,7 @@ export function ImageGenerationChatBar({
                     }}
                     onSave={(videoOptions) => {
                       // Convert video options back to image options
+                      console.log("🔧 ModelSelectionDropdown onSave called with:", videoOptions);
                       setSelections({
                         style: videoOptions.style,
                         character: videoOptions.character,
@@ -221,6 +245,7 @@ export function ImageGenerationChatBar({
                         aspectRatio: videoOptions.aspectRatio,
                         quality: videoOptions.quality,
                       });
+                      console.log("🔧 New selections set");
                     }}
                     onImageUpload={() => {}} // Not used for images page
                     onModeChange={() => {}} // Not used for images page
