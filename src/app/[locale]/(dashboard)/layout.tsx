@@ -6,6 +6,7 @@ import { MobileIconSidebar } from "@/components/MobileIconSidebar";
 import { usePathname } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import LocaleSwitcher from "@/components/LocaleSwitcher";
+import Link from "next/link";
 import dynamic from "next/dynamic";
 
 // SSEProvider를 동적 임포트로 변경
@@ -68,12 +69,16 @@ export default function DashboardLayout({
         {/* Mobile icon sidebar - only show on mobile */}
         <MobileIconSidebar />
         
-        <main className="flex-1 md:ml-0 ml-16">
-          {/* Mobile header with just title */}
+        <main className="flex-1 flex flex-col">
+          {/* Mobile header with logo */}
           <div className="md:hidden flex items-center justify-center p-4 border-b bg-card">
-            <h1 className="text-lg font-semibold text-foreground">{getPageTitle()}</h1>
+            <Link href="/home" className="cursor-pointer hover:opacity-80 transition-opacity">
+              <div className="text-2xl font-extrabold text-foreground tracking-tight">
+                Hoit
+              </div>
+            </Link>
           </div>
-          <div className="flex-1 overflow-y-auto">{children}</div>
+          <div className="flex-1 overflow-y-auto pb-16 md:pb-0">{children}</div>
         </main>
       </div>
     </SSEProvider>

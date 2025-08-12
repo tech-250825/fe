@@ -154,7 +154,7 @@ export const ModernVideoCard: React.FC<VideoCardProps> = ({
           <video
             ref={videoRef}
             src={videoUrl}
-            className="w-full aspect-video object-cover"
+            className="w-full h-auto object-contain"
             muted={isMuted}
             loop
             playsInline
@@ -298,7 +298,7 @@ const CompactVideoCard: React.FC<VideoCardProps> = ({
           <video
             ref={videoRef}
             src={videoUrl}
-            className="w-full aspect-video object-cover"
+            className="w-full h-auto object-contain"
             muted
             loop
             playsInline
@@ -363,41 +363,48 @@ const CinematicVideoCard: React.FC<VideoCardProps> = ({
     }
   };
 
-  // Calculate dynamic width based on aspect ratio
-  const getCardStyles = () => {
-    if (!aspectRatio) return { width: '320px', height: '320px' }; // Default square
+  const getContainerStyle = () => {
+    if (!aspectRatio) return { className: "max-w-md", style: {} };
     
-    const baseHeight = 320; // Fixed height in pixels
-    const calculatedWidth = baseHeight * aspectRatio;
-    
-    // Set min/max widths to prevent extreme sizes
-    const minWidth = 200;
-    const maxWidth = 500;
-    const finalWidth = Math.max(minWidth, Math.min(maxWidth, calculatedWidth));
-    
-    return {
-      width: `${finalWidth}px`,
-      height: `${baseHeight}px`
-    };
+    // 9:16 같은 세로 비율일 때는 고정 크기 (비율 유지하되 최대 크기 제한)
+    if (aspectRatio < 0.8) {
+      return {
+        className: "",
+        style: { 
+          width: 'min(240px, 70vw)', // 240px와 화면 폭의 70% 중 작은 값
+        }
+      };
+    }
+    // 1:1 비율
+    else if (aspectRatio >= 0.8 && aspectRatio <= 1.2) {
+      return { className: "max-w-sm sm:max-w-md", style: {} };
+    }
+    // 16:9 같은 가로 비율일 때는 반응형으로 폭을 넓게
+    else {
+      return { className: "max-w-md sm:max-w-lg md:max-w-xl", style: {} };
+    }
   };
 
-  const cardStyles = getCardStyles();
+  const containerConfig = getContainerStyle();
 
   return (
     <div
-      className={`relative overflow-hidden rounded-xl bg-black shadow-lg transition-all duration-300 cursor-pointer ${
+      className={`relative overflow-hidden rounded-xl bg-black shadow-lg transition-all duration-300 cursor-pointer w-full ${containerConfig.className} mx-auto ${
         isHovered ? "scale-105 shadow-2xl" : "scale-100"
       }`}
-      style={cardStyles}
+      style={containerConfig.style}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       {/* Dynamic container based on video aspect ratio */}
-      <div className="relative w-full h-full flex items-center justify-center">
+      <div 
+        className="relative w-full" 
+        style={aspectRatio ? { aspectRatio: `${aspectRatio}` } : { aspectRatio: '16/9' }}
+      >
         <video
           ref={videoRef}
           src={videoUrl}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain"
           muted
           loop
           playsInline
@@ -480,15 +487,15 @@ const InstagramVideoCard: React.FC<VideoCardProps> = ({
           </Button>
         </div>
 
-        {/* 비디오 (정사각형) */}
+        {/* 비디오 (원본 비율 유지) */}
         <div
-          className="relative aspect-square cursor-pointer"
+          className="relative cursor-pointer"
           onClick={handlePlayPause}
         >
           <video
             ref={videoRef}
             src={videoUrl}
-            className="w-full h-full object-cover"
+            className="w-full h-auto object-contain"
             muted
             loop
             playsInline

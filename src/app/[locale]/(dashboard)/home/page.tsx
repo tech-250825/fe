@@ -344,17 +344,19 @@ const resumeAutoplay = () => {
 
 
   return (
-    <div className="p-10 bg-background">
-      {/* Hero Section - Video on top, 2 CTAs below */}
-      <section className="mb-8 md:mb-10 lg:mb-12">
-        <div className="flex flex-col gap-6">
-          {/* TOP: Hero Carousel */}
-          <div className="w-full">
-            <div
-              className="relative w-full h-[400px] lg:h-[500px] rounded-xl overflow-hidden shadow-2xl bg-black"
-              onMouseEnter={pauseAutoplay}
-              onMouseLeave={resumeAutoplay}
-            >
+    <div className="p-1 sm:p-4 md:p-6 lg:p-10 bg-background">
+      {/* Container with max width */}
+      <div className="max-w-7xl mx-auto">
+        {/* Hero Section - Video on top, 2 CTAs below */}
+        <section className="mb-2 sm:mb-4 md:mb-6 lg:mb-8">
+          <div className="flex flex-col gap-2 sm:gap-4 md:gap-6">
+            {/* TOP: Hero Carousel */}
+            <div className="w-full">
+              <div
+                className="relative w-full aspect-video rounded-lg overflow-hidden shadow-lg bg-black"
+                onMouseEnter={pauseAutoplay}
+                onMouseLeave={resumeAutoplay}
+              >
               {(() => {
                 const slide = heroSlides[currentSlide];
                 return (
@@ -377,8 +379,8 @@ const resumeAutoplay = () => {
                         className="absolute inset-0 w-full h-full object-cover"
                       />
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4 md:p-6 lg:p-8">
-                      <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-2 sm:p-3 md:p-4 lg:p-6">
+                      <h2 className="text-sm sm:text-base md:text-lg lg:text-xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
                         {t(slide.titleKey as any)}
                       </h2>
                     </div>
@@ -399,25 +401,25 @@ const resumeAutoplay = () => {
           </div>
 
           {/* BOTTOM: 2 CTA Panels side by side */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="rounded-2xl bg-black/55 backdrop-blur-md border border-white/10 p-6 shadow-2xl flex flex-col justify-between h-[200px]">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3 md:gap-4 lg:gap-6">
+            <div className="rounded-lg bg-black/55 backdrop-blur-md border border-white/10 p-3 sm:p-4 md:p-6 shadow-lg flex flex-col justify-between h-[120px] sm:h-[150px] md:h-[200px]">
               <div>
-                <h3 className="text-white/90 text-sm font-medium mb-2">Quick Start</h3>
-                <p className="text-white text-2xl font-extrabold leading-tight mb-1">Create Videos</p>
-                <p className="text-white/70 text-sm">Turn prompts into animation</p>
+                <h3 className="text-white/90 text-xs sm:text-sm font-medium mb-1 sm:mb-2">Quick Start</h3>
+                <p className="text-white text-sm sm:text-lg md:text-xl lg:text-2xl font-extrabold leading-tight mb-1">Create Videos</p>
+                <p className="text-white/70 text-xs sm:text-sm">Turn prompts into animation</p>
               </div>
-              <a href="/create/videos" className="mt-4 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-6 py-3 text-sm transition">
+              <a href="/create/videos" className="mt-2 sm:mt-4 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-4 py-2 sm:px-6 sm:py-3 text-xs sm:text-sm transition">
                 Create Videos
               </a>
             </div>
 
-            <div className="rounded-2xl bg-black/55 backdrop-blur-md border border-white/10 p-6 shadow-2xl flex flex-col justify-between h-[200px]">
+            <div className="rounded-lg bg-black/55 backdrop-blur-md border border-white/10 p-3 sm:p-4 md:p-6 shadow-lg flex flex-col justify-between h-[120px] sm:h-[150px] md:h-[200px]">
               <div>
-                <h3 className="text-white/90 text-sm font-medium mb-2">Generate</h3>
-                <p className="text-white text-2xl font-extrabold leading-tight mb-1">Create Images</p>
-                <p className="text-white/70 text-sm">AI-powered image creation</p>
+                <h3 className="text-white/90 text-xs sm:text-sm font-medium mb-1 sm:mb-2">Generate</h3>
+                <p className="text-white text-sm sm:text-lg md:text-xl lg:text-2xl font-extrabold leading-tight mb-1">Create Images</p>
+                <p className="text-white/70 text-xs sm:text-sm">AI-powered image creation</p>
               </div>
-              <a href="/create/images" className="mt-4 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-6 py-3 text-sm transition">
+              <a href="/create/images" className="mt-2 sm:mt-4 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-4 py-2 sm:px-6 sm:py-3 text-xs sm:text-sm transition">
                 Create Images
               </a>
             </div>
@@ -426,35 +428,64 @@ const resumeAutoplay = () => {
       </section>
 
       {/* Content Section */}
-      <section className="mb-8 md:mb-10 lg:mb-12">
+      <section className="mb-2 sm:mb-4 md:mb-6 lg:mb-8">
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "all" | "animation" | "videos" | "images")} className="w-full">
-          <TabsList className="flex gap-4">
-            <TabsTrigger value="all" className="text-sm font-medium">
+          <TabsList className="flex gap-1 sm:gap-2 md:gap-4">
+            <TabsTrigger value="all" className="text-xs sm:text-sm font-medium">
               All ({publicContent?.length || 0})
             </TabsTrigger>
-            <TabsTrigger value="animation" className="text-sm font-medium">
+            <TabsTrigger value="animation" className="text-xs sm:text-sm font-medium">
               Animation ({publicContent?.filter(item => item.type === "video").length || 0})
             </TabsTrigger>
-            <TabsTrigger value="videos" className="text-sm font-medium">
+            <TabsTrigger value="videos" className="text-xs sm:text-sm font-medium">
               Videos ({publicContent?.filter(item => item.type === "video").length || 0})
             </TabsTrigger>
-            <TabsTrigger value="images" className="text-sm font-medium">
+            <TabsTrigger value="images" className="text-xs sm:text-sm font-medium">
               Images ({publicContent?.filter(item => item.type === "image").length || 0})
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value={activeTab} className="mt-0">
             {getTabContent().length > 0 && (
-              <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4 space-y-4">
+              <div className="columns-2 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-2 sm:gap-3 md:gap-4 space-y-2 sm:space-y-3 md:space-y-4">
                 {getTabContent().map((item) => {
                   const isVideo = item.type === 'video';
                   // Skip items without image data
                   if (!item.image || !item.image.url) return null;
                   
+                  // Debug: Log video URLs
+                  if (isVideo) {
+                    console.log('Rendering video item:', item.image.url);
+                  }
+                  
                   return (
                     <div 
                       key={`${item.type}-${item.task.id}-${item.image.id}`} 
                       className="break-inside-avoid mb-4 relative group cursor-pointer overflow-hidden rounded-lg"
+                      onMouseEnter={(e) => {
+                        if (isVideo) {
+                          const video = e.currentTarget.querySelector('video');
+                          if (video) {
+                            console.log('Div hover - attempting to play video:', video.src);
+                            video.muted = true;
+                            video.play().then(() => {
+                              console.log('Video started playing from div hover');
+                            }).catch((error) => {
+                              console.error('Video play failed from div hover:', error);
+                            });
+                          }
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (isVideo) {
+                          const video = e.currentTarget.querySelector('video');
+                          if (video) {
+                            console.log('Div leave - pausing video');
+                            video.pause();
+                            video.currentTime = 0;
+                          }
+                        }
+                      }}
                     >
                       {isVideo ? (
                         <video
@@ -463,10 +494,36 @@ const resumeAutoplay = () => {
                           muted
                           loop
                           playsInline
-                          onMouseEnter={(e) => e.currentTarget.play().catch(() => {})}
+                          preload="metadata"
+                          onMouseEnter={(e) => {
+                            const video = e.currentTarget;
+                            console.log('Mouse entered, attempting to play video:', video.src);
+                            console.log('Video readyState:', video.readyState);
+                            console.log('Video muted:', video.muted);
+                            video.muted = true; // Ensure it's muted for autoplay
+                            video.play().then(() => {
+                              console.log('Video started playing successfully');
+                            }).catch((error) => {
+                              console.error('Video play failed:', error);
+                              console.log('Error details:', error.name, error.message);
+                            });
+                          }}
                           onMouseLeave={(e) => {
-                            e.currentTarget.pause();
-                            e.currentTarget.currentTime = 0;
+                            const video = e.currentTarget;
+                            video.pause();
+                            video.currentTime = 0;
+                          }}
+                          onCanPlay={(e) => {
+                            // Ensure video is ready to play
+                            const video = e.currentTarget;
+                            console.log('Video can play:', video.src);
+                            video.muted = true;
+                          }}
+                          onLoadedData={(e) => {
+                            console.log('Video loaded data:', e.currentTarget.src);
+                          }}
+                          onError={(e) => {
+                            console.error('Video error:', e.currentTarget.error);
                           }}
                         />
                       ) : (
@@ -478,13 +535,13 @@ const resumeAutoplay = () => {
                         />
                       )}
                       
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-end p-3">
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-end p-3 pointer-events-none">
                         <div className="text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300 line-clamp-2">
                           {item.task.prompt}
                         </div>
                       </div>
                       
-                      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
                         <div className={`px-2 py-1 rounded-full text-xs font-medium ${
                           isVideo ? 'bg-red-500 text-white' : 'bg-blue-500 text-white'
                         }`}>
@@ -493,14 +550,14 @@ const resumeAutoplay = () => {
                       </div>
                       
                       {item.task.lora && (
-                        <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
                           <div className="px-2 py-1 rounded-full text-xs font-medium bg-purple-500 text-white">
                             {item.task.lora}
                           </div>
                         </div>
                       )}
                       
-                      <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-auto">
                         <Button
                           size="sm"
                           variant="secondary"
@@ -508,7 +565,7 @@ const resumeAutoplay = () => {
                             e.stopPropagation();
                             handleRecreate(item);
                           }}
-                          className="text-xs h-7 px-2 bg-white/90 hover:bg-white text-black font-medium"
+                          className="text-xs h-7 px-2 bg-white/90 hover:bg-white text-black font-medium pointer-events-auto"
                         >
                           <Copy className="w-3 h-3 mr-1" />
                           Recreate
@@ -638,6 +695,7 @@ const resumeAutoplay = () => {
         onClose={closeVideoPopup}
         videoSrc={currentVideoUrl}
       />
+      </div>
     </div>
   );
 };

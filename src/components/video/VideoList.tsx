@@ -32,11 +32,13 @@ export function VideoList({
   // 빈 상태 렌더링
   if (taskList.length === 0 && !loading) {
     return (
-      <div className={`w-full p-6 space-y-6 pb-32 pt-40 ${className}`}>
-        <EmptyState
-          title={t("list.empty.title")}
-          description={t("list.empty.description")}
-        />
+      <div className={`flex justify-center w-full space-y-8 pb-32 pt-40 ${className}`}>
+        <div className="w-full max-w-2xl">
+          <EmptyState
+            title={t("list.empty.title")}
+            description={t("list.empty.description")}
+          />
+        </div>
       </div>
     );
   }
@@ -46,7 +48,7 @@ export function VideoList({
       {/* 비디오 목록 */}
       <div
         ref={listRef}
-        className={`w-full p-6 space-y-6 pb-32 pt-40 ${className}`}
+        className={`flex flex-col items-center w-full space-y-8 pb-32 pt-40 ${className}`}
         style={{
           minHeight: "auto",
           height: "auto",
@@ -54,14 +56,15 @@ export function VideoList({
         }}
       >
         {taskList.map((item) => (
-          <VideoCard
-            key={item.task.id}
-            item={item}
-            onClick={onVideoClick}
-            onCopyPrompt={() => onCopyPrompt?.(item)}
-            onDownload={() => onDownload?.(item)}
-            onDelete={() => onDelete?.(item)}
-          />
+          <div key={item.task.id} className="w-full max-w-2xl">
+            <VideoCard
+              item={item}
+              onClick={onVideoClick}
+              onCopyPrompt={() => onCopyPrompt?.(item)}
+              onDownload={() => onDownload?.(item)}
+              onDelete={() => onDelete?.(item)}
+            />
+          </div>
         ))}
       </div>
 
