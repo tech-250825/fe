@@ -320,13 +320,13 @@ export function ModelSelectionDropdown({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent 
-        className="w-[95vw] sm:w-[500px] lg:w-[600px] max-h-[80vh] overflow-y-auto p-0" 
+        className="w-[85vw] sm:w-[400px] md:w-[500px] lg:w-[600px] max-h-[70vh] overflow-y-auto p-0" 
         align="start"
         side="bottom"
         sideOffset={8}
         onCloseAutoFocus={(e) => e.preventDefault()}
       >
-        <div className="p-3 sm:p-6">
+        <div className="p-2 sm:p-4 md:p-6">
           {renderHeader()}
           
           {tempMode === "t2v" ? (
@@ -363,7 +363,7 @@ export function ModelSelectionDropdown({
                     <TabsContent value="style">
                       <Card>
                         <CardContent className="p-2 sm:p-4 max-h-[200px] sm:max-h-[250px] overflow-y-auto">
-                          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
+                          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
                             {styleModels && styleModels.length > 0 ? styleModels.map((style) => (
                               <VisualSelectButton
                                 key={style.name || style.id}
@@ -398,7 +398,7 @@ export function ModelSelectionDropdown({
                     <TabsContent value="character">
                       <Card>
                         <CardContent className="p-2 sm:p-4 max-h-[200px] sm:max-h-[250px] overflow-y-auto">
-                          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
+                          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
                             {characterModels && characterModels.length > 0 ? characterModels.map((char) => (
                               <VisualSelectButton
                                 key={char.name || char.id}
