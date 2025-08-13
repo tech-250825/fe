@@ -17,7 +17,7 @@ const defaultOptions: ImageOptions = {
   style: null,
   character: null,
   checkpoint: null,
-  aspectRatio: "16:9" as "1:1" | "16:9" | "9:16",
+  aspectRatio: "9:16" as "1:1" | "16:9" | "9:16",
   quality: "720p" as "480p" | "720p",
 };
 

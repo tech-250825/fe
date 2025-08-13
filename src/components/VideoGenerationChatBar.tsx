@@ -25,7 +25,7 @@ import { getI2VResolutionProfile } from "@/lib/types";
 const defaultOptions: VideoOptions = {
   style: null,
   character: null,
-  aspectRatio: "16:9" as "1:1" | "16:9" | "9:16",
+  aspectRatio: "9:16" as "1:1" | "16:9" | "9:16",
   duration: 4,
   quality: "720p" as "480p" | "720p",
 };
