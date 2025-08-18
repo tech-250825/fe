@@ -108,6 +108,9 @@
     "groups": {
       "tools": "工具"
     },
+    "credits": {
+      "getCredits": "获取积分"
+    },
     "user": {
       "loggedIn": "已登录",
       "guest": "访客",
@@ -718,6 +721,21 @@
       "success": "视频已删除。",
       "constraintError": "由于相关数据无法删除。请联系管理员。",
       "failed": "删除失败。请重试。"
+    }
+  },
+  "GetCredits": {
+    "title": "获取积分",
+    "subtitle": "回答调查问卷获得免费积分",
+    "surveyTitle": "获取免费积分",
+    "surveyDescription": "完成简单的调查问卷即可获得免费积分。",
+    "benefits": {
+      "item1": "完成简单调查",
+      "item2": "立即获得免费积分",
+      "item3": "帮助改善服务"
+    },
+    "buttons": {
+      "close": "关闭",
+      "getCredit": "获取积分"
     }
   }
 }

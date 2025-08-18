@@ -108,6 +108,9 @@
     "groups": {
       "tools": "ツール"
     },
+    "credits": {
+      "getCredits": "クレジット取得"
+    },
     "user": {
       "loggedIn": "ログイン済み",
       "guest": "ゲスト",
@@ -718,6 +721,21 @@
       "success": "動画が削除されました。",
       "constraintError": "関連データがあるため削除できません。管理者にお問い合わせください。",
       "failed": "削除に失敗しました。再試行してください。"
+    }
+  },
+  "GetCredits": {
+    "title": "クレジット取得",
+    "subtitle": "アンケートに答えて無料クレジットを獲得",
+    "surveyTitle": "無料クレジット取得",
+    "surveyDescription": "簡単なアンケートにご回答いただくと、無料クレジットを受け取ることができます。",
+    "benefits": {
+      "item1": "簡単なアンケートの完了",
+      "item2": "無料クレジットを即座に受け取り",
+      "item3": "サービス向上にご協力"
+    },
+    "buttons": {
+      "close": "閉じる",
+      "getCredit": "クレジット取得"
     }
   }
 }

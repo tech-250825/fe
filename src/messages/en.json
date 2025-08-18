@@ -108,6 +108,9 @@
     "groups": {
       "tools": "TOOLS"
     },
+    "credits": {
+      "getCredits": "Get Credits"
+    },
     "user": {
       "loggedIn": "Logged in",
       "guest": "Guest",
@@ -638,6 +641,21 @@
       "canvasContextNotAvailable": "Canvas context is not available",
       "failedToCreateBlob": "Failed to create blob",
       "noDownloadUrl": "No download URL provided"
+    }
+  },
+  "GetCredits": {
+    "title": "Get Credits",
+    "subtitle": "Answer a survey to get free credits",
+    "surveyTitle": "Get Free Credits",
+    "surveyDescription": "Complete a simple survey to receive free credits.",
+    "benefits": {
+      "item1": "Complete simple survey",
+      "item2": "Get free credits instantly",
+      "item3": "Help improve our service"
+    },
+    "buttons": {
+      "close": "Close",
+      "getCredit": "Get Credits"
     }
   },
   "CreditInsufficient": {

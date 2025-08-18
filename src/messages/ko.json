@@ -86,6 +86,9 @@
     "groups": {
       "tools": "도구"
     },
+    "credits": {
+      "getCredits": "크레딧 받기"
+    },
     "user": {
       "loggedIn": "로그인됨",
       "guest": "게스트",
@@ -640,6 +643,21 @@
       "noDownloadUrl": "다운로드 URL이 제공되지 않았습니다"
     }
   },
+  "GetCredits": {
+    "title": "크레딧 받기",
+    "subtitle": "설문조사에 답하고 무료 크레딧을 받으세요",
+    "surveyTitle": "무료 크레딧 받기",
+    "surveyDescription": "간단한 설문조사에 참여하면 무료 크레딧을 받을 수 있습니다.",
+    "benefits": {
+      "item1": "간단한 설문조사 완료",
+      "item2": "무료 크레딧 즉시 지급", 
+      "item3": "서비스 개선에 도움"
+    },
+    "buttons": {
+      "close": "닫기",
+      "getCredit": "크레딧 받기"
+    }
+  },
   "CreditInsufficient": {
     "title": "크레딧 부족",
     "subtitle": "모든 크레딧이 소모되었습니다",
@@ -652,7 +670,7 @@
     },
     "buttons": {
       "close": "나중에",
-      "getCredit": "Go Get Credit"
+      "getCredit": "크레딧 받기"
     }
   },
   "VideoCreation": {
