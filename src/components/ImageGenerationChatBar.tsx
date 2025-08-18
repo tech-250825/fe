@@ -246,27 +246,6 @@ export function ImageGenerationChatBar({
                 <p className="max-w-xs text-center">{t("chatBar.settingsTooltip")}</p>
               </TooltipContent>
             </Tooltip>
-            {onEnhancePrompt && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={handleEnhancePrompt}
-                      disabled={!prompt.trim() || isGenerating || isEnhancing}
-                      className="hover:bg-primary/10 hover:text-primary disabled:opacity-50"
-                    >
-                      <Sparkles className={`h-5 w-5 ${isEnhancing ? 'animate-spin' : ''}`} />
-                      <span className="sr-only">{t("chatBar.enhance")}</span>
-                    </Button>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="max-w-xs text-center">{t("chatBar.enhanceTooltip")}</p>
-                </TooltipContent>
-              </Tooltip>
-            )}
           </div>
           <Input
             type="text"
@@ -274,10 +253,7 @@ export function ImageGenerationChatBar({
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             onKeyPress={handleKeyPress}
-            className={cn(
-              "w-full h-14 pr-14 bg-card border-border text-foreground",
-              onEnhancePrompt ? "pl-28" : "pl-14"
-            )}
+            className="w-full h-14 pr-14 pl-14 bg-card border-border text-foreground"
             disabled={isGenerating}
           />
           <Button

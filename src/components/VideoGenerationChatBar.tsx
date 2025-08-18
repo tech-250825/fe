@@ -518,27 +518,6 @@ export function VideoGenerationChatBar({
                 <p className="max-w-xs text-center">Choose from your generated images</p>
               </TooltipContent>
             </Tooltip>
-            {onEnhancePrompt && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={handleEnhancePrompt}
-                      disabled={!prompt.trim() || isGenerating || isEnhancing}
-                      className="hover:bg-primary/10 hover:text-primary disabled:opacity-50"
-                    >
-                      <Sparkles className={`h-5 w-5 ${isEnhancing ? 'animate-spin' : ''}`} />
-                      <span className="sr-only">{t("chatBar.enhance")}</span>
-                    </Button>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="max-w-xs text-center">{t("chatBar.enhanceTooltip")}</p>
-                </TooltipContent>
-              </Tooltip>
-            )}
           </div>
           <input
             ref={fileInputRef}
@@ -557,8 +536,8 @@ export function VideoGenerationChatBar({
             className={cn(
               "w-full h-14 pr-14 bg-card border-border text-foreground",
               uploadedImage 
-                ? onEnhancePrompt ? "pl-48" : "pl-36"  // Image preview + 3 buttons (settings, image, enhance)
-                : onEnhancePrompt ? "pl-36" : "pl-24"  // No image preview + 3 buttons or 2 buttons
+                ? "pl-36"  // Image preview + 2 buttons (settings, image)
+                : "pl-24"  // No image preview + 2 buttons
             )}
             disabled={isGenerating}
           />
