@@ -82,6 +82,7 @@ export function VideoGenerationChatBar({
   const [recreateImageUrl, setRecreateImageUrl] = useState<string | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Set first style model as default when styleModels are loaded (only if no character is selected)
   useEffect(() => {
@@ -143,6 +144,8 @@ export function VideoGenerationChatBar({
       reader.onloadend = () => {
         setUploadedImage(reader.result as string);
         setUploadedImageFile(file);
+        setSelectedImageFromLibrary(null); // Clear library selection
+        setRecreateImageUrl(null); // Clear recreate image URL
         setMode("i2v");
         setSelections((prev) => ({
           ...prev,
@@ -222,6 +225,46 @@ export function VideoGenerationChatBar({
   const handleUseFromLibrary = useCallback(() => {
     setIsLibraryModalOpen(true);
   }, []);
+
+  const handlePaste = useCallback(async (e: ClipboardEvent) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      if (item.type.startsWith('image/')) {
+        e.preventDefault();
+        const file = item.getAsFile();
+        if (file) {
+          // Create a filename with timestamp for pasted images
+          const timestamp = new Date().getTime();
+          const newFile = new File([file], `pasted-image-${timestamp}.${file.type.split('/')[1]}`, {
+            type: file.type
+          });
+          handleImageUpload(newFile);
+          toast.success("Image pasted successfully!");
+        }
+        break;
+      }
+    }
+  }, [handleImageUpload]);
+
+  // Add paste event listener for clipboard images
+  useEffect(() => {
+    const handleGlobalPaste = (e: ClipboardEvent) => {
+      // Only handle paste if the input is focused or if no other input is focused
+      if (inputRef.current && (document.activeElement === inputRef.current || 
+          (!document.activeElement || document.activeElement.tagName === 'BODY'))) {
+        handlePaste(e);
+      }
+    };
+
+    document.addEventListener('paste', handleGlobalPaste);
+    
+    return () => {
+      document.removeEventListener('paste', handleGlobalPaste);
+    };
+  }, [handlePaste]);
 
   const handleModeChange = (newMode: GenerationMode) => {
     setMode(newMode);
@@ -505,6 +548,7 @@ export function VideoGenerationChatBar({
             className="hidden"
           />
           <Input
+            ref={inputRef}
             type="text"
             placeholder={t("chatBar.promptPlaceholder")}
             value={prompt}

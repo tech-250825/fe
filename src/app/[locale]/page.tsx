@@ -23,6 +23,7 @@ import LocaleSwitcher from "@/components/LocaleSwitcher";
 import { StructuredData, generateWebSiteSchema, generateWebApplicationSchema, generateOrganizationSchema } from "@/components/seo/StructuredData";
 import { useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
+import Footer from "@/components/Footer";
 
 // Discord Icon Component
 const DiscordIcon = ({ className }: { className?: string }) => (
@@ -368,24 +369,7 @@ const MinimalistLandingPage: React.FC = () => {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-gray-200 py-12 px-6">
-        <div className="container mx-auto flex flex-wrap justify-between items-center">
-          <div className="text-gray-600 mb-4 md:mb-0">
-            &copy; {new Date().getFullYear()} Hoit, Inc. {t("footer.copyright")}
-          </div>
-          <div className="flex space-x-6 text-gray-600">
-            <a href="#" className="hover:text-black">
-              {t("footer.twitter")}
-            </a>
-            <a href="#" className="hover:text-black">
-              {t("footer.discord")}
-            </a>
-            <a href="#" className="hover:text-black">
-              {t("footer.contact")}
-            </a>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };
