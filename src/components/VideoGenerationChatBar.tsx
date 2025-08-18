@@ -242,7 +242,7 @@ export function VideoGenerationChatBar({
             type: file.type
           });
           handleImageUpload(newFile);
-          toast.success("Image pasted successfully!");
+          toast.success(t("toast.imagePastedSuccessfully"));
         }
         break;
       }

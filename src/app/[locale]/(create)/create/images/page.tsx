@@ -591,7 +591,7 @@ export default function CreateImagesPage() {
         }
         
         console.log("✅ Download initiated for", item.images.length, "images");
-        toast.success(`${item.images.length} images download started`);
+        toast.success(t("toast.imagesDownloadStarted", { count: item.images.length }));
         
       } catch (error) {
         console.error("❌ Download failed:", error);

@@ -753,7 +753,10 @@
       "invalidRequest": "Invalid request. Please check your settings and try again.",
       "authFailed": "Authentication failed. Please log in again.",
       "networkError": "Network error occurred. Please check your connection and try again.",
-      "creditInsufficient": "Insufficient credits. Please recharge your credits."
+      "creditInsufficient": "Insufficient credits. Please recharge your credits.",
+      "imagesDownloadStarted": "{count} images download started",
+      "videoGenerationFailed": "Video generation failed (Error {status}). Please try again.",
+      "imagePastedSuccessfully": "Image pasted successfully!"
     },
     "delete": {
       "confirm": "Are you sure you want to delete this video?",

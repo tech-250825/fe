@@ -714,7 +714,10 @@
       "serverError": "動画生成中にサーバーエラーが発生しました。後で再試行してください。",
       "invalidRequest": "無効なリクエストです。設定を確認してから再試行してください。",
       "authFailed": "認証に失敗しました。再度ログインしてください。",
-      "networkError": "ネットワークエラーが発生しました。接続を確認してから再試行してください。"
+      "networkError": "ネットワークエラーが発生しました。接続を確認してから再試行してください。",
+      "imagesDownloadStarted": "{count}枚の画像ダウンロードが開始されました",
+      "videoGenerationFailed": "動画生成に失敗しました（エラー {status}）。再試行してください。",
+      "imagePastedSuccessfully": "画像が正常に貼り付けられました！"
     },
     "delete": {
       "confirm": "本当にこの動画を削除しますか？",

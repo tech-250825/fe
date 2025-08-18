@@ -714,7 +714,10 @@
       "serverError": "生成视频时发生服务器错误。请稍后重试。",
       "invalidRequest": "无效请求。请检查设置后重试。",
       "authFailed": "身份验证失败。请重新登录。",
-      "networkError": "发生网络错误。请检查连接后重试。"
+      "networkError": "发生网络错误。请检查连接后重试。",
+      "imagesDownloadStarted": "{count}张图片下载已开始",
+      "videoGenerationFailed": "视频生成失败（错误 {status}）。请重试。",
+      "imagePastedSuccessfully": "图片粘贴成功！"
     },
     "delete": {
       "confirm": "您确定要删除此视频吗？",
