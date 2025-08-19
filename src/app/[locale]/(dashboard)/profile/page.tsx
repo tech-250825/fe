@@ -1,120 +1,37 @@
-"use client"
+import type React from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { 
+  User, 
+  Calendar, 
+  Mail, 
+  Crown, 
+  Activity, 
+  Package, 
+  CreditCard 
+} from "lucide-react";
+import { getTranslations } from "next-intl/server";
+import { getProfile, getUserNameFromEmail, getInitialsFromEmail } from "@/lib/profile";
+import { BuyCreditsButton, LogoutButton } from "@/components/profile/ProfileClientActions";
 
-import type React from "react"
-import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Skeleton } from "@/components/ui/skeleton"
-import { User, Calendar, Zap, Mail, LogOut, Settings, Crown, Activity, Package, UserX, CreditCard } from "lucide-react"
-import { toast } from "sonner"
-import { useAuth } from "@/hooks/useAuth"
-import { config } from "@/config"
-import { useTranslations } from "next-intl"
+export default async function ProfilePage() {
+  const t = await getTranslations("Profile");
+  const profile = await getProfile();
 
-// Backend response structure
-interface BackendResponse<T> {
-  timestamp: string
-  statusCode: number
-  message: string
-  data: T
-}
-
-// User profile interface matching backend spec
-interface UserProfile {
-  id: number
-  email: string
-  profileImage: string
-  credit: number
-}
-
-const ProfilePage: React.FC = () => {
-  const t = useTranslations("Profile")
-  const { handleLogout: authLogout } = useAuth()
-  const [profile, setProfile] = useState<UserProfile | null>(null)
-  const [loading, setLoading] = useState(true)
-
-  // Extract username from email
-  const getUserNameFromEmail = (email: string) => {
-    return email ? email.split("@")[0] : "User"
-  }
-
-  // Extract initials from email
-  const getInitialsFromEmail = (email: string) => {
-    const username = getUserNameFromEmail(email)
-    return username.slice(0, 2).toUpperCase()
-  }
-
-  // Fetch profile data - modified to match backend response structure
-  const fetchProfile = async () => {
-    try {
-      setLoading(true)
-      const response = await fetch(`${config.apiUrl}/api/user/profile`, {
-        credentials: "include",
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch profile")
-      }
-
-      // Backend response structure
-      const backendResponse: BackendResponse<UserProfile> = await response.json()
-      setProfile(backendResponse.data)
-    } catch (error) {
-      console.error("Profile fetch error:", error)
-      toast.error(t("messages.fetchError"))
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    fetchProfile()
-  }, [])
-
-  const handleBuyCredits = () => {
-    toast.info(t("messages.creditsPending"))
-  }
-
-  const handleLogout = () => {
-    authLogout()
-  }
-
-  const handleWithdraw = async () => {
-    const confirmed = window.confirm(
-      t("account.withdraw.confirm"),
-    )
-    if (!confirmed) return
-
-    try {
-      const response = await fetch(`${config.apiUrl}/api/user/withdraw`, {
-        method: "DELETE",
-        credentials: "include",
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to withdraw")
-      }
-
-      toast.success(t("messages.withdrawSuccess"))
-      handleLogout()
-    } catch (error) {
-      console.error("Withdraw error:", error)
-      toast.error(t("messages.withdrawError"))
-    }
-  }
-
-  if (loading) {
-    return <ProfileSkeleton />
-  }
-
+  // If no profile data, show error state
   if (!profile) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-500">{t("messages.noProfile")}</p>
+        <div className="text-center">
+          <p className="text-gray-500 mb-4">{t("messages.noProfile")}</p>
+          <p className="text-sm text-muted-foreground">
+            Please log in to view your profile.
+          </p>
+        </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -145,7 +62,9 @@ const ProfilePage: React.FC = () => {
                 <div>
                   <div className="flex items-center gap-2">
                     <User className="text-primary size-5" />
-                    <h2 className="text-lg font-semibold">{getUserNameFromEmail(profile.email)}</h2>
+                    <h2 className="text-lg font-semibold">
+                      {getUserNameFromEmail(profile.email)}
+                    </h2>
                     <Badge>{t("user.activeUser")}</Badge>
                   </div>
                   <div className="mt-1 space-y-1">
@@ -154,7 +73,8 @@ const ProfilePage: React.FC = () => {
                       <p className="text-muted-foreground text-sm">{profile.email}</p>
                     </div>
                     <p className="text-muted-foreground text-sm">
-                      {t("user.userId")}: {profile.id} • {t("user.joinedDate")}: {new Date().toLocaleDateString()}
+                      {t("user.userId")}: {profile.id} • {t("user.joinedDate")}:{" "}
+                      {new Date().toLocaleDateString()}
                     </p>
                   </div>
                 </div>
@@ -173,8 +93,9 @@ const ProfilePage: React.FC = () => {
                     <span className="text-sm font-medium">{t("credit.title")}</span>
                   </div>
                   <div className="mt-2">
-                    <div className="text-xl font-bold text-blue-600">{profile.credit.toLocaleString()}</div>
-
+                    <div className="text-xl font-bold text-blue-600">
+                      {profile.credit.toLocaleString()}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -195,10 +116,7 @@ const ProfilePage: React.FC = () => {
                   </span>
                 </div>
               </div>
-              <Button onClick={handleBuyCredits} className="bg-blue-600 hover:bg-blue-700">
-                <CreditCard className="mr-2 size-4" />
-                {t("credit.purchase")}
-              </Button>
+              <BuyCreditsButton />
             </div>
           </CardContent>
         </Card>
@@ -208,7 +126,6 @@ const ProfilePage: React.FC = () => {
           <CardContent className="p-6">
             <div className="mb-6 flex flex-col items-start justify-between gap-3 sm:flex-row">
               <h2 className="text-lg font-semibold">{t("account.title")}</h2>
-
             </div>
             <div className="space-y-4">
               <div className="flex flex-col items-start justify-between gap-3 border-b py-3 last:border-0 sm:flex-row sm:items-center">
@@ -218,7 +135,9 @@ const ProfilePage: React.FC = () => {
                   </div>
                   <div>
                     <p className="font-medium">{t("account.accountType.title")}</p>
-                    <p className="text-muted-foreground text-sm">{t("account.accountType.description")}</p>
+                    <p className="text-muted-foreground text-sm">
+                      {t("account.accountType.description")}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -254,7 +173,9 @@ const ProfilePage: React.FC = () => {
                   </div>
                   <div>
                     <p className="font-medium">{t("account.joinDate.title")}</p>
-                    <p className="text-muted-foreground text-sm">{new Date().toLocaleDateString()}</p>
+                    <p className="text-muted-foreground text-sm">
+                      {new Date().toLocaleDateString()}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -268,26 +189,22 @@ const ProfilePage: React.FC = () => {
               <div className="flex flex-col items-start justify-between gap-3 border-b py-3 last:border-0 sm:flex-row sm:items-center">
                 <div className="flex items-center gap-3">
                   <div className="bg-muted rounded-md p-2">
-                    <LogOut className="text-muted-foreground size-4" />
+                    <Mail className="text-muted-foreground size-4" />
                   </div>
                   <div>
                     <p className="font-medium">{t("account.logout.title")}</p>
-                    <p className="text-muted-foreground text-sm">{t("account.logout.description")}</p>
+                    <p className="text-muted-foreground text-sm">
+                      {t("account.logout.description")}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleLogout}
-                    className="text-red-600 hover:text-red-700 bg-transparent"
-                  >
-                    {t("account.logout.button")}
-                  </Button>
+                  <LogoutButton />
                 </div>
               </div>
 
-              {/* <div className="flex flex-col items-start justify-between gap-3 border-b py-3 last:border-0 sm:flex-row sm:items-center">
+              {/* Uncomment if withdraw functionality is needed
+              <div className="flex flex-col items-start justify-between gap-3 border-b py-3 last:border-0 sm:flex-row sm:items-center">
                 <div className="flex items-center gap-3">
                   <div className="bg-red-50 rounded-md p-2">
                     <UserX className="text-red-500 size-4" />
@@ -298,94 +215,14 @@ const ProfilePage: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={handleWithdraw}
-                    className="bg-red-600 hover:bg-red-700"
-                  >
-                    {t("account.withdraw.button")}
-                  </Button>
+                  <WithdrawButton userId={profile.id} />
                 </div>
-              </div> */}
+              </div>
+              */}
             </div>
           </CardContent>
         </Card>
       </div>
     </div>
-  )
+  );
 }
-
-// Loading skeleton component
-const ProfileSkeleton: React.FC = () => {
-  return (
-    <div className="container mx-auto px-4 py-6 md:px-6 2xl:max-w-[1400px]">
-      <div className="mx-auto max-w-4xl">
-        <div className="mb-8 flex flex-col items-start justify-between gap-4 sm:flex-row">
-          <div className="space-y-2">
-            <Skeleton className="h-8 w-48" />
-            <Skeleton className="h-4 w-64" />
-          </div>
-          <Skeleton className="h-8 w-24" />
-        </div>
-
-        <Card className="mb-8 p-0">
-          <CardContent className="p-6">
-            <div className="flex flex-col items-start justify-between gap-6 sm:flex-row">
-              <div className="flex items-center gap-4">
-                <Skeleton className="h-16 w-16 rounded-full" />
-                <div className="space-y-2">
-                  <Skeleton className="h-6 w-48" />
-                  <Skeleton className="h-4 w-64" />
-                </div>
-              </div>
-              <Skeleton className="h-8 w-24" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className="mb-8 grid grid-cols-1 gap-6">
-          {[1].map((i) => (
-            <Card key={i} className="p-0">
-              <CardContent className="p-6">
-                <div className="space-y-2">
-                  <Skeleton className="h-5 w-32" />
-                  <Skeleton className="h-8 w-16" />
-                  <Skeleton className="h-3 w-40" />
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        <Card className="p-0">
-          <CardContent className="p-6">
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <Skeleton className="h-6 w-32" />
-                <Skeleton className="h-8 w-24" />
-              </div>
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="flex items-center justify-between py-3 border-b">
-                  <div className="flex items-center gap-3">
-                    <Skeleton className="h-10 w-10 rounded-md" />
-                    <div className="space-y-1">
-                      <Skeleton className="h-4 w-24" />
-                      <Skeleton className="h-3 w-32" />
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <Skeleton className="h-6 w-16" />
-                    <Skeleton className="h-8 w-8" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  )
-}
-
-export default ProfilePage
