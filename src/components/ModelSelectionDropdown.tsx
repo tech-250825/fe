@@ -92,17 +92,6 @@ export function ModelSelectionDropdown({
     setIsOpen(false);
   };
 
-  // Helper function to check if a model is NSFW
-  const isNSFWModel = (model: any) => {
-    const name = (model.name || model.modelName || model.title || '').toLowerCase();
-    const nsfwKeywords = ['wai', 'nsfw', 'adult', 'xxx', 'porn', 'nude', 'naked', 'sexy', 'hentai', 'ecchi'];
-    return nsfwKeywords.some(keyword => name.includes(keyword));
-  };
-
-  // Helper function to check if there are any NSFW models
-  const hasNSFWModels = () => {
-    return checkpointModels?.some(model => isNSFWModel(model)) || false;
-  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -346,7 +335,7 @@ export function ModelSelectionDropdown({
               <Tabs defaultValue={mediaType === "image" ? "checkpoint" : "style"} className="w-full mt-4">
                 <TabsList className={cn("grid w-full", 
                   mediaType === "image" 
-                    ? (hasNSFWModels() ? "grid-cols-2" : "grid-cols-1")
+                    ? "grid-cols-1"
                     : "grid-cols-2"
                 )}>
                   {mediaType !== "image" && (
@@ -366,22 +355,12 @@ export function ModelSelectionDropdown({
                     </>
                   )}
                   {mediaType === "image" && (
-                    <>
-                      <TabsTrigger
-                        value="checkpoint"
-                        className={cn(tempOptions.checkpoint?.name && "text-primary")}
-                      >
-                        {t("tabs.style")}
-                      </TabsTrigger>
-                      {hasNSFWModels() && (
-                        <TabsTrigger
-                          value="nsfw"
-                          className={cn(tempOptions.checkpoint?.name && "text-primary")}
-                        >
-                          NSFW
-                        </TabsTrigger>
-                      )}
-                    </>
+                    <TabsTrigger
+                      value="checkpoint"
+                      className={cn(tempOptions.checkpoint?.name && "text-primary")}
+                    >
+                      {t("tabs.style")}
+                    </TabsTrigger>
                   )}
                 </TabsList>
                 {mediaType !== "image" && (
@@ -458,92 +437,47 @@ export function ModelSelectionDropdown({
                     </TabsContent>
                   </>
                 )}
-                {mediaType === "image" && (() => {
-                  // Filter models into SFW and NSFW categories
-                  const sfwModels = checkpointModels?.filter(model => !isNSFWModel(model)) || [];
-                  const nsfwModels = checkpointModels?.filter(model => isNSFWModel(model)) || [];
-                  
-                  return (
-                    <>
-                      <TabsContent value="checkpoint">
-                        <Card>
-                          <CardContent className="p-2 sm:p-4 max-h-[200px] sm:max-h-[250px] overflow-y-auto">
-                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
-                              {sfwModels && sfwModels.length > 0 ? sfwModels.map((checkpoint) => {
-                                const isSelected = tempOptions.checkpoint?.name === checkpoint.name;
-                                console.log(`🏗️ SFW Checkpoint ${checkpoint.name} isSelected:`, isSelected, "tempOptions.checkpoint:", tempOptions.checkpoint);
-                                
-                                return (
-                                  <VisualSelectButton
-                                    key={checkpoint.name || checkpoint.id}
-                                    label={checkpoint.name || checkpoint.modelName || checkpoint.title}
-                                    imgSrc={
-                                      checkpoint.img || 
-                                      checkpoint.image || 
-                                      checkpoint.imageUrl || 
-                                      checkpoint.thumbnailUrl || 
-                                      checkpoint.url ||
-                                      checkpoint.thumbnail ||
-                                      "/placeholder.svg"
-                                    }
-                                    isSelected={isSelected}
-                                    onClick={() =>
-                                      setTempOptions((prev) => ({
-                                        ...prev,
-                                        checkpoint: checkpoint,
-                                      }))
-                                    }
-                                  />
-                                );
-                              }) : (
-                                <div className="col-span-full text-center py-8 text-muted-foreground">
-                                  {checkpointModels ? "No SFW models available" : "Loading SFW models..."}
-                                </div>
-                              )}
+                {mediaType === "image" && (
+                  <TabsContent value="checkpoint">
+                    <Card>
+                      <CardContent className="p-2 sm:p-4 max-h-[200px] sm:max-h-[250px] overflow-y-auto">
+                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
+                          {checkpointModels && checkpointModels.length > 0 ? checkpointModels.map((model) => {
+                            const isSelected = tempOptions.checkpoint?.name === model.name;
+                            console.log(`🔥 Combined Model ${model.name} (${model.type}) isSelected:`, isSelected, "tempOptions.checkpoint:", tempOptions.checkpoint);
+                            
+                            return (
+                              <VisualSelectButton
+                                key={model.name || model.id}
+                                label={model.name || model.modelName || model.title}
+                                imgSrc={
+                                  model.img || 
+                                  model.image || 
+                                  model.imageUrl || 
+                                  model.thumbnailUrl || 
+                                  model.url ||
+                                  model.thumbnail ||
+                                  "/placeholder.svg"
+                                }
+                                isSelected={isSelected}
+                                onClick={() =>
+                                  setTempOptions((prev) => ({
+                                    ...prev,
+                                    checkpoint: model,
+                                  }))
+                                }
+                              />
+                            );
+                          }) : (
+                            <div className="col-span-full text-center py-8 text-muted-foreground">
+                              {checkpointModels ? "No models available" : "Loading models..."}
                             </div>
-                          </CardContent>
-                        </Card>
-                      </TabsContent>
-                      {nsfwModels.length > 0 && (
-                        <TabsContent value="nsfw">
-                          <Card>
-                            <CardContent className="p-2 sm:p-4 max-h-[200px] sm:max-h-[250px] overflow-y-auto">
-                              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
-                                {nsfwModels.map((checkpoint) => {
-                                  const isSelected = tempOptions.checkpoint?.name === checkpoint.name;
-                                  console.log(`🔞 NSFW Checkpoint ${checkpoint.name} isSelected:`, isSelected, "tempOptions.checkpoint:", tempOptions.checkpoint);
-                                  
-                                  return (
-                                    <VisualSelectButton
-                                      key={checkpoint.name || checkpoint.id}
-                                      label={checkpoint.name || checkpoint.modelName || checkpoint.title}
-                                      imgSrc={
-                                        checkpoint.img || 
-                                        checkpoint.image || 
-                                        checkpoint.imageUrl || 
-                                        checkpoint.thumbnailUrl || 
-                                        checkpoint.url ||
-                                        checkpoint.thumbnail ||
-                                        "/placeholder.svg"
-                                      }
-                                      isSelected={isSelected}
-                                      onClick={() =>
-                                        setTempOptions((prev) => ({
-                                          ...prev,
-                                          checkpoint: checkpoint,
-                                        }))
-                                      }
-                                    />
-                                  );
-                                })}
-                              </div>
-                            </CardContent>
-                          </Card>
-                        </TabsContent>
-                      )}
-                    </>
-                  );
-                })()}
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+                )}
               </Tabs>
               {renderOptionSelectors(true)}
             </>

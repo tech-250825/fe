@@ -39,7 +39,6 @@ export default function CreateImagesPage() {
 
   // 모델 관련 상태
   const [availableModels, setAvailableModels] = useState<any[]>([]);
-  const [selectedTab, setSelectedTab] = useState("STYLE");
   const [styleModels, setStyleModels] = useState<any[]>([]);
   const [characterModels, setCharacterModels] = useState<any[]>([]);
   const [checkpointModels, setCheckpointModels] = useState<any[]>([]);
@@ -72,51 +71,66 @@ export default function CreateImagesPage() {
     try {
       let fetchedStyleModels: any[] = [];
       let fetchedCharacterModels: any[] = [];
+      let allCombinedModels: any[] = [];
 
-      // STYLE 모델 조회 - IMAGE 타입으로 변경
-      const styleResponse = await api.get(
+      // STYLE LORA 모델 조회
+      const styleLoraResponse = await api.get(
         `${config.apiUrl}/api/weights?mediaType=IMAGE&styleType=STYLE&modelType=LORA`
       );
 
-      if (styleResponse.ok) {
-        const styleData = await styleResponse.json();
+      if (styleLoraResponse.ok) {
+        const styleData = await styleLoraResponse.json();
         fetchedStyleModels = styleData.data || styleData;
-        setStyleModels(fetchedStyleModels);
-        console.log("🎨 Style Models API Response:", styleData);
+        console.log("🎨 Style LORA Models API Response:", styleData);
       }
 
-      // CHARACTER 모델 조회 - IMAGE 타입으로 변경
-      const characterResponse = await api.get(
+      // CHARACTER LORA 모델 조회
+      const characterLoraResponse = await api.get(
         `${config.apiUrl}/api/weights?mediaType=IMAGE&styleType=CHARACTER&modelType=LORA`
       );
 
-      if (characterResponse.ok) {
-        const characterData = await characterResponse.json();
+      if (characterLoraResponse.ok) {
+        const characterData = await characterLoraResponse.json();
         fetchedCharacterModels = characterData.data || characterData;
-        setCharacterModels(fetchedCharacterModels);
-        console.log("👤 Character Models API Response:", characterData);
+        console.log("👤 Character LORA Models API Response:", characterData);
       }
 
-      // CHECKPOINT 모델 조회 - IMAGE 타입으로 새로 추가
+      // CHECKPOINT 모델 조회
       const checkpointResponse = await api.get(
         `${config.apiUrl}/api/weights?mediaType=IMAGE&styleType=STYLE&modelType=CHECKPOINT`
       );
 
+      let fetchedCheckpointModels: any[] = [];
       if (checkpointResponse.ok) {
         const checkpointData = await checkpointResponse.json();
-        const fetchedCheckpointModels = checkpointData.data || checkpointData;
-        setCheckpointModels(fetchedCheckpointModels);
+        fetchedCheckpointModels = checkpointData.data || checkpointData;
         console.log("🏗️ Checkpoint Models API Response:", checkpointData);
-        console.log("🏗️ Checkpoint Models Array:", fetchedCheckpointModels);
-        if (fetchedCheckpointModels.length > 0) {
-          console.log("🏗️ First Checkpoint Model Structure:", fetchedCheckpointModels[0]);
-        }
       }
 
-      // 전체 모델 목록 설정 (현재 탭에 따라)
-      const currentModels =
-        selectedTab === "STYLE" ? fetchedStyleModels : fetchedCharacterModels;
-      setAvailableModels(currentModels);
+      // 모든 visible 모델들을 결합 (checkpoint + LoRAs)
+      const visibleCheckpoints = fetchedCheckpointModels.filter(model => model.visible);
+      const visibleStyleLoras = fetchedStyleModels.filter(model => model.visible);
+      const visibleCharacterLoras = fetchedCharacterModels.filter(model => model.visible);
+
+      // 통합된 모델 리스트 생성 (checkpoints + LoRAs 모두 포함)
+      allCombinedModels = [
+        ...visibleCheckpoints.map(model => ({ ...model, type: 'CHECKPOINT' })),
+        ...visibleStyleLoras.map(model => ({ ...model, type: 'LORA' })),
+        ...visibleCharacterLoras.map(model => ({ ...model, type: 'LORA' }))
+      ];
+
+      console.log("🔥 Combined Visible Models:", allCombinedModels.length, "total");
+      console.log("🔍 Checkpoint count:", visibleCheckpoints.length);
+      console.log("🔍 Style LoRA count:", visibleStyleLoras.length);
+      console.log("🔍 Character LoRA count:", visibleCharacterLoras.length);
+
+      // 개별적으로도 설정 (기존 로직 호환성을 위해)
+      setStyleModels(fetchedStyleModels);
+      setCharacterModels(fetchedCharacterModels);
+      setCheckpointModels(allCombinedModels); // 통합된 모델을 checkpoint에 저장
+
+      // availableModels는 이제 통합된 모델을 사용
+      setAvailableModels(allCombinedModels);
     } catch (error) {
       console.error("❌ 모델 목록 로드 실패:", error);
     }
@@ -334,66 +348,83 @@ export default function CreateImagesPage() {
       const selectedCheckpointModel = options.checkpoint;
       const resolutionProfile = getResolutionProfile(options.aspectRatio, options.quality);
 
-      // Auto-select LoRA based on aspect ratio
-      let autoSelectedLoraId = 0;
-      let selectedLoraName = "None";
-      let useV2Endpoint = false;
+      // Determine API endpoint and payload based on selected model type
+      let apiEndpoint = '/api/images/create';
+      let requestData: any;
       
-      // Debug: 현재 사용 가능한 LoRA 모델들 확인
-      console.log("🔍 사용 가능한 LoRA 모델들:");
-      styleModels.forEach((model, index) => {
-        console.log(`  ${index + 1}. ${model.name} (ID: ${model.id})`);
-      });
-      
-      if (options.aspectRatio === "16:9") {
-        // Use Face Detailer LoRA for 16:9 ratio and v2 endpoint
-        const faceDetailerLora = styleModels.find(model => 
-          model.name?.toLowerCase().includes('facedetailer') ||
-          model.name?.toLowerCase().includes('face detailer') ||
-          model.name?.toLowerCase() === 'facedetailer'
-        );
-        if (faceDetailerLora) {
-          autoSelectedLoraId = faceDetailerLora.id;
-          selectedLoraName = faceDetailerLora.name;
-          useV2Endpoint = true;
-          console.log("🔷 16:9 비율 감지 → Face Detailer LoRA 자동 선택");
-          console.log("   LoRA Name:", faceDetailerLora.name);
-          console.log("   LoRA ID:", autoSelectedLoraId);
-          console.log("   Endpoint: v2 (/api/images/create/v2)");
-        } else {
-          console.warn("⚠️ Face Detailer LoRA를 찾을 수 없습니다!");
-        }
+      if (selectedCheckpointModel?.type === 'CHECKPOINT') {
+        // Use v3 endpoint for CHECKPOINT models - no loraId needed
+        apiEndpoint = '/api/images/create/v3';
+        requestData = {
+          checkpointId: selectedCheckpointModel.id,
+          prompt: prompt,
+          resolutionProfile: resolutionProfile,
+        };
+        console.log("🏗️ Checkpoint 모델 감지 → v3 API 사용");
+        console.log("   Checkpoint Name:", selectedCheckpointModel.name);
+        console.log("   Checkpoint ID:", selectedCheckpointModel.id);
+        console.log("   Endpoint: v3 (/api/images/create/v3)");
       } else {
-        // Use Anime LoRA for other ratios and v1 endpoint
-        const animeLora = styleModels.find(model => 
-          model.name?.toLowerCase().includes('anime') || 
-          model.name?.toLowerCase().includes('아니메')
-        );
-        if (animeLora) {
-          autoSelectedLoraId = animeLora.id;
-          selectedLoraName = animeLora.name;
-          console.log(`🔸 ${options.aspectRatio} 비율 감지 → Anime LoRA 자동 선택`);
-          console.log("   LoRA Name:", animeLora.name);
-          console.log("   LoRA ID:", autoSelectedLoraId);
-          console.log("   Endpoint: v1 (/api/images/create)");
+        // Use existing LoRA-based logic for other models
+        let autoSelectedLoraId = 0;
+        let selectedLoraName = "None";
+        let useV2Endpoint = false;
+        
+        // Debug: 현재 사용 가능한 LoRA 모델들 확인
+        console.log("🔍 사용 가능한 LoRA 모델들:");
+        styleModels.forEach((model, index) => {
+          console.log(`  ${index + 1}. ${model.name} (ID: ${model.id})`);
+        });
+        
+        if (options.aspectRatio === "16:9") {
+          // Use Face Detailer LoRA for 16:9 ratio and v2 endpoint
+          const faceDetailerLora = styleModels.find(model => 
+            model.name?.toLowerCase().includes('facedetailer') ||
+            model.name?.toLowerCase().includes('face detailer') ||
+            model.name?.toLowerCase() === 'facedetailer'
+          );
+          if (faceDetailerLora) {
+            autoSelectedLoraId = faceDetailerLora.id;
+            selectedLoraName = faceDetailerLora.name;
+            useV2Endpoint = true;
+            console.log("🔷 16:9 비율 감지 → Face Detailer LoRA 자동 선택");
+            console.log("   LoRA Name:", faceDetailerLora.name);
+            console.log("   LoRA ID:", autoSelectedLoraId);
+            console.log("   Endpoint: v2 (/api/images/create/v2)");
+          } else {
+            console.warn("⚠️ Face Detailer LoRA를 찾을 수 없습니다!");
+          }
         } else {
-          console.warn("⚠️ Anime LoRA를 찾을 수 없습니다!");
+          // Use Anime LoRA for other ratios and v1 endpoint
+          const animeLora = styleModels.find(model => 
+            model.name?.toLowerCase().includes('anime') || 
+            model.name?.toLowerCase().includes('아니메')
+          );
+          if (animeLora) {
+            autoSelectedLoraId = animeLora.id;
+            selectedLoraName = animeLora.name;
+            console.log(`🔸 ${options.aspectRatio} 비율 감지 → Anime LoRA 자동 선택`);
+            console.log("   LoRA Name:", animeLora.name);
+            console.log("   LoRA ID:", autoSelectedLoraId);
+            console.log("   Endpoint: v1 (/api/images/create)");
+          } else {
+            console.warn("⚠️ Anime LoRA를 찾을 수 없습니다!");
+          }
         }
-      }
 
-      const requestData = {
-        checkpointId: selectedCheckpointModel?.id || 0,
-        loraId: autoSelectedLoraId,
-        prompt: prompt,
-        resolutionProfile: resolutionProfile,
-      };
-      
-      const apiEndpoint = useV2Endpoint ? '/api/images/create/v2' : '/api/images/create';
+        requestData = {
+          checkpointId: selectedCheckpointModel?.id || 0,
+          loraId: autoSelectedLoraId,
+          prompt: prompt,
+          resolutionProfile: resolutionProfile,
+        };
+        
+        apiEndpoint = useV2Endpoint ? '/api/images/create/v2' : '/api/images/create';
+      }
       
       console.log("🚀 === 이미지 생성 요청 정보 ===");
       console.log("📐 Aspect Ratio:", options.aspectRatio);
-      console.log("🎨 Checkpoint:", selectedCheckpointModel?.name || "None", "(ID:", selectedCheckpointModel?.id || 0, ")");
-      console.log("✨ LoRA:", selectedLoraName, "(ID:", autoSelectedLoraId, ")");
+      console.log("🎨 Selected Model:", selectedCheckpointModel?.name || "None", "(ID:", selectedCheckpointModel?.id || 0, ")");
       console.log("🔗 API Endpoint:", apiEndpoint);
       console.log("📦 Request Payload:", requestData);
       console.log("==============================");
@@ -459,12 +490,11 @@ export default function CreateImagesPage() {
     }
   }, []);
 
-  // 탭 변경 시 모델 목록 업데이트
+  // 모델 변경 시 사용가능한 모델 업데이트
   useEffect(() => {
-    const currentModels =
-      selectedTab === "STYLE" ? styleModels : characterModels;
-    setAvailableModels(currentModels);
-  }, [selectedTab, styleModels, characterModels]);
+    // 더 이상 탭 기반이 아니라 통합된 모델 리스트를 사용
+    // fetchAvailableModels에서 이미 allCombinedModels을 setAvailableModels에 설정함
+  }, [checkpointModels]);
 
   // SSE 알림을 받았을 때 새로고침 처리를 위한 이벤트 리스너
   useEffect(() => {
