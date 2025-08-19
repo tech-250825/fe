@@ -108,6 +108,9 @@
     "groups": {
       "tools": "工具"
     },
+    "credits": {
+      "getCredits": "获取积分"
+    },
     "user": {
       "loggedIn": "已登录",
       "guest": "访客",
@@ -692,6 +695,10 @@
         "quality": "质量",
         "uploadImage": "上传图片",
         "removeImage": "删除图片"
+      },
+      "buttons": {
+        "selectFromComputer": "从电脑选择",
+        "useFromLibrary": "从库中图片使用"
       }
     },
     "parameters": {
@@ -711,13 +718,129 @@
       "serverError": "生成视频时发生服务器错误。请稍后重试。",
       "invalidRequest": "无效请求。请检查设置后重试。",
       "authFailed": "身份验证失败。请重新登录。",
-      "networkError": "发生网络错误。请检查连接后重试。"
+      "networkError": "发生网络错误。请检查连接后重试。",
+      "creditInsufficient": "积分不足。请充值积分。",
+      "imagesDownloadStarted": "{count}张图片下载已开始",
+      "videoGenerationFailed": "视频生成失败（错误 {status}）。请重试。",
+      "imagePastedSuccessfully": "图片粘贴成功！"
+    },
+    "badges": {
+      "textToVideo": "文本转视频",
+      "imageToVideo": "图片转视频",
+      "style": "风格",
+      "character": "角色"
     },
     "delete": {
       "confirm": "您确定要删除此视频吗？",
       "success": "视频已删除。",
       "constraintError": "由于相关数据无法删除。请联系管理员。",
       "failed": "删除失败。请重试。"
+    }
+  },
+  "GetCredits": {
+    "title": "获取积分",
+    "subtitle": "回答调查问卷获得免费积分",
+    "surveyTitle": "获取免费积分",
+    "surveyDescription": "完成简单的调查问卷即可获得免费积分。",
+    "benefits": {
+      "item1": "完成简单调查",
+      "item2": "立即获得免费积分",
+      "item3": "帮助改善服务"
+    },
+    "buttons": {
+      "close": "关闭",
+      "getCredit": "获取积分"
+    }
+  },
+  "CreditInsufficient": {
+    "title": "积分不足",
+    "subtitle": "所有积分已用完",
+    "surveyTitle": "获取免费积分",
+    "surveyDescription": "您的积分已用完。如果您参与我们的调查，我们将再次为您发送额外积分。",
+    "benefits": {
+      "item1": "完成简单调查",
+      "item2": "立即获得免费积分",
+      "item3": "帮助改善服务"
+    },
+    "buttons": {
+      "close": "稍后",
+      "getCredit": "去获取积分"
+    }
+  },
+  "settings": {
+    "title": {
+      "textToVideoSettings": "文本转视频设置",
+      "imageToVideoSettings": "图片转视频设置",
+      "textToImageSettings": "文本转图片设置"
+    },
+    "description": {
+      "chooseStyleForImage": "为您的图片生成选择风格。",
+      "chooseStyleForVideo": "为您的视频生成选择风格或角色。"
+    },
+    "tabs": {
+      "style": "风格",
+      "character": "角色"
+    },
+    "labels": {
+      "noStyleModels": "没有可用的风格模型",
+      "noCharacterModels": "没有可用的角色模型",
+      "aspectRatio": "宽高比",
+      "duration": "时长",
+      "quality": "质量",
+      "resolution": "分辨率"
+    },
+    "placeholders": {
+      "dropImageHere": "在此拖放图片",
+      "selectImage": "选择图片",
+      "dragDropUpload": "拖放或点击上传",
+      "clickToUploadOrDragDrop": "点击上传或拖放",
+      "dropToChangeImage": "拖放以更改图片",
+      "changeImageOrDragDrop": "更改图片或拖放",
+      "jpgPngWebpGif": "JPG、PNG、WebP、GIF（最大10MB）"
+    },
+    "buttons": {
+      "save": "保存",
+      "cancel": "取消",
+      "apply": "应用",
+      "reset": "重置",
+      "selectFromComputer": "从电脑选择",
+      "useFromLibrary": "从库中图片使用"
+    },
+    "tooltips": {
+      "settingsTooltip": "配置生成设置",
+      "imageUploadTooltip": "从您生成的图片中选择",
+      "uploadPreview": "上传预览"
+    }
+  },
+  "modal": {
+    "title": {
+      "imageViewer": "图片查看器",
+      "videoViewer": "视频查看器",
+      "prompt": "提示",
+      "parameters": "参数",
+      "allImages": "所有图片"
+    },
+    "buttons": {
+      "copyPrompt": "复制提示",
+      "download": "下载"
+    },
+    "tooltips": {
+      "copyPromptTooltip": "将提示文本复制到剪贴板",
+      "downloadImageTooltip": "下载图片",
+      "inputImageTooltip": "输入图片"
+    },
+    "labels": {
+      "inputImage": "输入图片",
+      "aspectRatio": "宽高比",
+      "duration": "时长",
+      "style": "风格",
+      "resolution": "分辨率",
+      "taskId": "任务ID",
+      "createdAt": "创建时间"
+    },
+    "dragDrop": {
+      "dropImageHere": "在此拖放您的图片",
+      "toGenerateVideo": "以从中生成视频"
     }
   }
 }

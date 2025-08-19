@@ -43,7 +43,7 @@ export function ModelSelectionDropdown({
   checkpointModels = [],
   mediaType = "video",
 }: ModelSelectionDropdownProps) {
-  const t = useTranslations("VideoCreation");
+  const t = useTranslations("settings");
   const [tempMode, setTempMode] = useState<GenerationMode>(mode);
   const [tempOptions, setTempOptions] = useState<VideoOptions>(options);
   const [tempImageFile, setTempImageFile] = useState<File | null>(null);
@@ -123,7 +123,7 @@ export function ModelSelectionDropdown({
 
     // Check if file is an accepted image type
     if (!acceptedTypes.includes(file.type.toLowerCase())) {
-      toast.error(`Unsupported file type. Please upload JPG, PNG, WebP, or GIF images only.`);
+      toast.error(t("placeholders.dragDropUpload"));
       return;
     }
 
@@ -185,17 +185,17 @@ export function ModelSelectionDropdown({
   const renderHeader = () => {
     const getTitle = () => {
       if (mediaType === "image") {
-        return "Text-to-Image Settings";
+        return t("title.textToImageSettings");
       }
-      return tempMode === "t2v" ? "Text-to-Video Settings" : "Image-to-Video Settings";
+      return tempMode === "t2v" ? t("title.textToVideoSettings") : t("title.imageToVideoSettings");
     };
 
     const getDescription = () => {
       if (mediaType === "image") {
-        return "Choose a style for your image generation.";
+        return t("description.chooseStyleForImage");
       }
       return tempMode === "t2v"
-        ? "Choose a style or character for your video generation."
+        ? t("description.chooseStyleForVideo")
         : "Adjust settings and upload an image for your video.";
     };
 
@@ -211,9 +211,9 @@ export function ModelSelectionDropdown({
     <div className="pt-4 border-t">
       <div className="flex gap-2 ml-auto justify-end">
         <Button variant="outline" onClick={handleCancel} size="sm">
-          Cancel
+          {t("buttons.cancel")}
         </Button>
-        <Button onClick={handleSave} size="sm">Save Changes</Button>
+        <Button onClick={handleSave} size="sm">{t("buttons.save")}</Button>
       </div>
     </div>
   );
@@ -232,7 +232,7 @@ export function ModelSelectionDropdown({
     return (
       <div className={cn("grid grid-cols-1 gap-2 sm:gap-4 pt-4", getGridCols())}>
         {isT2V && (
-          <OptionGroup title={t("chatBar.settings.aspectRatio")}>
+          <OptionGroup title={t("labels.aspectRatio")}>
             <RadioGroup
               value={tempOptions.aspectRatio}
               onValueChange={(value) =>
@@ -264,7 +264,7 @@ export function ModelSelectionDropdown({
         )}
         {/* Only show duration for video generation */}
         {mediaType === "video" && (
-          <OptionGroup title={t("chatBar.settings.duration")}>
+          <OptionGroup title={t("labels.duration")}>
             <RadioGroup
               value={String(tempOptions.duration)}
               onValueChange={(value) =>
@@ -294,7 +294,7 @@ export function ModelSelectionDropdown({
             </RadioGroup>
           </OptionGroup>
         )}
-        <OptionGroup title={t("chatBar.settings.quality")}>
+        <OptionGroup title={t("labels.quality")}>
           <RadioGroup
             value={tempOptions.quality}
             onValueChange={(value) =>
@@ -328,7 +328,7 @@ export function ModelSelectionDropdown({
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon">
           <Settings2 className="h-5 w-5" />
-          <span className="sr-only">Open settings</span>
+          <span className="sr-only">{t("tooltips.settingsTooltip")}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent 
@@ -355,13 +355,13 @@ export function ModelSelectionDropdown({
                         value="style"
                         className={cn(tempOptions.style?.name && "text-primary")}
                       >
-                        {t("chatBar.settings.style")}
+                        {t("tabs.style")}
                       </TabsTrigger>
                       <TabsTrigger
                         value="character"
                         className={cn(tempOptions.character?.name && "text-primary")}
                       >
-                        {t("chatBar.settings.character")}
+                        {t("tabs.character")}
                       </TabsTrigger>
                     </>
                   )}
@@ -371,7 +371,7 @@ export function ModelSelectionDropdown({
                         value="checkpoint"
                         className={cn(tempOptions.checkpoint?.name && "text-primary")}
                       >
-                        Style
+                        {t("tabs.style")}
                       </TabsTrigger>
                       {hasNSFWModels() && (
                         <TabsTrigger
@@ -414,7 +414,7 @@ export function ModelSelectionDropdown({
                               />
                             )) : (
                               <div className="col-span-full text-center py-8 text-muted-foreground">
-                                {styleModels ? "No style models available" : "Loading style models..."}
+                                {styleModels ? t("labels.noStyleModels") : "Loading style models..."}
                               </div>
                             )}
                           </div>
@@ -449,7 +449,7 @@ export function ModelSelectionDropdown({
                               />
                             )) : (
                               <div className="col-span-full text-center py-8 text-muted-foreground">
-                                {characterModels ? "No character models available" : "Loading character models..."}
+                                {characterModels ? t("labels.noCharacterModels") : "Loading character models..."}
                               </div>
                             )}
                           </div>
@@ -567,7 +567,7 @@ export function ModelSelectionDropdown({
                     isDragOver ? "text-primary" : "text-muted-foreground"
                   )} />
                   <p className="mt-2 text-sm font-semibold">
-                    {isDragOver ? "Drop image here" : "Click to upload or drag & drop"}
+                    {isDragOver ? t("placeholders.dropImageHere") : t("placeholders.dragDropUpload")}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     JPG, PNG, WebP, GIF (Max 10MB)

@@ -33,11 +33,11 @@ export default function VideoResultModal({
   onClose,
   videoResult,
 }: VideoResultModalProps) {
-  const t = useTranslations("Common");
+  const t = useTranslations("modal");
   
   const handleCopyPrompt = () => {
     navigator.clipboard.writeText(videoResult.prompt);
-    toast.success(t("toasts.promptCopied"));
+    toast.success(t("buttons.copyPrompt"));
   };
 
 
@@ -71,7 +71,7 @@ export default function VideoResultModal({
               <div className="text-center">
                 <div className="flex justify-center items-center mb-4">
                   <h3 className="text-lg font-semibold text-foreground">
-                    Prompt
+                    {t("title.prompt")}
                   </h3>
                 </div>
                 <div className="bg-card rounded-lg p-4 mb-3 border border-border">
@@ -88,10 +88,10 @@ export default function VideoResultModal({
                         onClick={handleCopyPrompt}
                       >
                         <Copy className="w-4 h-4 mr-2" />
-                        Copy Prompt
+                        {t("buttons.copyPrompt")}
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent>Copy prompt text to clipboard</TooltipContent>
+                    <TooltipContent>{t("tooltips.copyPromptTooltip")}</TooltipContent>
                   </Tooltip>
                 </div>
               </div>
@@ -99,7 +99,7 @@ export default function VideoResultModal({
               {/* Parameters Section - Button Style */}
               <div>
                 <h3 className="text-lg font-semibold text-foreground mb-3 text-center">
-                  Parameters
+                  {t("title.parameters")}
                 </h3>
                 <div className="flex flex-wrap gap-2 justify-center">
                   {/* Input Image (if exists) */}
@@ -114,7 +114,7 @@ export default function VideoResultModal({
                           e.currentTarget.style.display = 'none';
                         }}
                       />
-                      <span className="text-xs text-muted-foreground">Input Image</span>
+                      <span className="text-xs text-muted-foreground">{t("labels.inputImage")}</span>
                     </div>
                   )}
                   

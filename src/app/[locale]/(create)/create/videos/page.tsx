@@ -548,7 +548,7 @@ export default function CreatePage() {
         } else if (response.status === 401) {
           toast.error(t("toast.authFailed"));
         } else {
-          toast.error(`Video generation failed (Error ${response.status}). Please try again.`);
+          toast.error(t("toast.videoGenerationFailed", { status: response.status }));
         }
         
         setTaskList((prev) => prev.filter((task) => task.task.id !== tempId));

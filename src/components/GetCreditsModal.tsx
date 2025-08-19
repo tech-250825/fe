@@ -50,10 +50,10 @@ export function GetCreditsModal({
             </div>
             <div>
               <DialogTitle className="text-lg font-semibold">
-                Get Credits
+                {t("title")}
               </DialogTitle>
               <p className="text-white/90 text-sm">
-                Answer a survey to get free credits
+                {t("subtitle")}
               </p>
             </div>
           </div>
@@ -69,10 +69,10 @@ export function GetCreditsModal({
                 </div>
                 <div className="space-y-2">
                   <h3 className="font-medium text-gray-900">
-                    Free Credits Available
+                    {t("surveyTitle")}
                   </h3>
                   <p className="text-sm text-gray-600 leading-relaxed">
-                    Complete a quick survey to help us improve our service and get free credits to create more content!
+                    {t("surveyDescription")}
                   </p>
                 </div>
               </div>
@@ -82,15 +82,15 @@ export function GetCreditsModal({
           <div className="mt-4 p-4 bg-gray-50 rounded-lg">
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-              Quick 2-minute survey
+              {t("benefits.item1")}
             </div>
             <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              Get free credits instantly
+              {t("benefits.item2")}
             </div>
             <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
               <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-              Help improve our service
+              {t("benefits.item3")}
             </div>
           </div>
         </div>
@@ -103,14 +103,14 @@ export function GetCreditsModal({
               onClick={onClose}
               className="flex-1"
             >
-              Close
+              {t("buttons.close")}
             </Button>
             <Button
               onClick={handleGetCredit}
               className="flex-1 bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700"
             >
               <Gift className="w-4 h-4 mr-2" />
-              Get Credits
+              {t("buttons.getCredit")}
               <ExternalLink className="w-3 h-3 ml-1" />
             </Button>
           </div>

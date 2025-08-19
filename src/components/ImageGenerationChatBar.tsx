@@ -157,7 +157,7 @@ export function ImageGenerationChatBar({
           variant="secondary"
           className="flex items-center gap-1"
         >
-          Style: {selections.checkpoint?.name}
+          {t("badges.style")}: {selections.checkpoint?.name}
         </Badge>
       );
     } else if (selections.style) {
@@ -167,7 +167,7 @@ export function ImageGenerationChatBar({
           variant="secondary"
           className="flex items-center gap-1"
         >
-          Style: {selections.style?.name}
+          {t("badges.style")}: {selections.style?.name}
         </Badge>
       );
     } else if (selections.character) {
@@ -203,7 +203,7 @@ export function ImageGenerationChatBar({
       <div className="p-4 w-full max-w-3xl mx-auto relative">
         <div className="flex flex-wrap items-center gap-2 mb-2">
           <Badge variant="default">
-            Text-to-Image
+            {t("badges.textToImage")}
           </Badge>
           {selectionBadges}
         </div>
@@ -246,27 +246,6 @@ export function ImageGenerationChatBar({
                 <p className="max-w-xs text-center">{t("chatBar.settingsTooltip")}</p>
               </TooltipContent>
             </Tooltip>
-            {onEnhancePrompt && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={handleEnhancePrompt}
-                      disabled={!prompt.trim() || isGenerating || isEnhancing}
-                      className="hover:bg-primary/10 hover:text-primary disabled:opacity-50"
-                    >
-                      <Sparkles className={`h-5 w-5 ${isEnhancing ? 'animate-spin' : ''}`} />
-                      <span className="sr-only">{t("chatBar.enhance")}</span>
-                    </Button>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="max-w-xs text-center">{t("chatBar.enhanceTooltip")}</p>
-                </TooltipContent>
-              </Tooltip>
-            )}
           </div>
           <Input
             type="text"
@@ -274,10 +253,7 @@ export function ImageGenerationChatBar({
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             onKeyPress={handleKeyPress}
-            className={cn(
-              "w-full h-14 pr-14 bg-card border-border text-foreground",
-              onEnhancePrompt ? "pl-28" : "pl-14"
-            )}
+            className="w-full h-14 pr-14 pl-14 bg-card border-border text-foreground"
             disabled={isGenerating}
           />
           <Button

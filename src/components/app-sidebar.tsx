@@ -214,7 +214,7 @@ export function AppSidebar() {
               className="w-full"
             >
               <Gift className="w-4 h-4" />
-              <span>Get Credits</span>
+              <span>{t("credits.getCredits")}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
 

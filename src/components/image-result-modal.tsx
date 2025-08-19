@@ -28,7 +28,7 @@ export default function ImageResultModal({
   imageItem,
   onDownload,
 }: ImageResultModalProps) {
-  const t = useTranslations("Common");
+  const t = useTranslations("modal");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
   // Get all available images (either from images array or single image)
@@ -43,7 +43,7 @@ export default function ImageResultModal({
 
   const handleCopyPrompt = () => {
     navigator.clipboard.writeText(imageItem.task.prompt);
-    toast.success(t("toasts.promptCopied"));
+    toast.success(t("buttons.copyPrompt"));
   };
 
   const handleDownload = () => {
@@ -103,7 +103,7 @@ export default function ImageResultModal({
         }}
       >
         <VisuallyHidden>
-          <DialogTitle>Image Viewer</DialogTitle>
+          <DialogTitle>{t("title.imageViewer")}</DialogTitle>
         </VisuallyHidden>
         <TooltipProvider>
           <div className="flex flex-col md:flex-row h-full">
@@ -147,7 +147,7 @@ export default function ImageResultModal({
               <div className="text-center">
                 <div className="flex justify-center items-center mb-4">
                   <h3 className="text-lg font-semibold text-foreground">
-                    Prompt
+                    {t("title.prompt")}
                   </h3>
                 </div>
                 <div className="bg-card rounded-lg p-4 mb-3 border border-border">
@@ -164,10 +164,10 @@ export default function ImageResultModal({
                         onClick={handleCopyPrompt}
                       >
                         <Copy className="w-4 h-4 mr-2" />
-                        Copy Prompt
+                        {t("buttons.copyPrompt")}
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent>Copy prompt text to clipboard</TooltipContent>
+                    <TooltipContent>{t("tooltips.copyPromptTooltip")}</TooltipContent>
                   </Tooltip>
                   
                   {onDownload && (
@@ -179,10 +179,10 @@ export default function ImageResultModal({
                           onClick={handleDownload}
                         >
                           <Download className="w-4 h-4 mr-2" />
-                          Download
+                          {t("buttons.download")}
                         </Button>
                       </TooltipTrigger>
-                      <TooltipContent>Download image</TooltipContent>
+                      <TooltipContent>{t("tooltips.downloadImageTooltip")}</TooltipContent>
                     </Tooltip>
                   )}
                 </div>
@@ -191,7 +191,7 @@ export default function ImageResultModal({
               {/* Parameters Section - Button Style */}
               <div>
                 <h3 className="text-lg font-semibold text-foreground mb-3 text-center">
-                  Parameters
+                  {t("title.parameters")}
                 </h3>
                 <div className="flex flex-wrap gap-2 justify-center">
                   {Object.entries(getParameters()).map(
@@ -212,7 +212,7 @@ export default function ImageResultModal({
               {hasMultipleImages && (
                 <div>
                   <h3 className="text-lg font-semibold text-foreground mb-3 text-center">
-                    All Images
+                    {t("title.allImages")}
                   </h3>
                   <div className="grid grid-cols-2 gap-2">
                     {allImages.map((img, index) => (

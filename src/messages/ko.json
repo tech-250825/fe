@@ -86,6 +86,9 @@
     "groups": {
       "tools": "도구"
     },
+    "credits": {
+      "getCredits": "크레딧 받기"
+    },
     "user": {
       "loggedIn": "로그인됨",
       "guest": "게스트",
@@ -554,7 +557,10 @@
       "extendVideo": "비디오 연장",
       "cancel": "취소",
       "startCreating": "생성 시작",
-      "select": "선택"
+      "select": "선택",
+      "backToBoards": "보드로 돌아가기",
+      "add": "추가",
+      "newScene": "새로운 장면"
     },
     "modals": {
       "selectImageTitle": "라이브러리에서 이미지 선택"
@@ -564,6 +570,8 @@
       "disconnected": "연결 끊김",
       "generatingNew": "새 비디오 생성 중...",
       "generatingInProgress": "생성 진행 중...",
+      "generating": "생성 중...",
+      "continueFromLastFrame": "마지막 비디오의 최종 프레임에서 계속",
       "noVideos": "사용 가능한 비디오가 없습니다",
       "noCompletedVideos": "완료된 비디오가 없습니다",
       "noStyleSelected": "스타일이 선택되지 않았습니다",
@@ -584,6 +592,7 @@
       "generateFirst": "첫 번째 비디오를 생성하세요",
       "generateFirstDescription": "이 보드의 첫 번째 비디오를 만들기 위해 아래 프롬프트 입력을 사용하세요",
       "noImagesInLibrary": "라이브러리에 이미지가 없습니다",
+      "noImagesFound": "라이브러리에서 이미지를 찾을 수 없습니다",
       "createImagesFirst": "먼저 이미지를 생성하세요!"
     },
     "menu": {
@@ -600,6 +609,9 @@
       "enhancePrompt": "AI로 프롬프트 개선",
       "selectImage": "이미지 선택",
       "chooseImageSource": "이미지 소스 선택"
+    },
+    "settings": {
+      "videoSettings": "비디오 설정"
     },
     "badges": {
       "imageToVideo": "이미지를 비디오로",
@@ -640,6 +652,21 @@
       "noDownloadUrl": "다운로드 URL이 제공되지 않았습니다"
     }
   },
+  "GetCredits": {
+    "title": "크레딧 받기",
+    "subtitle": "설문조사에 답하고 무료 크레딧을 받으세요",
+    "surveyTitle": "무료 크레딧 받기",
+    "surveyDescription": "간단한 설문조사에 참여하면 무료 크레딧을 받을 수 있습니다.",
+    "benefits": {
+      "item1": "간단한 설문조사 완료",
+      "item2": "무료 크레딧 즉시 지급", 
+      "item3": "서비스 개선에 도움"
+    },
+    "buttons": {
+      "close": "닫기",
+      "getCredit": "크레딧 받기"
+    }
+  },
   "CreditInsufficient": {
     "title": "크레딧 부족",
     "subtitle": "모든 크레딧이 소모되었습니다",
@@ -652,7 +679,7 @@
     },
     "buttons": {
       "close": "나중에",
-      "getCredit": "Go Get Credit"
+      "getCredit": "크레딧 받기"
     }
   },
   "VideoCreation": {
@@ -715,7 +742,25 @@
         "quality": "품질",
         "uploadImage": "이미지 업로드",
         "removeImage": "이미지 제거"
+      },
+      "buttons": {
+        "selectFromComputer": "컴퓨터에서 선택",
+        "useFromLibrary": "라이브러리 이미지 사용"
+      },
+      "description": {
+        "chooseStyleForImage": "이미지 생성을 위한 스타일을 선택하세요.",
+        "chooseStyleForVideo": "비디오 생성을 위한 스타일이나 캐릭터를 선택하세요.",
+        "adjustSettingsAndUpload": "설정을 조정하고 비디오를 위한 이미지를 업로드하세요."
+      },
+      "title": {
+        "textToVideoSettings": "텍스트를 비디오로 설정",
+        "imageToVideoSettings": "이미지를 비디오로 설정",
+        "textToImageSettings": "텍스트를 이미지로 설정"
       }
+    },
+    "buttons": {
+      "cancel": "취소",
+      "saveChanges": "변경사항 저장"
     },
     "parameters": {
       "aspectRatio": "비율",
@@ -735,13 +780,100 @@
       "invalidRequest": "잘못된 요청입니다. 설정을 확인하고 다시 시도해주세요.",
       "authFailed": "인증에 실패했습니다. 다시 로그인해주세요.",
       "networkError": "네트워크 오류가 발생했습니다. 연결을 확인하고 다시 시도해주세요.",
-      "creditInsufficient": "크레딧이 부족합니다. 크레딧을 충전해주세요."
+      "creditInsufficient": "크레딧이 부족합니다. 크레딧을 충전해주세요.",
+      "imagesDownloadStarted": "{count}개 이미지 다운로드가 시작되었습니다",
+      "videoGenerationFailed": "비디오 생성에 실패했습니다 (오류 {status}). 다시 시도해주세요.",
+      "imagePastedSuccessfully": "이미지가 성공적으로 붙여넣기 되었습니다!"
     },
     "delete": {
       "confirm": "정말로 삭제하시겠습니까?",
       "success": "삭제되었습니다.",
       "constraintError": "연관된 데이터가 있어 삭제할 수 없습니다. 관리자에게 문의하세요.",
       "failed": "삭제에 실패했습니다. 다시 시도해주세요."
+    },
+    "badges": {
+      "textToVideo": "텍스트를 비디오로",
+      "imageToVideo": "이미지를 비디오로",
+      "textToImage": "텍스트를 이미지로",
+      "style": "스타일",
+      "character": "캐릭터"
+    }
+  },
+  "settings": {
+    "title": {
+      "textToVideoSettings": "텍스트를 비디오로 설정",
+      "imageToVideoSettings": "이미지를 비디오로 설정",
+      "textToImageSettings": "텍스트를 이미지로 설정"
+    },
+    "description": {
+      "chooseStyleForImage": "이미지 생성을 위한 스타일을 선택하세요.",
+      "chooseStyleForVideo": "비디오 생성을 위한 스타일이나 캐릭터를 선택하세요.",
+      "adjustSettingsAndUpload": "설정을 조정하고 비디오를 위한 이미지를 업로드하세요."
+    },
+    "tabs": {
+      "style": "스타일",
+      "character": "캐릭터"
+    },
+    "labels": {
+      "noStyleModels": "사용 가능한 스타일 모델이 없습니다",
+      "noCharacterModels": "사용 가능한 캐릭터 모델이 없습니다",
+      "aspectRatio": "비율",
+      "duration": "재생 시간",
+      "quality": "품질",
+      "resolution": "해상도"
+    },
+    "placeholders": {
+      "dropImageHere": "이미지를 여기에 놓으세요",
+      "selectImage": "이미지 선택",
+      "dragDropUpload": "드래그 앤 드롭하거나 클릭하여 업로드",
+      "clickToUploadOrDragDrop": "클릭하여 업로드하거나 드래그 앤 드롭",
+      "dropToChangeImage": "놓아서 이미지 변경",
+      "changeImageOrDragDrop": "이미지 변경 또는 드래그 앤 드롭",
+      "jpgPngWebpGif": "JPG, PNG, WebP, GIF (최대 10MB)"
+    },
+    "buttons": {
+      "save": "저장",
+      "cancel": "취소",
+      "apply": "적용",
+      "reset": "초기화",
+      "selectFromComputer": "컴퓨터에서 선택",
+      "useFromLibrary": "라이브러리 이미지 사용"
+    },
+    "tooltips": {
+      "settingsTooltip": "생성 설정 구성",
+      "imageUploadTooltip": "생성된 이미지에서 선택",
+      "uploadPreview": "업로드 미리보기"
+    }
+  },
+  "modal": {
+    "title": {
+      "imageViewer": "이미지 뷰어",
+      "videoViewer": "비디오 뷰어",
+      "prompt": "프롬프트",
+      "parameters": "매개변수",
+      "allImages": "모든 이미지"
+    },
+    "buttons": {
+      "copyPrompt": "프롬프트 복사",
+      "download": "다운로드"
+    },
+    "tooltips": {
+      "copyPromptTooltip": "프롬프트 텍스트를 클립보드에 복사",
+      "downloadImageTooltip": "이미지 다운로드",
+      "inputImageTooltip": "입력 이미지"
+    },
+    "labels": {
+      "inputImage": "입력 이미지",
+      "aspectRatio": "비율",
+      "duration": "재생 시간",
+      "style": "스타일",
+      "resolution": "해상도",
+      "taskId": "작업 ID",
+      "createdAt": "생성일"
+    },
+    "dragDrop": {
+      "dropImageHere": "이미지를 여기에 놓으세요",
+      "toGenerateVideo": "비디오를 생성하기 위해"
     }
   }
 }

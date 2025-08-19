@@ -217,7 +217,7 @@ export function MobileIconSidebar() {
               variant="outline"
             >
               <Gift className="w-4 h-4 mr-3" />
-              Get Credits
+              {t("credits.getCredits")}
             </Button>
 
             {/* Theme Toggle */}

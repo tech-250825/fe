@@ -242,7 +242,7 @@ export function VideoGenerationChatBar({
             type: file.type
           });
           handleImageUpload(newFile);
-          toast.success("Image pasted successfully!");
+          toast.success(t("toast.imagePastedSuccessfully"));
         }
         break;
       }
@@ -374,7 +374,7 @@ export function VideoGenerationChatBar({
             variant="secondary"
             className="flex items-center gap-1"
           >
-            Style: {selections.style?.name}
+            {t("badges.style")}: {selections.style?.name}
             <button
               onClick={() => handleBadgeRemove("style")}
               className="rounded-full hover:bg-muted-foreground/20"
@@ -390,7 +390,7 @@ export function VideoGenerationChatBar({
             variant="secondary"
             className="flex items-center gap-1"
           >
-            Character: {selections.character?.name}
+            {t("badges.character")}: {selections.character?.name}
             <button
               onClick={() => handleBadgeRemove("character")}
               className="rounded-full hover:bg-muted-foreground/20"
@@ -440,15 +440,15 @@ export function VideoGenerationChatBar({
         >
           <div className="text-center p-4 border-2 border-dashed border-primary rounded-lg">
             <ImageIcon className="mx-auto h-8 w-8 text-muted-foreground" />
-            <p className="mt-2 text-sm font-semibold">Drop your image here</p>
+            <p className="mt-2 text-sm font-semibold">{t("modal.dragDrop.dropImageHere")}</p>
             <p className="text-xs text-muted-foreground">
-              to generate a video from it
+              {t("modal.dragDrop.toGenerateVideo")}
             </p>
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2 mb-2">
           <Badge variant={mode === "t2v" ? "default" : "destructive"}>
-            {mode === "t2v" ? "Text-to-Video" : "Image-to-Video"}
+            {mode === "t2v" ? t("badges.textToVideo") : t("badges.imageToVideo")}
           </Badge>
           {selectionBadges}
         </div>
@@ -499,46 +499,25 @@ export function VideoGenerationChatBar({
                       className="hover:bg-blue-500/10 hover:text-blue-600"
                     >
                       <ImageIcon className="h-5 w-5" />
-                      <span className="sr-only">Image to Video</span>
+                      <span className="sr-only">{t("badges.imageToVideo")}</span>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start" className="w-56">
                     <DropdownMenuItem onClick={handleSelectFromComputer} className="flex items-center gap-2">
                       <Upload className="h-4 w-4" />
-                      Select from computer
+                      {t("chatBar.buttons.selectFromComputer")}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={handleUseFromLibrary} className="flex items-center gap-2">
                       <FolderOpen className="h-4 w-4" />
-                      Use from library images
+                      {t("chatBar.buttons.useFromLibrary")}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TooltipTrigger>
               <TooltipContent>
-                <p className="max-w-xs text-center">Choose from your generated images</p>
+                <p className="max-w-xs text-center">{t("settings.tooltips.imageUploadTooltip")}</p>
               </TooltipContent>
             </Tooltip>
-            {onEnhancePrompt && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={handleEnhancePrompt}
-                      disabled={!prompt.trim() || isGenerating || isEnhancing}
-                      className="hover:bg-primary/10 hover:text-primary disabled:opacity-50"
-                    >
-                      <Sparkles className={`h-5 w-5 ${isEnhancing ? 'animate-spin' : ''}`} />
-                      <span className="sr-only">{t("chatBar.enhance")}</span>
-                    </Button>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="max-w-xs text-center">{t("chatBar.enhanceTooltip")}</p>
-                </TooltipContent>
-              </Tooltip>
-            )}
           </div>
           <input
             ref={fileInputRef}
@@ -557,8 +536,8 @@ export function VideoGenerationChatBar({
             className={cn(
               "w-full h-14 pr-14 bg-card border-border text-foreground",
               uploadedImage 
-                ? onEnhancePrompt ? "pl-48" : "pl-36"  // Image preview + 3 buttons (settings, image, enhance)
-                : onEnhancePrompt ? "pl-36" : "pl-24"  // No image preview + 3 buttons or 2 buttons
+                ? "pl-36"  // Image preview + 2 buttons (settings, image)
+                : "pl-24"  // No image preview + 2 buttons
             )}
             disabled={isGenerating}
           />

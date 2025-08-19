@@ -108,6 +108,9 @@
     "groups": {
       "tools": "TOOLS"
     },
+    "credits": {
+      "getCredits": "Get Credits"
+    },
     "user": {
       "loggedIn": "Logged in",
       "guest": "Guest",
@@ -554,7 +557,10 @@
       "extendVideo": "Extend Video",
       "cancel": "Cancel",
       "startCreating": "Start Creating",
-      "select": "Select"
+      "select": "Select",
+      "backToBoards": "Back to Boards",
+      "add": "Add",
+      "newScene": "New scene"
     },
     "modals": {
       "selectImageTitle": "Select Image from Library"
@@ -564,6 +570,8 @@
       "disconnected": "Disconnected",
       "generatingNew": "Generating new video...",
       "generatingInProgress": "Generating in progress...",
+      "generating": "Generating in progress...",
+      "continueFromLastFrame": "Continue from the last video's final frame",
       "noVideos": "No videos available",
       "noCompletedVideos": "No completed videos available",
       "noStyleSelected": "No style selected",
@@ -584,6 +592,7 @@
       "generateFirst": "Generate your first video",
       "generateFirstDescription": "Use the prompt input below to create your first video for this board",
       "noImagesInLibrary": "No images found in your library",
+      "noImagesFound": "No images found in your library",
       "createImagesFirst": "Create some images first!"
     },
     "menu": {
@@ -600,6 +609,9 @@
       "enhancePrompt": "Enhance prompt with AI",
       "selectImage": "Select image",
       "chooseImageSource": "Choose image source"
+    },
+    "settings": {
+      "videoSettings": "Video Settings"
     },
     "badges": {
       "imageToVideo": "Image to Video",
@@ -640,6 +652,21 @@
       "noDownloadUrl": "No download URL provided"
     }
   },
+  "GetCredits": {
+    "title": "Get Credits",
+    "subtitle": "Answer a survey to get free credits",
+    "surveyTitle": "Get Free Credits",
+    "surveyDescription": "Complete a simple survey to receive free credits.",
+    "benefits": {
+      "item1": "Complete simple survey",
+      "item2": "Get free credits instantly",
+      "item3": "Help improve our service"
+    },
+    "buttons": {
+      "close": "Close",
+      "getCredit": "Get Credits"
+    }
+  },
   "CreditInsufficient": {
     "title": "Credits Insufficient",
     "subtitle": "All credits have been consumed",
@@ -658,7 +685,7 @@
   "VideoCreation": {
     "title": "Video Creation",
     "subtitle": "Create new videos",
-    "loginRequired": "Login required.",
+    "loginRequired": "Please log in to create videos.",
     "list": {
       "empty": {
         "title": "No videos created yet.",
@@ -715,7 +742,25 @@
         "quality": "Quality",
         "uploadImage": "Upload Image",
         "removeImage": "Remove Image"
+      },
+      "buttons": {
+        "selectFromComputer": "Select from computer",
+        "useFromLibrary": "Use from library images"
+      },
+      "description": {
+        "chooseStyleForImage": "Choose a style for your image generation.",
+        "chooseStyleForVideo": "Choose a style or character for your video generation.",
+        "adjustSettingsAndUpload": "Adjust settings and upload an image for your video."
+      },
+      "title": {
+        "textToVideoSettings": "Text-to-Video Settings",
+        "imageToVideoSettings": "Image-to-Video Settings",
+        "textToImageSettings": "Text-to-Image Settings"
       }
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "saveChanges": "Save Changes"
     },
     "parameters": {
       "aspectRatio": "Aspect Ratio",
@@ -735,13 +780,100 @@
       "invalidRequest": "Invalid request. Please check your settings and try again.",
       "authFailed": "Authentication failed. Please log in again.",
       "networkError": "Network error occurred. Please check your connection and try again.",
-      "creditInsufficient": "Insufficient credits. Please recharge your credits."
+      "creditInsufficient": "Insufficient credits. Please recharge your credits.",
+      "imagesDownloadStarted": "{count} images download started",
+      "videoGenerationFailed": "Video generation failed (Error {status}). Please try again.",
+      "imagePastedSuccessfully": "Image pasted successfully!"
+    },
+    "badges": {
+      "textToVideo": "Text-to-Video",
+      "imageToVideo": "Image-to-Video",
+      "textToImage": "Text-to-Image",
+      "style": "Style",
+      "character": "Character"
     },
     "delete": {
       "confirm": "Are you sure you want to delete this video?",
       "success": "Video has been deleted.",
       "constraintError": "Cannot delete due to related data. Please contact administrator.",
       "failed": "Failed to delete. Please try again."
+    }
+  },
+  "settings": {
+    "title": {
+      "textToVideoSettings": "Text-to-Video Settings",
+      "imageToVideoSettings": "Image-to-Video Settings",
+      "textToImageSettings": "Text-to-Image Settings"
+    },
+    "description": {
+      "chooseStyleForImage": "Choose a style for your image generation.",
+      "chooseStyleForVideo": "Choose a style or character for your video generation.",
+      "adjustSettingsAndUpload": "Adjust settings and upload an image for your video."
+    },
+    "tabs": {
+      "style": "Style",
+      "character": "Character"
+    },
+    "labels": {
+      "noStyleModels": "No style models available",
+      "noCharacterModels": "No character models available",
+      "aspectRatio": "Aspect Ratio",
+      "duration": "Duration",
+      "quality": "Quality",
+      "resolution": "Resolution"
+    },
+    "placeholders": {
+      "dropImageHere": "Drop image here",
+      "selectImage": "Select image",
+      "dragDropUpload": "Drag and drop or click to upload",
+      "clickToUploadOrDragDrop": "Click to upload or drag & drop",
+      "dropToChangeImage": "Drop to change image",
+      "changeImageOrDragDrop": "Change Image or Drag & Drop",
+      "jpgPngWebpGif": "JPG, PNG, WebP, GIF (Max 10MB)"
+    },
+    "buttons": {
+      "save": "Save",
+      "cancel": "Cancel",
+      "apply": "Apply",
+      "reset": "Reset",
+      "selectFromComputer": "Select from computer",
+      "useFromLibrary": "Use from library images"
+    },
+    "tooltips": {
+      "settingsTooltip": "Configure generation settings",
+      "imageUploadTooltip": "Choose from your generated images",
+      "uploadPreview": "Upload preview"
+    }
+  },
+  "modal": {
+    "title": {
+      "imageViewer": "Image Viewer",
+      "videoViewer": "Video Viewer",
+      "prompt": "Prompt",
+      "parameters": "Parameters",
+      "allImages": "All Images"
+    },
+    "buttons": {
+      "copyPrompt": "Copy Prompt",
+      "download": "Download"
+    },
+    "tooltips": {
+      "copyPromptTooltip": "Copy prompt text to clipboard",
+      "downloadImageTooltip": "Download image",
+      "inputImageTooltip": "Input Image"
+    },
+    "labels": {
+      "inputImage": "Input Image",
+      "aspectRatio": "Aspect Ratio",
+      "duration": "Duration",
+      "style": "Style",
+      "resolution": "Resolution",
+      "taskId": "Task ID",
+      "createdAt": "Created At"
+    },
+    "dragDrop": {
+      "dropImageHere": "Drop your image here",
+      "toGenerateVideo": "to generate a video from it"
     }
   }
 }

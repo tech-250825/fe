@@ -202,18 +202,18 @@ export function ModelSelectionModal({
   const renderHeader = () => {
     const getTitle = () => {
       if (mediaType === "image") {
-        return "Text-to-Image Settings";
+        return t("chatBar.title.textToImageSettings");
       }
-      return tempMode === "t2v" ? "Text-to-Video Settings" : "Image-to-Video Settings";
+      return tempMode === "t2v" ? t("chatBar.title.textToVideoSettings") : t("chatBar.title.imageToVideoSettings");
     };
 
     const getDescription = () => {
       if (mediaType === "image") {
-        return "Choose a style or character for your image generation.";
+        return t("chatBar.description.chooseStyleForImage");
       }
       return tempMode === "t2v"
-        ? "Choose a style or character for your video generation."
-        : "Adjust settings and upload an image for your video.";
+        ? t("chatBar.description.chooseStyleForVideo")
+        : t("chatBar.description.adjustSettingsAndUpload");
     };
 
     return (
@@ -228,9 +228,9 @@ export function ModelSelectionModal({
     <DialogFooter>
       <div className="flex gap-2 ml-auto">
         <Button variant="outline" onClick={() => onOpenChange(false)}>
-          Cancel
+          {t("buttons.cancel")}
         </Button>
-        <Button onClick={handleSave}>Save Changes</Button>
+        <Button onClick={handleSave}>{t("buttons.saveChanges")}</Button>
       </div>
     </DialogFooter>
   );
@@ -453,10 +453,10 @@ export function ModelSelectionModal({
                 isDragOver ? "text-primary" : "text-muted-foreground"
               )} />
               <p className="mt-2 text-sm font-semibold">
-                {isDragOver ? "Drop image here" : "Click to upload or drag & drop"}
+                {isDragOver ? t("placeholders.dropImageHere") : t("placeholders.clickToUploadOrDragDrop")}
               </p>
               <p className="text-xs text-muted-foreground">
-                JPG, PNG, WebP, GIF (Max 10MB)
+                {t("placeholders.jpgPngWebpGif")}
               </p>
             </div>
           ) : (
@@ -466,7 +466,7 @@ export function ModelSelectionModal({
                 {imagePreviewUrl && (
                   <img
                     src={imagePreviewUrl}
-                    alt="Upload preview"
+                    alt={t("tooltips.uploadPreview")}
                     className="w-full h-48 object-contain bg-muted"
                   />
                 )}
@@ -511,7 +511,7 @@ export function ModelSelectionModal({
                   onClick={() => fileInputRef.current?.click()}
                 >
                   <UploadCloud className="w-4 h-4 mr-2" />
-                  {isDragOver ? "Drop to change image" : "Change Image or Drag & Drop"}
+                  {isDragOver ? t("placeholders.dropToChangeImage") : t("placeholders.changeImageOrDragDrop")}
                 </Button>
               </div>
             </div>

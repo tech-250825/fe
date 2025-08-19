@@ -27,7 +27,7 @@ import {
   Play, 
   Pause, 
   Plus, 
-  Sparkles, 
+ 
   Upload, 
   Download,
   ArrowRight,
@@ -89,7 +89,6 @@ export default function BoardPage() {
 
   // Generation state
   const [isGenerating, setIsGenerating] = useState(false);
-  const [isEnhancing, setIsEnhancing] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showCreditModal, setShowCreditModal] = useState(false);
@@ -1118,34 +1117,6 @@ export default function BoardPage() {
     }
   };
 
-  const handleEnhancePrompt = async (prompt: string, selections: VideoOptions): Promise<string> => {
-    setIsEnhancing(true);
-    try {
-      const selectedLoraModel = selections.style || selections.character;
-      
-      const requestPayload: any = {
-        prompt: prompt
-      };
-      
-      if (selectedLoraModel?.id) {
-        requestPayload.loraId = selectedLoraModel.id;
-      }
-      
-      const response = await api.post(`${config.apiUrl}/api/weights`, requestPayload);
-      
-      if (response.ok) {
-        const backendResponse: BackendResponse<string> = await response.json();
-        return backendResponse.data || prompt;
-      } else {
-        throw new Error(`Failed to enhance prompt: ${response.statusText}`);
-      }
-    } catch (error) {
-      console.error("❌ Network error:", error);
-      throw new Error(t("messages.enhancePromptFailed"));
-    } finally {
-      setIsEnhancing(false);
-    }
-  };
 
   const handleCloseModal = () => {
     router.push(`/boards/${boardId}`);
@@ -1767,7 +1738,7 @@ export default function BoardPage() {
             className="gap-2"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to Boards
+            {t("buttons.backToBoards")}
           </Button>
           <div className="border-l border-border pl-4">
             <h1 className="text-lg font-semibold text-foreground">
@@ -1862,7 +1833,6 @@ export default function BoardPage() {
               </p>
               <div className="flex gap-3">
                 <Button className="gap-2">
-                  <Sparkles className="w-4 h-4" />
                   Start Creating
                 </Button>
               </div>
@@ -1913,7 +1883,7 @@ export default function BoardPage() {
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Video Settings</p>
+                <p>{t("settings.videoSettings")}</p>
               </TooltipContent>
             </Tooltip>
           </div>
@@ -2133,7 +2103,7 @@ export default function BoardPage() {
                   className="w-24 h-16 rounded-lg border-2 border-dashed border-muted-foreground hover:border-foreground cursor-pointer flex flex-col items-center justify-center bg-muted hover:bg-muted/80 transition-colors flex-shrink-0 p-2"
                 >
                   <Plus className="w-4 h-4 text-muted-foreground mb-1" />
-                  <span className="text-[10px] text-muted-foreground">Add</span>
+                  <span className="text-[10px] text-muted-foreground">{t("buttons.add")}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" side="top" className="w-56">
@@ -2149,15 +2119,15 @@ export default function BoardPage() {
                 >
                   <Image className="w-4 h-4 mr-2" />
                   <div className="flex flex-col">
-                    <span className="font-medium">Change from last frame</span>
+                    <span className="font-medium">{t("menu.changeFromLastFrame")}</span>
                     <span className="text-xs text-muted-foreground">
                       {scenes.length === 0 
                         ? t("status.noVideos") 
                         : !scenes.some(scene => scene.taskItem.task.status === "COMPLETED" && scene.src)
                         ? t("status.noCompletedVideos")
                         : isGenerating
-                        ? "Generating in progress..."
-                        : "Continue from the last video's final frame"
+                        ? t("status.generating")
+                        : t("status.continueFromLastFrame")
                       }
                     </span>
                   </div>
@@ -2172,9 +2142,9 @@ export default function BoardPage() {
                 >
                   <Film className="w-4 h-4 mr-2" />
                   <div className="flex flex-col">
-                    <span className="font-medium">New scene</span>
+                    <span className="font-medium">{t("buttons.newScene")}</span>
                     <span className="text-xs text-muted-foreground">
-                      Create a completely new video scene
+                      {t("menu.createNewScene")}
                     </span>
                   </div>
                 </DropdownMenuItem>
@@ -2196,7 +2166,7 @@ export default function BoardPage() {
               )}
               {videoOptions.style ? (
                 <Badge variant="secondary" className="text-xs">
-                  Style: {videoOptions.style.name}
+                  {t("badges.style", { name: videoOptions.style.name })}
                 </Badge>
               ) : videoOptions.character ? (
                 <Badge variant="secondary" className="text-xs">
@@ -2231,34 +2201,14 @@ export default function BoardPage() {
                       className="flex-shrink-0"
                     >
                       <Settings2 className="h-4 w-4" />
-                      <span className="sr-only">Open settings</span>
+                      <span className="sr-only">{t("tooltips.openSettings")}</span>
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Video generation settings</p>
+                    <p>{t("tooltips.videoGenerationSettings")}</p>
                   </TooltipContent>
                 </Tooltip>
 
-                {/* 프롬프트 개선 버튼 */}
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleEnhancePrompt(prompt, videoOptions).then(setPrompt)}
-                        disabled={!prompt.trim() || isGenerating || isEnhancing}
-                        className="hover:bg-primary/10 hover:text-primary disabled:opacity-50 flex-shrink-0"
-                      >
-                        <Sparkles className={`h-4 w-4 ${isEnhancing ? 'animate-spin' : ''}`} />
-                        <span className="sr-only">Enhance prompt</span>
-                      </Button>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Enhance prompt with AI</p>
-                  </TooltipContent>
-                </Tooltip>
 
                 {/* 이미지 선택 드롭다운 */}
                 <Tooltip>
@@ -2278,20 +2228,20 @@ export default function BoardPage() {
                       <DropdownMenuContent align="start" className="w-56">
                         <DropdownMenuItem onClick={handleSelectFromComputer} className="flex items-center gap-2">
                           <Upload className="h-4 w-4" />
-                          Upload from computer
+                          {t("menu.uploadFromComputer")}
                         </DropdownMenuItem>
                         <DropdownMenuItem 
                           onClick={handleOpenImageLibrary}
                           className="flex items-center gap-2"
                         >
                           <FolderOpen className="h-4 w-4" />
-                          Select from library
+                          {t("menu.selectFromLibrary")}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Choose image source</p>
+                    <p>{t("tooltips.chooseImageSource")}</p>
                   </TooltipContent>
                 </Tooltip>
 
@@ -2353,8 +2303,8 @@ export default function BoardPage() {
                       ) : (
                         <div className="text-center py-8 text-muted-foreground">
                           <Image className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                          <p>No images found in your library</p>
-                          <p className="text-sm">Create some images first!</p>
+                          <p>{t("emptyStates.noImagesFound")}</p>
+                          <p className="text-sm">{t("emptyStates.createImagesFirst")}</p>
                         </div>
                       )}
                     </div>
