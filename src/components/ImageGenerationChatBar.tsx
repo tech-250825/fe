@@ -157,7 +157,7 @@ export function ImageGenerationChatBar({
           variant="secondary"
           className="flex items-center gap-1"
         >
-          Style: {selections.checkpoint?.name}
+          {t("badges.style")}: {selections.checkpoint?.name}
         </Badge>
       );
     } else if (selections.style) {
@@ -167,7 +167,7 @@ export function ImageGenerationChatBar({
           variant="secondary"
           className="flex items-center gap-1"
         >
-          Style: {selections.style?.name}
+          {t("badges.style")}: {selections.style?.name}
         </Badge>
       );
     } else if (selections.character) {
@@ -203,7 +203,7 @@ export function ImageGenerationChatBar({
       <div className="p-4 w-full max-w-3xl mx-auto relative">
         <div className="flex flex-wrap items-center gap-2 mb-2">
           <Badge variant="default">
-            Text-to-Image
+            {t("badges.textToImage")}
           </Badge>
           {selectionBadges}
         </div>

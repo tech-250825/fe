@@ -788,6 +788,7 @@
     "badges": {
       "textToVideo": "Text-to-Video",
       "imageToVideo": "Image-to-Video",
+      "textToImage": "Text-to-Image",
       "style": "Style",
       "character": "Character"
     },
