@@ -83,7 +83,7 @@ export function ModelSelectionModal({
   triggerButton,
   className = "",
 }: ModelSelectionModalProps) {
-  const t = useTranslations("settings");
+  const t = useTranslations("VideoCreation");
   const [tempMode, setTempMode] = useState<GenerationMode>(mode);
   const [tempOptions, setTempOptions] = useState<VideoOptions>(options);
   const [tempImageFile, setTempImageFile] = useState<File | null>(null);
@@ -202,18 +202,18 @@ export function ModelSelectionModal({
   const renderHeader = () => {
     const getTitle = () => {
       if (mediaType === "image") {
-        return "Text-to-Image Settings";
+        return t("chatBar.title.textToImageSettings");
       }
-      return tempMode === "t2v" ? "Text-to-Video Settings" : "Image-to-Video Settings";
+      return tempMode === "t2v" ? t("chatBar.title.textToVideoSettings") : t("chatBar.title.imageToVideoSettings");
     };
 
     const getDescription = () => {
       if (mediaType === "image") {
-        return t("description.chooseStyleForImage");
+        return t("chatBar.description.chooseStyleForImage");
       }
       return tempMode === "t2v"
-        ? t("description.chooseStyleForVideo")
-        : "Adjust settings and upload an image for your video.";
+        ? t("chatBar.description.chooseStyleForVideo")
+        : t("chatBar.description.adjustSettingsAndUpload");
     };
 
     return (
@@ -228,9 +228,9 @@ export function ModelSelectionModal({
     <DialogFooter>
       <div className="flex gap-2 ml-auto">
         <Button variant="outline" onClick={() => onOpenChange(false)}>
-          Cancel
+          {t("buttons.cancel")}
         </Button>
-        <Button onClick={handleSave}>Save Changes</Button>
+        <Button onClick={handleSave}>{t("buttons.saveChanges")}</Button>
       </div>
     </DialogFooter>
   );

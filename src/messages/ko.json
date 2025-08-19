@@ -557,7 +557,10 @@
       "extendVideo": "비디오 연장",
       "cancel": "취소",
       "startCreating": "생성 시작",
-      "select": "선택"
+      "select": "선택",
+      "backToBoards": "보드로 돌아가기",
+      "add": "추가",
+      "newScene": "새로운 장면"
     },
     "modals": {
       "selectImageTitle": "라이브러리에서 이미지 선택"
@@ -567,6 +570,8 @@
       "disconnected": "연결 끊김",
       "generatingNew": "새 비디오 생성 중...",
       "generatingInProgress": "생성 진행 중...",
+      "generating": "생성 중...",
+      "continueFromLastFrame": "마지막 비디오의 최종 프레임에서 계속",
       "noVideos": "사용 가능한 비디오가 없습니다",
       "noCompletedVideos": "완료된 비디오가 없습니다",
       "noStyleSelected": "스타일이 선택되지 않았습니다",
@@ -587,6 +592,7 @@
       "generateFirst": "첫 번째 비디오를 생성하세요",
       "generateFirstDescription": "이 보드의 첫 번째 비디오를 만들기 위해 아래 프롬프트 입력을 사용하세요",
       "noImagesInLibrary": "라이브러리에 이미지가 없습니다",
+      "noImagesFound": "라이브러리에서 이미지를 찾을 수 없습니다",
       "createImagesFirst": "먼저 이미지를 생성하세요!"
     },
     "menu": {
@@ -603,6 +609,9 @@
       "enhancePrompt": "AI로 프롬프트 개선",
       "selectImage": "이미지 선택",
       "chooseImageSource": "이미지 소스 선택"
+    },
+    "settings": {
+      "videoSettings": "비디오 설정"
     },
     "badges": {
       "imageToVideo": "이미지를 비디오로",
@@ -737,7 +746,21 @@
       "buttons": {
         "selectFromComputer": "컴퓨터에서 선택",
         "useFromLibrary": "라이브러리 이미지 사용"
+      },
+      "description": {
+        "chooseStyleForImage": "이미지 생성을 위한 스타일을 선택하세요.",
+        "chooseStyleForVideo": "비디오 생성을 위한 스타일이나 캐릭터를 선택하세요.",
+        "adjustSettingsAndUpload": "설정을 조정하고 비디오를 위한 이미지를 업로드하세요."
+      },
+      "title": {
+        "textToVideoSettings": "텍스트를 비디오로 설정",
+        "imageToVideoSettings": "이미지를 비디오로 설정",
+        "textToImageSettings": "텍스트를 이미지로 설정"
       }
+    },
+    "buttons": {
+      "cancel": "취소",
+      "saveChanges": "변경사항 저장"
     },
     "parameters": {
       "aspectRatio": "비율",
@@ -783,7 +806,8 @@
     },
     "description": {
       "chooseStyleForImage": "이미지 생성을 위한 스타일을 선택하세요.",
-      "chooseStyleForVideo": "비디오 생성을 위한 스타일이나 캐릭터를 선택하세요."
+      "chooseStyleForVideo": "비디오 생성을 위한 스타일이나 캐릭터를 선택하세요.",
+      "adjustSettingsAndUpload": "설정을 조정하고 비디오를 위한 이미지를 업로드하세요."
     },
     "tabs": {
       "style": "스타일",

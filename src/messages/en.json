@@ -557,7 +557,10 @@
       "extendVideo": "Extend Video",
       "cancel": "Cancel",
       "startCreating": "Start Creating",
-      "select": "Select"
+      "select": "Select",
+      "backToBoards": "Back to Boards",
+      "add": "Add",
+      "newScene": "New scene"
     },
     "modals": {
       "selectImageTitle": "Select Image from Library"
@@ -567,6 +570,8 @@
       "disconnected": "Disconnected",
       "generatingNew": "Generating new video...",
       "generatingInProgress": "Generating in progress...",
+      "generating": "Generating in progress...",
+      "continueFromLastFrame": "Continue from the last video's final frame",
       "noVideos": "No videos available",
       "noCompletedVideos": "No completed videos available",
       "noStyleSelected": "No style selected",
@@ -587,6 +592,7 @@
       "generateFirst": "Generate your first video",
       "generateFirstDescription": "Use the prompt input below to create your first video for this board",
       "noImagesInLibrary": "No images found in your library",
+      "noImagesFound": "No images found in your library",
       "createImagesFirst": "Create some images first!"
     },
     "menu": {
@@ -603,6 +609,9 @@
       "enhancePrompt": "Enhance prompt with AI",
       "selectImage": "Select image",
       "chooseImageSource": "Choose image source"
+    },
+    "settings": {
+      "videoSettings": "Video Settings"
     },
     "badges": {
       "imageToVideo": "Image to Video",
@@ -737,7 +746,21 @@
       "buttons": {
         "selectFromComputer": "Select from computer",
         "useFromLibrary": "Use from library images"
+      },
+      "description": {
+        "chooseStyleForImage": "Choose a style for your image generation.",
+        "chooseStyleForVideo": "Choose a style or character for your video generation.",
+        "adjustSettingsAndUpload": "Adjust settings and upload an image for your video."
+      },
+      "title": {
+        "textToVideoSettings": "Text-to-Video Settings",
+        "imageToVideoSettings": "Image-to-Video Settings",
+        "textToImageSettings": "Text-to-Image Settings"
       }
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "saveChanges": "Save Changes"
     },
     "parameters": {
       "aspectRatio": "Aspect Ratio",
@@ -783,7 +806,8 @@
     },
     "description": {
       "chooseStyleForImage": "Choose a style for your image generation.",
-      "chooseStyleForVideo": "Choose a style or character for your video generation."
+      "chooseStyleForVideo": "Choose a style or character for your video generation.",
+      "adjustSettingsAndUpload": "Adjust settings and upload an image for your video."
     },
     "tabs": {
       "style": "Style",
