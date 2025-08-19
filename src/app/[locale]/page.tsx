@@ -18,12 +18,33 @@ import {
   Copy,
   User,
   LogOut,
+  Edit3,
+  Images,
+  Film
 } from "lucide-react";
 import LocaleSwitcher from "@/components/LocaleSwitcher";
 import { StructuredData, generateWebSiteSchema, generateWebApplicationSchema, generateOrganizationSchema } from "@/components/seo/StructuredData";
 import { useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
+
+// 추가
+import { motion } from "framer-motion";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CheckCircle2 } from "lucide-react"; // (Images, Film, Edit3는 이미 가져왔으니 OK)
+
+const FadeIn: React.FC<React.PropsWithChildren<{ delay?: number }>> = ({ children, delay = 0 }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 16 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, amount: 0.3 }}
+    transition={{ duration: 0.6, ease: "easeOut", delay }}
+  >
+    {children}
+  </motion.div>
+);
+
+
 
 // Discord Icon Component
 const DiscordIcon = ({ className }: { className?: string }) => (
@@ -112,262 +133,101 @@ const MinimalistLandingPage: React.FC = () => {
           </div>
         </main>
       </div>
+      
 
-      {/* Animation Showcase Section */}
-      <section className="py-20 px-6 bg-white text-black">
-        <div className="container mx-auto text-center">
-          <h2 className="text-4xl font-bold mb-16 tracking-tighter">
-            {t("showcase.title")}
-          </h2>
-          <div className="grid md:grid-cols-4 gap-8">
-            {Array.from({ length: 4 }).map((_, index) => {
-              const videoUrls = [
-                "https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/ghibli_upscale.mp4",
-                "https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/violet_upscale.mp4",
-                "https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/pastel_upscale.mp4",
-                "https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/ship_upscale.mp4",
-              ];
+      {/* FEATURES */}
+      {/* <div id="features" className="py-20 md:py-28">
+        <div className="container mx-auto px-6">
+          <FadeIn>
+            <h2 className="text-2xl md:text-4xl font-semibold tracking-tight">핵심 기능</h2>
+            <p className="mt-3 text-white/70 max-w-2xl">세 가지 축으로 흐름을 단순화했습니다. 만들고, 이어가고, 다듬는 것.</p>
+          </FadeIn>
 
-              const thumbnailPaths = [
-                "/thumbnails/ghibli_thumbnail.png",
-                "/thumbnails/violet_thumbnail.png",
-                "/thumbnails/pastel_thumbnail.png",
-                "/thumbnails/ship_thumbnail.png",
-              ];
-
-              const titleKeys = [
-                "showcase.ghibli",
-                "showcase.violet",
-                "showcase.pastel",
-                "showcase.vintage",
-              ];
-
-              return (
-                <div
-                  key={index}
-                  className="group cursor-pointer"
-                  onClick={() => setSelectedVideo(videoUrls[index])}
-                >
-                  <div className="relative rounded-lg overflow-hidden aspect-w-16 aspect-h-9 bg-gray-200">
-                    <Image
-                      src={thumbnailPaths[index]}
-                      alt={`${t(titleKeys[index] as any)} - AI generated video example showcasing different art styles`}
-                      width={400}
-                      height={225}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      priority={index < 2}
-                      loading={index < 2 ? "eager" : "lazy"}
-                    />
-                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                      <Play className="w-12 h-12 text-white opacity-80 group-hover:opacity-100 transform group-hover:scale-110 transition-all" />
+          <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-5" data-testid="feature-grid">
+            {[
+              {
+                icon: Images,
+                title: "일러스트 만들기",
+                desc: "손맛이 느껴지는 결과물. 복잡한 설정은 배경으로 숨겼습니다.",
+                badge: "Illustration",
+              },
+              {
+                icon: Film,
+                title: "일관성 애니메이션",
+                desc: "캐릭터의 분위기를 잃지 않고 장면을 이어 붙입니다.",
+                badge: "Consistent Animation",
+              },
+              {
+                icon: Edit3,
+                title: "이미지 편집",
+                desc: "브러시, 마스크, 디테일 보정까지 자연스럽게.",
+                badge: "Edit Suite",
+              },
+            ].map((item, idx) => (
+              <motion.div key={idx} whileHover={{ y: -6 }} transition={{ type: "spring", stiffness: 200, damping: 20 }}>
+                <Card className="rounded-2xl border-white/10 bg-white/[0.04] hover:bg-white/[0.06] transition-colors" data-testid={`feature-card-${idx}`}>
+                  <CardHeader>
+                    <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-white/70">
+                      <item.icon className="h-4 w-4" />
+                      {item.badge}
                     </div>
-                  </div>
-                  <div className="mt-4 text-left">
-                    <h3 className="font-semibold text-lg">
-                      {t(titleKeys[index] as any)}
-                    </h3>
-                    <p className="text-gray-600 text-sm mt-1">
-                      {t("showcase.aiGenerated")}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
+                    <CardTitle className="mt-4 text-lg md:text-xl">{item.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-white/70 text-sm md:text-base">{item.desc}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
           </div>
         </div>
-      </section>
+      </div>
 
-      {selectedVideo && (
-        <div
-          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center"
-          onClick={() => setSelectedVideo(null)}
-        >
-          <div
-            className="relative w-full max-w-4xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setSelectedVideo(null)}
-              className="absolute -top-12 right-0 text-white text-4xl"
-            >
-              &times;
-            </button>
-            <video
-              src={selectedVideo}
-              controls
-              autoPlay
-              className="w-full rounded-lg"
-            />
-          </div>
-        </div>
-      )}
-
-      {/* How It Works Section */}
-      <section className="py-28 px-6 bg-gray-50 text-black">
-        <div className="container mx-auto text-center">
-          <h2 className="text-5xl font-bold mb-20 tracking-tighter">
-            {t("howItWorks.title")}
-          </h2>
-          <div className="grid md:grid-cols-3 gap-16 text-left max-w-7xl mx-auto">
-            <div className="flex flex-col items-center text-center">
-              <div className="flex items-center justify-center bg-black text-white rounded-full w-20 h-20 mb-8">
-                <Upload className="w-10 h-10" />
-              </div>
-              <h3 className="text-3xl font-semibold mb-4">
-                {t("howItWorks.step1.title")}
-              </h3>
-              <p className="text-gray-600 leading-relaxed text-lg">
-                {t("howItWorks.step1.description")}
-              </p>
+    
+      <div id="research" className="py-14">
+        <div className="container mx-auto px-6">
+          <div className="grid gap-6 md:grid-cols-2 items-start">
+            <div>
+              <h3 className="text-2xl font-semibold">Research</h3>
+              <p className="mt-2 text-white/70">일관성과 컨트롤을 위한 모델 연구. 새 릴리즈 노트와 데모를 소개합니다.</p>
+              <a href="#" className="mt-4 inline-flex items-center text-white/90 hover:underline">최근 리서치 보기 <ArrowRight className="ml-2 h-4 w-4"/></a>
             </div>
-            <div className="flex flex-col items-center text-center">
-              <div className="flex items-center justify-center bg-black text-white rounded-full w-20 h-20 mb-8">
-                <Sparkles className="w-10 h-10" />
-              </div>
-              <h3 className="text-3xl font-semibold mb-4">
-                {t("howItWorks.step2.title")}
-              </h3>
-              <p className="text-gray-600 leading-relaxed text-lg">
-                {t("howItWorks.step2.description")}
-              </p>
-            </div>
-            <div className="flex flex-col items-center text-center">
-              <div className="flex items-center justify-center bg-black text-white rounded-full w-20 h-20 mb-8">
-                <Download className="w-10 h-10" />
-              </div>
-              <h3 className="text-3xl font-semibold mb-4">
-                {t("howItWorks.step3.title")}
-              </h3>
-              <p className="text-gray-600 leading-relaxed text-lg">
-                {t("howItWorks.step3.description")}
-              </p>
+            <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+              <img src="https://images.unsplash.com/photo-1526948128573-703ee1aeb6fa?q=80&w=1400&auto=format&fit=crop" alt="research" className="h-64 w-full object-cover"/>
             </div>
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* Why Choose Us Section */}
-      <section className="py-28 px-6 bg-white text-black">
-        <div className="container mx-auto text-center">
-          <h2 className="text-5xl font-bold mb-20 tracking-tighter">
-            {t("whyChoose.title")}
-          </h2>
-          <div className="grid md:grid-cols-3 gap-10 max-w-7xl mx-auto">
-            <div className="group bg-gray-50 p-10 rounded-lg shadow-sm hover:shadow-xl hover:scale-105 transition-all duration-300">
-              <div className="flex justify-center mb-6">
-                <UserPlus className="w-12 h-12 text-gray-500" />
+    
+      <div id="gallery" className="py-12">
+        <div className="container mx-auto px-6">
+          <FadeIn>
+            <div className="flex items-end justify-between gap-6">
+              <div>
+                <h3 className="text-xl md:text-3xl font-semibold">작품 프리뷰</h3>
+                <p className="mt-2 text-white/70">호버하면 미리보기가 재생되거나 확대됩니다.</p>
               </div>
-              <h3 className="text-3xl font-semibold mb-4">
-                {t("whyChoose.feature1.title")}
-              </h3>
-              <p className="text-gray-600 leading-relaxed text-lg">
-                {t("whyChoose.feature1.description")}
-              </p>
+              <Button variant="secondary" className="rounded-xl bg-white/10 hover:bg-white/20">모두 보기</Button>
             </div>
-            <div className="group bg-gray-50 p-10 rounded-lg shadow-sm hover:shadow-xl hover:scale-105 transition-all duration-300">
-              <div className="flex justify-center mb-6">
-                <Zap className="w-12 h-12 text-gray-500" />
-              </div>
-              <h3 className="text-3xl font-semibold mb-4">
-                {t("whyChoose.feature2.title")}
-              </h3>
-              <p className="text-gray-600 leading-relaxed text-lg">
-                {t("whyChoose.feature2.description")}
-              </p>
-            </div>
-            <div className="group bg-gray-50 p-10 rounded-lg shadow-sm hover:shadow-xl hover:scale-105 transition-all duration-300">
-              <div className="flex justify-center mb-6">
-                <Layers className="w-12 h-12 text-gray-500" />
-              </div>
-              <h3 className="text-3xl font-semibold mb-4">
-                {t("whyChoose.feature3.title")}
-              </h3>
-              <p className="text-gray-600 leading-relaxed text-lg">
-                {t("whyChoose.feature3.description")}
-              </p>
-            </div>
+          </FadeIn>
+          <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4" data-testid="gallery-grid">
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+            <motion.a key={i} href="#" className="group relative block overflow-hidden rounded-2xl border border-white/10 bg-white/5"
+              initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, ease: "easeOut", delay: i * 0.03 }}
+              whileHover={{ scale: 1.02 }} data-testid={`gallery-item-${i}`}>
+              <img
+                src={`https://picsum.photos/seed/${i + 30}/800/1000`}
+                alt={`preview-${i}`}
+                className="h-48 md:h-56 w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+            </motion.a>
+          ))}
           </div>
         </div>
-      </section>
-
-      {/* Ready to Animate Section */}
-      <section className="py-28 px-6 bg-gray-50 text-black">
-        <div className="container mx-auto text-center max-w-4xl">
-          <div className="flex justify-center mb-8">
-            <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center">
-              <ImageIcon className="w-16 h-16 text-gray-400" />
-            </div>
-          </div>
-          <h2 className="text-5xl font-bold mb-6 tracking-tighter">
-            {t("readyToAnimate.title")}
-          </h2>
-          <p className="text-lg text-gray-600 mb-10">
-            {t("readyToAnimate.description")}
-          </p>
-          <div className="flex flex-col items-center space-y-4">
-            <a
-              href="mailto:contact@hoit.studio"
-              className="bg-black text-white px-8 py-4 rounded-full font-semibold hover:bg-gray-800 transition-colors text-lg"
-            >
-              {t("readyToAnimate.getInTouch")}
-            </a>
-            <div className="text-center pt-6">
-              <div className="flex items-center space-x-2 mb-2">
-                <p className="text-gray-600">
-                  {t("contact.email")}:{" "}
-                  <a
-                    href="mailto:contact@hoit.studio"
-                    className="font-semibold text-black hover:underline"
-                  >
-                    contact@hoit.studio
-                  </a>
-                </p>
-                <button
-                  onClick={() => copyToClipboard("contact@hoit.studio")}
-                  className="p-2 rounded-full hover:bg-gray-200 transition-colors"
-                >
-                  <Copy className="w-4 h-4 text-gray-500" />
-                </button>
-              </div>
-              <div className="flex items-center space-x-2">
-                <p className="text-gray-600">
-                  {t("contact.instagram")}:{" "}
-                  <a
-                    href="https://instagram.com/hoit.studio"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-semibold text-black hover:underline"
-                  >
-                    @hoit.studio
-                  </a>
-                </p>
-                <button
-                  onClick={() => copyToClipboard("@hoit.studio")}
-                  className="p-2 rounded-full hover:bg-gray-200 transition-colors"
-                >
-                  <Copy className="w-4 h-4 text-gray-500" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 px-6 bg-black text-white">
-        <div className="container mx-auto text-center">
-          <h2 className="text-4xl font-bold mb-4 tracking-tighter">
-            {t("cta.title")}
-          </h2>
-          <p className="text-gray-400 mb-8 max-w-xl mx-auto">
-            {t("cta.description")}
-          </p>
-          <button className="bg-white text-black px-8 py-4 rounded-full font-semibold hover:bg-gray-200 transition-colors text-lg">
-            {t("cta.signUp")}
-          </button>
-        </div>
-      </section>
-
+      </div> */}
+      
       {/* Footer */}
       <Footer />
     </div>

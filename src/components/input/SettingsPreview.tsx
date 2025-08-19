@@ -34,7 +34,7 @@ export function SettingsPreview({
             {selectedResolution} {selectedAspectRatio}
           </span>
           <span className="text-gray-500">•</span>
-          <span>{selectedFrames === 81 ? "4s" : "8s"}</span>
+          <span>{selectedFrames === 81 ? "4s" : selectedFrames === 101 ? "6s" : "8s"}</span>
         </div>
         <button
           onClick={onClose}
