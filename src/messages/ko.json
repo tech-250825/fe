@@ -719,7 +719,7 @@
     },
     "generation": {
       "generating": "생성 중",
-      "creatingContent": "비디오 콘텐츠를 생성하고 있습니다",
+      "creatingContent": "비디오 콘텐츠를 생성하고 있습니다. 2분에서 5분 정도 안에 생성됩니다",
       "processingFrames": "프레임 처리 중",
       "renderingVideo": "비디오 렌더링 중"
     },

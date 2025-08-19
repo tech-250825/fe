@@ -96,7 +96,7 @@ export function ChatInput({
       selectedImage: uploadedImageFile,
       resolution: options.quality,
       aspectRatio: options.aspectRatio,
-      frames: options.duration === 4 ? 81 : 101,
+      frames: options.duration === 4 ? 81 : options.duration === 6 ? 101 : 161,
       width,
       height,
     };
@@ -120,7 +120,7 @@ export function ChatInput({
             }}
             selectedResolution={options.quality}
             selectedAspectRatio={options.aspectRatio}
-            selectedFrames={options.duration === 4 ? 81 : 101}
+            selectedFrames={options.duration === 4 ? 81 : options.duration === 6 ? 101 : 161}
             onClose={() => setShowSelectedSettings(false)}
           />
         )}

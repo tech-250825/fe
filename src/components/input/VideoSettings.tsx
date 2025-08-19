@@ -59,6 +59,7 @@ export function VideoSettings({
           >
             <option value={81}>81</option>
             <option value={101}>101</option>
+            <option value={161}>161</option>
           </select>
         </div>
       </div>

@@ -34,7 +34,7 @@ export function ImageGenerationScreen({ }: ImageGenerationScreenProps) {
               <span className="animate-pulse delay-300 text-purple-400">.</span>
             </span>
           </h2>
-          <p className="text-gray-400">Creating your artwork</p>
+          <p className="text-gray-400">Creating your artwork, this takes about 30~60 seconds</p>
         </div>
 
         {/* Spinner */}

@@ -857,7 +857,7 @@ export default function BoardPage() {
       console.log("🎯 Endpoint:", endpoint);
       console.log("🎯 Full URL will be:", `${config.apiUrl}${endpoint}`);
 
-      const frames = options.duration === 4 ? 81 : 101;
+      const frames = options.duration === 4 ? 81 : options.duration === 6 ? 101 : 161;
       const loraId = selectedLoraModel?.id || 1;
       
       console.log("🎯 LoRA ID:", loraId);
@@ -1255,7 +1255,7 @@ export default function BoardPage() {
       });
 
       // Calculate selected number of frames based on duration
-      const selectedNumFrames = videoOptions.duration === 4 ? 81 : 101;
+      const selectedNumFrames = videoOptions.duration === 4 ? 81 : videoOptions.duration === 6 ? 101 : 161;
       
       // Create JSON payload for the new API
       const payload = {

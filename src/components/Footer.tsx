@@ -31,29 +31,7 @@ export default function Footer() {
   
   return (
     <footer className="bg-gray-900 text-gray-300">
-      {/* Newsletter Section */}
-      <div className="border-b border-gray-800">
-        <div className="container mx-auto px-6 py-12">
-          <div className="max-w-2xl mx-auto text-center">
-            <h3 className="text-2xl font-bold text-white mb-4">
-              Stay Updated with Hoit
-            </h3>
-            <p className="text-gray-400 mb-6">
-              Get the latest updates on new features, tutorials, and AI animation trends.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-4 py-3 rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center">
-                Subscribe <ArrowRight className="w-4 h-4 ml-2" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      
 
       {/* Main Footer Content */}
       <div className="container mx-auto px-6 py-16">

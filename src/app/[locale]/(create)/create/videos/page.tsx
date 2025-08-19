@@ -301,7 +301,8 @@ export default function CreatePage() {
     // 일반적으로 20 FPS 기준으로 계산 (백엔드 설정에 따라 다를 수 있음)
     // 81 frames = ~4s, 121 frames = ~6s 패턴으로 보임
     if (numFrames <= 81) return "4s";
-    if (numFrames <= 101) return "6s";
+    if (numFrames <= 121) return "6s";
+    if (numFrames <= 161) return "8s";
     
     // 더 정확한 계산이 필요한 경우
     const fps = 20; // 추정 FPS (실제 백엔드 설정 확인 필요)
@@ -401,7 +402,7 @@ export default function CreatePage() {
       tempHeight = dimensions.height;
     }
     
-    tempFrames = options.duration === 4 ? 81 : 101;
+    tempFrames = options.duration === 4 ? 81 : options.duration === 6 ? 101 : 161;
 
     const optimisticTask: TaskItem = {
       type: "video",
@@ -432,7 +433,7 @@ export default function CreatePage() {
       // Width/height no longer needed for API payload
 
       const frames =
-        options.duration === 4 ? 81 : 101;
+        options.duration === 4 ? 81 : options.duration === 6 ? 101 : 161;
 
       // Get lora ID with fallback to default (1 is Studio Ghibli based on API response)
       const loraId = selectedLoraModel?.id || 1; // Default to Studio Ghibli (id: 1)
