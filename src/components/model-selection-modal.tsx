@@ -83,7 +83,7 @@ export function ModelSelectionModal({
   triggerButton,
   className = "",
 }: ModelSelectionModalProps) {
-  const t = useTranslations("VideoCreation");
+  const t = useTranslations("settings");
   const [tempMode, setTempMode] = useState<GenerationMode>(mode);
   const [tempOptions, setTempOptions] = useState<VideoOptions>(options);
   const [tempImageFile, setTempImageFile] = useState<File | null>(null);
@@ -209,10 +209,10 @@ export function ModelSelectionModal({
 
     const getDescription = () => {
       if (mediaType === "image") {
-        return "Choose a style or character for your image generation.";
+        return t("description.chooseStyleForImage");
       }
       return tempMode === "t2v"
-        ? "Choose a style or character for your video generation."
+        ? t("description.chooseStyleForVideo")
         : "Adjust settings and upload an image for your video.";
     };
 
@@ -453,10 +453,10 @@ export function ModelSelectionModal({
                 isDragOver ? "text-primary" : "text-muted-foreground"
               )} />
               <p className="mt-2 text-sm font-semibold">
-                {isDragOver ? "Drop image here" : "Click to upload or drag & drop"}
+                {isDragOver ? t("placeholders.dropImageHere") : t("placeholders.clickToUploadOrDragDrop")}
               </p>
               <p className="text-xs text-muted-foreground">
-                JPG, PNG, WebP, GIF (Max 10MB)
+                {t("placeholders.jpgPngWebpGif")}
               </p>
             </div>
           ) : (
@@ -466,7 +466,7 @@ export function ModelSelectionModal({
                 {imagePreviewUrl && (
                   <img
                     src={imagePreviewUrl}
-                    alt="Upload preview"
+                    alt={t("tooltips.uploadPreview")}
                     className="w-full h-48 object-contain bg-muted"
                   />
                 )}
@@ -511,7 +511,7 @@ export function ModelSelectionModal({
                   onClick={() => fileInputRef.current?.click()}
                 >
                   <UploadCloud className="w-4 h-4 mr-2" />
-                  {isDragOver ? "Drop to change image" : "Change Image or Drag & Drop"}
+                  {isDragOver ? t("placeholders.dropToChangeImage") : t("placeholders.changeImageOrDragDrop")}
                 </Button>
               </div>
             </div>

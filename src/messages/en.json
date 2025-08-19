@@ -676,7 +676,7 @@
   "VideoCreation": {
     "title": "Video Creation",
     "subtitle": "Create new videos",
-    "loginRequired": "Login required.",
+    "loginRequired": "Please log in to create videos.",
     "list": {
       "empty": {
         "title": "No videos created yet.",
@@ -733,6 +733,10 @@
         "quality": "Quality",
         "uploadImage": "Upload Image",
         "removeImage": "Remove Image"
+      },
+      "buttons": {
+        "selectFromComputer": "Select from computer",
+        "useFromLibrary": "Use from library images"
       }
     },
     "parameters": {
@@ -758,11 +762,93 @@
       "videoGenerationFailed": "Video generation failed (Error {status}). Please try again.",
       "imagePastedSuccessfully": "Image pasted successfully!"
     },
+    "badges": {
+      "textToVideo": "Text-to-Video",
+      "imageToVideo": "Image-to-Video",
+      "style": "Style",
+      "character": "Character"
+    },
     "delete": {
       "confirm": "Are you sure you want to delete this video?",
       "success": "Video has been deleted.",
       "constraintError": "Cannot delete due to related data. Please contact administrator.",
       "failed": "Failed to delete. Please try again."
+    }
+  },
+  "settings": {
+    "title": {
+      "textToVideoSettings": "Text-to-Video Settings",
+      "imageToVideoSettings": "Image-to-Video Settings",
+      "textToImageSettings": "Text-to-Image Settings"
+    },
+    "description": {
+      "chooseStyleForImage": "Choose a style for your image generation.",
+      "chooseStyleForVideo": "Choose a style or character for your video generation."
+    },
+    "tabs": {
+      "style": "Style",
+      "character": "Character"
+    },
+    "labels": {
+      "noStyleModels": "No style models available",
+      "noCharacterModels": "No character models available",
+      "aspectRatio": "Aspect Ratio",
+      "duration": "Duration",
+      "quality": "Quality",
+      "resolution": "Resolution"
+    },
+    "placeholders": {
+      "dropImageHere": "Drop image here",
+      "selectImage": "Select image",
+      "dragDropUpload": "Drag and drop or click to upload",
+      "clickToUploadOrDragDrop": "Click to upload or drag & drop",
+      "dropToChangeImage": "Drop to change image",
+      "changeImageOrDragDrop": "Change Image or Drag & Drop",
+      "jpgPngWebpGif": "JPG, PNG, WebP, GIF (Max 10MB)"
+    },
+    "buttons": {
+      "save": "Save",
+      "cancel": "Cancel",
+      "apply": "Apply",
+      "reset": "Reset",
+      "selectFromComputer": "Select from computer",
+      "useFromLibrary": "Use from library images"
+    },
+    "tooltips": {
+      "settingsTooltip": "Configure generation settings",
+      "imageUploadTooltip": "Choose from your generated images",
+      "uploadPreview": "Upload preview"
+    }
+  },
+  "modal": {
+    "title": {
+      "imageViewer": "Image Viewer",
+      "videoViewer": "Video Viewer",
+      "prompt": "Prompt",
+      "parameters": "Parameters",
+      "allImages": "All Images"
+    },
+    "buttons": {
+      "copyPrompt": "Copy Prompt",
+      "download": "Download"
+    },
+    "tooltips": {
+      "copyPromptTooltip": "Copy prompt text to clipboard",
+      "downloadImageTooltip": "Download image",
+      "inputImageTooltip": "Input Image"
+    },
+    "labels": {
+      "inputImage": "Input Image",
+      "aspectRatio": "Aspect Ratio",
+      "duration": "Duration",
+      "style": "Style",
+      "resolution": "Resolution",
+      "taskId": "Task ID",
+      "createdAt": "Created At"
+    },
+    "dragDrop": {
+      "dropImageHere": "Drop your image here",
+      "toGenerateVideo": "to generate a video from it"
     }
   }
 }

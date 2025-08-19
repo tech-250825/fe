@@ -695,6 +695,10 @@
         "quality": "品質",
         "uploadImage": "画像アップロード",
         "removeImage": "画像を削除"
+      },
+      "buttons": {
+        "selectFromComputer": "コンピューターから選択",
+        "useFromLibrary": "ライブラリ画像を使用"
       }
     },
     "parameters": {
@@ -715,9 +719,16 @@
       "invalidRequest": "無効なリクエストです。設定を確認してから再試行してください。",
       "authFailed": "認証に失敗しました。再度ログインしてください。",
       "networkError": "ネットワークエラーが発生しました。接続を確認してから再試行してください。",
+      "creditInsufficient": "クレジット不足です。クレジットをチャージしてください。",
       "imagesDownloadStarted": "{count}枚の画像ダウンロードが開始されました",
       "videoGenerationFailed": "動画生成に失敗しました（エラー {status}）。再試行してください。",
       "imagePastedSuccessfully": "画像が正常に貼り付けられました！"
+    },
+    "badges": {
+      "textToVideo": "テキストから動画へ",
+      "imageToVideo": "画像から動画へ",
+      "style": "スタイル",
+      "character": "キャラクター"
     },
     "delete": {
       "confirm": "本当にこの動画を削除しますか？",
@@ -739,6 +750,97 @@
     "buttons": {
       "close": "閉じる",
       "getCredit": "クレジット取得"
+    }
+  },
+  "CreditInsufficient": {
+    "title": "クレジット不足",
+    "subtitle": "すべてのクレジットが消費されました",
+    "surveyTitle": "無料クレジット取得",
+    "surveyDescription": "クレジットが枯渇しました。私たちのアンケートに参加していただければ、追加のクレジットを再度お送りします。",
+    "benefits": {
+      "item1": "簡単なアンケートの完了",
+      "item2": "無料クレジットを即座に受け取り",
+      "item3": "サービス向上にご協力"
+    },
+    "buttons": {
+      "close": "後で",
+      "getCredit": "クレジット取得に行く"
+    }
+  },
+  "settings": {
+    "title": {
+      "textToVideoSettings": "テキストから動画へ設定",
+      "imageToVideoSettings": "画像から動画へ設定",
+      "textToImageSettings": "テキストから画像へ設定"
+    },
+    "description": {
+      "chooseStyleForImage": "画像生成のためのスタイルを選択してください。",
+      "chooseStyleForVideo": "動画生成のためのスタイルまたはキャラクターを選択してください。"
+    },
+    "tabs": {
+      "style": "スタイル",
+      "character": "キャラクター"
+    },
+    "labels": {
+      "noStyleModels": "利用可能なスタイルモデルがありません",
+      "noCharacterModels": "利用可能なキャラクターモデルがありません",
+      "aspectRatio": "アスペクト比",
+      "duration": "再生時間",
+      "quality": "品質",
+      "resolution": "解像度"
+    },
+    "placeholders": {
+      "dropImageHere": "ここに画像をドロップ",
+      "selectImage": "画像を選択",
+      "dragDropUpload": "ドラッグ＆ドロップまたはクリックしてアップロード",
+      "clickToUploadOrDragDrop": "クリックしてアップロードまたはドラッグ＆ドロップ",
+      "dropToChangeImage": "ドロップして画像を変更",
+      "changeImageOrDragDrop": "画像を変更またはドラッグ＆ドロップ",
+      "jpgPngWebpGif": "JPG、PNG、WebP、GIF（最大10MB）"
+    },
+    "buttons": {
+      "save": "保存",
+      "cancel": "キャンセル",
+      "apply": "適用",
+      "reset": "リセット",
+      "selectFromComputer": "コンピューターから選択",
+      "useFromLibrary": "ライブラリ画像を使用"
+    },
+    "tooltips": {
+      "settingsTooltip": "生成設定を構成",
+      "imageUploadTooltip": "生成された画像から選択",
+      "uploadPreview": "アップロードプレビュー"
+    }
+  },
+  "modal": {
+    "title": {
+      "imageViewer": "画像ビューアー",
+      "videoViewer": "動画ビューアー",
+      "prompt": "プロンプト",
+      "parameters": "パラメータ",
+      "allImages": "すべての画像"
+    },
+    "buttons": {
+      "copyPrompt": "プロンプトをコピー",
+      "download": "ダウンロード"
+    },
+    "tooltips": {
+      "copyPromptTooltip": "プロンプトテキストをクリップボードにコピー",
+      "downloadImageTooltip": "画像をダウンロード",
+      "inputImageTooltip": "入力画像"
+    },
+    "labels": {
+      "inputImage": "入力画像",
+      "aspectRatio": "アスペクト比",
+      "duration": "再生時間",
+      "style": "スタイル",
+      "resolution": "解像度",
+      "taskId": "タスクID",
+      "createdAt": "作成日"
+    },
+    "dragDrop": {
+      "dropImageHere": "ここに画像をドロップ",
+      "toGenerateVideo": "動画を生成するため"
     }
   }
 }
