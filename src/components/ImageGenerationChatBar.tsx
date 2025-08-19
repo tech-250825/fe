@@ -249,7 +249,7 @@ export function ImageGenerationChatBar({
           </div>
           <Input
             type="text"
-            placeholder={t("chatBar.promptPlaceholder")}
+            placeholder={t("chatBar.imagePromptPlaceholder")}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             onKeyPress={handleKeyPress}
