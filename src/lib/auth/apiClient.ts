@@ -20,19 +20,16 @@ export async function apiClient(
 
   // If we get a 401 and haven't already tried refreshing, attempt refresh
   if (response.status === 401 && !skipTokenRefresh) {
-    console.log("🔄 API call received 401, attempting token refresh...");
-    
     const refreshSuccess = await tokenManager.refreshToken();
     
     if (refreshSuccess) {
-      console.log("✅ Token refreshed, retrying API call...");
+ 
       // Retry the original request with the new token
       response = await fetch(url, {
         credentials: "include",
         ...fetchOptions,
       });
     } else {
-      console.log("❌ Token refresh failed, redirecting to login...");
       // If refresh fails, redirect to login
       window.location.href = "/home";
     }

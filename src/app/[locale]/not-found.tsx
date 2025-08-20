@@ -1,7 +1,13 @@
+"use client";
+
+import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/button";
 import { Home, ArrowLeft, Search } from "lucide-react";
+import { useTranslations } from "next-intl";
 
-export default function NotFound() {
+export default function LocaleNotFound() {
+  const t = useTranslations("NotFound");
+  
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4">
       <div className="max-w-md w-full text-center space-y-8">
@@ -12,10 +18,10 @@ export default function NotFound() {
           </h1>
           <div className="space-y-2">
             <h2 className="text-2xl font-semibold text-foreground">
-              Page Not Found
+              {t("title")}
             </h2>
             <p className="text-muted-foreground">
-              The page you're looking for doesn't exist or has been moved.
+              {t("description")}
             </p>
           </div>
         </div>
@@ -33,30 +39,32 @@ export default function NotFound() {
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Button asChild variant="default" className="w-full sm:w-auto">
-            <a href="/home" className="flex items-center gap-2">
+            <Link href="/home" className="flex items-center gap-2">
               <Home className="w-4 h-4" />
-              Go Home
-            </a>
+              {t("goHome")}
+            </Link>
           </Button>
-          <a 
-            href="javascript:history.back()" 
-            className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 w-full sm:w-auto"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Go Back
-          </a>
+          <Button asChild variant="outline" className="w-full sm:w-auto">
+            <button 
+              onClick={() => window.history.back()} 
+              className="flex items-center gap-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              {t("goBack")}
+            </button>
+          </Button>
         </div>
 
         {/* Brand */}
         <div className="pt-8 border-t border-border">
           <p className="text-sm text-muted-foreground">
-            Return to{" "}
-            <a 
+            {t("returnTo")}{" "}
+            <Link 
               href="/" 
               className="font-semibold text-foreground hover:text-primary transition-colors"
             >
               Hoit
-            </a>
+            </Link>
           </p>
         </div>
       </div>

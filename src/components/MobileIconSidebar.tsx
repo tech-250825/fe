@@ -17,9 +17,8 @@ import {
   LogOut,
   X,
 } from "lucide-react";
-import { usePathname } from "@/i18n/routing";
+import { usePathname, Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
-import Link from "next/link";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/hooks/useAuth";
 import { LoginModal } from "@/components/login-modal";

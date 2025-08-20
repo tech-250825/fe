@@ -41,15 +41,10 @@ export const useSSEManager = ({
 
   const connect = useCallback(() => {
     if (!memberId || isConnectingRef.current || eventSourceRef.current) {
-      console.log("SSE 연결 중복 방지:", {
-        memberId: !!memberId,
-        isConnecting: isConnectingRef.current,
-        hasConnection: !!eventSourceRef.current,
-      });
+
       return;
     }
 
-    console.log("SSE 새 연결 시작:", memberId);
     isConnectingRef.current = true;
 
     try {
@@ -58,17 +53,12 @@ export const useSSEManager = ({
       });
 
       eventSource.onopen = (event) => {
-        console.log("SSE Connected:", {
-          memberId,
-          timestamp: new Date().toISOString(),
-        });
         reconnectAttemptsRef.current = 0;
         isConnectingRef.current = false;
         onOpen?.(event);
       };
 
       eventSource.onmessage = (event) => {
-        console.log("SSE Message:", event.data);
         onMessage?.(event);
       };
 
@@ -85,9 +75,6 @@ export const useSSEManager = ({
 
           if (reconnectAttemptsRef.current < maxReconnectAttempts) {
             reconnectAttemptsRef.current++;
-            console.log(
-              `SSE 재연결 시도 ${reconnectAttemptsRef.current}/${maxReconnectAttempts}`,
-            );
 
             reconnectTimeoutRef.current = setTimeout(() => {
               connect();
@@ -97,12 +84,6 @@ export const useSSEManager = ({
           }
         }
       };
-
-      //   eventSource.onclose = (event) => {
-      //     console.log("SSE Closed:", event);
-      //     isConnectingRef.current = false;
-      //     onClose?.(event);
-      //   };
 
       eventSourceRef.current = eventSource;
     } catch (error) {
@@ -150,7 +131,6 @@ export const useSSEManager = ({
   useEffect(() => {
     const handleFocus = () => {
       if (memberId && !eventSourceRef.current) {
-        console.log("페이지 포커스로 인한 SSE 재연결");
         reconnect();
       }
     };
