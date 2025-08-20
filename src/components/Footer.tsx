@@ -45,26 +45,23 @@ export default function Footer() {
               and images with our cutting-edge artificial intelligence platform.
             </p>
             <div className="flex space-x-4">
-              <a href="https://twitter.com/hoit" className="text-gray-400 hover:text-white transition-colors">
+              <a href="https://x.com/han1000llm" className="text-gray-400 hover:text-white transition-colors">
                 <Twitter className="w-5 h-5" />
               </a>
               <a href="https://discord.gg/hpmPdaysuR" className="text-gray-400 hover:text-white transition-colors">
                 <DiscordIcon className="w-5 h-5" />
               </a>
-              <a href="https://instagram.com/hoit.studio" className="text-gray-400 hover:text-white transition-colors">
+              <a href="https://www.instagram.com/hoitstudio/" className="text-gray-400 hover:text-white transition-colors">
                 <Instagram className="w-5 h-5" />
               </a>
-              <a href="https://linkedin.com/company/hoit" className="text-gray-400 hover:text-white transition-colors">
-                <Linkedin className="w-5 h-5" />
-              </a>
-              <a href="https://youtube.com/@hoit" className="text-gray-400 hover:text-white transition-colors">
+              <a href="https://www.youtube.com/@HoitStudio-h8g" className="text-gray-400 hover:text-white transition-colors">
                 <Youtube className="w-5 h-5" />
               </a>
             </div>
           </div>
 
-          {/* Products */}
-          <div>
+
+          {/* <div>
             <h4 className="text-white font-semibold mb-6">Products</h4>
             <ul className="space-y-3">
               <li><a href="/create/videos" className="text-gray-400 hover:text-white transition-colors">Video Generation</a></li>
@@ -76,7 +73,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Resources */}
           <div>
             <h4 className="text-white font-semibold mb-6">Resources</h4>
             <ul className="space-y-3">
@@ -87,7 +83,7 @@ export default function Footer() {
               <li><a href="/support" className="text-gray-400 hover:text-white transition-colors">Help Center</a></li>
               <li><a href="/changelog" className="text-gray-400 hover:text-white transition-colors">Changelog</a></li>
             </ul>
-          </div>
+          </div> */}
 
           {/* Company Information */}
           <div>
