@@ -348,22 +348,38 @@ export default function CreateImagesPage() {
       const selectedCheckpointModel = options.checkpoint;
       const resolutionProfile = getResolutionProfile(options.aspectRatio, options.quality);
 
-      // Determine API endpoint and payload based on selected model type
+      // Determine API endpoint and payload based on selected model type and aspect ratio
       let apiEndpoint = '/api/images/create';
       let requestData: any;
       
       if (selectedCheckpointModel?.type === 'CHECKPOINT') {
-        // Use v3 endpoint for CHECKPOINT models - no loraId needed
-        apiEndpoint = '/api/images/create/v3';
-        requestData = {
-          checkpointId: selectedCheckpointModel.id,
-          prompt: prompt,
-          resolutionProfile: resolutionProfile,
-        };
-        console.log("🏗️ Checkpoint 모델 감지 → v3 API 사용");
-        console.log("   Checkpoint Name:", selectedCheckpointModel.name);
-        console.log("   Checkpoint ID:", selectedCheckpointModel.id);
-        console.log("   Endpoint: v3 (/api/images/create/v3)");
+        if (options.aspectRatio === "16:9") {
+          // Use v2 endpoint for CHECKPOINT models with 16:9 ratio + facedetailer LoRA
+          apiEndpoint = '/api/images/create/v2';
+          requestData = {
+            checkpointId: selectedCheckpointModel.id,
+            loraId: 23, // facedetailer LoRA ID
+            prompt: prompt,
+            resolutionProfile: resolutionProfile,
+          };
+          console.log("🔷 Checkpoint + 16:9 비율 감지 → v2 API + facedetailer LoRA 사용");
+          console.log("   Checkpoint Name:", selectedCheckpointModel.name);
+          console.log("   Checkpoint ID:", selectedCheckpointModel.id);
+          console.log("   LoRA ID: 23 (facedetailer)");
+          console.log("   Endpoint: v2 (/api/images/create/v2)");
+        } else {
+          // Use v3 endpoint for CHECKPOINT models with other ratios - no loraId needed
+          apiEndpoint = '/api/images/create/v3';
+          requestData = {
+            checkpointId: selectedCheckpointModel.id,
+            prompt: prompt,
+            resolutionProfile: resolutionProfile,
+          };
+          console.log("🏗️ Checkpoint + 다른 비율 감지 → v3 API 사용");
+          console.log("   Checkpoint Name:", selectedCheckpointModel.name);
+          console.log("   Checkpoint ID:", selectedCheckpointModel.id);
+          console.log("   Endpoint: v3 (/api/images/create/v3)");
+        }
       } else {
         // Use existing LoRA-based logic for other models
         let autoSelectedLoraId = 0;
