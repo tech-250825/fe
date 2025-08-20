@@ -110,7 +110,7 @@ const MinimalistLandingPage: React.FC = () => {
       {/* Hero Section with Video Background */}
       <div className="relative h-screen overflow-hidden">
         <video
-          src="https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/UpscaleVideo_1_20250711.mp4"
+          src="/hero/output2.mp4"
           autoPlay
           muted
           loop
