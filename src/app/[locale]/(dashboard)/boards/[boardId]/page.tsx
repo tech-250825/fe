@@ -262,7 +262,6 @@ export default function BoardPage() {
       video.addEventListener('canplaythrough', () => {
         videoCache.current[src] = video;
         preloadedVideos.current.add(src);
-        console.log("✅ Video preloaded:", src);
         resolve(video);
       });
       
@@ -280,8 +279,6 @@ export default function BoardPage() {
     const preloadAllVideos = async () => {
       if (scenes.length === 0) return;
 
-      console.log("🔄 Starting video preloading...");
-      
       // Preload all completed videos
       const preloadPromises = scenes
         .filter(scene => scene.taskItem.task.status === "COMPLETED" && scene.src)
@@ -294,7 +291,6 @@ export default function BoardPage() {
 
       const results = await Promise.allSettled(preloadPromises);
       const successCount = results.filter(r => r.status === 'fulfilled').length;
-      console.log(`✅ Preloaded ${successCount} videos out of ${preloadPromises.length}`);
     };
 
     // Start preloading after initial render
@@ -332,12 +328,9 @@ export default function BoardPage() {
     const nextVideoSrc = scenes[nextIndex].src;
     if (!nextVideoSrc) return;
 
-    console.log("🔄 Switching to video:", nextIndex, nextVideoSrc);
-
     // Check if video is preloaded for instant switching
     if (preloadedVideos.current.has(nextVideoSrc)) {
-      console.log("⚡ Using preloaded video for instant switch");
-      
+
       // Instant switch with preloaded video
       setCurrentSceneIndex(nextIndex);
       setActiveVideoSrc(nextVideoSrc);
@@ -350,8 +343,7 @@ export default function BoardPage() {
       }
     } else {
       // Fallback to normal loading (with minimal delay)
-      console.log("📥 Video not preloaded, loading normally");
-      
+
       setCurrentSceneIndex(nextIndex);
       setActiveVideoSrc(nextVideoSrc);
       setCurrentTime(0);
@@ -371,7 +363,6 @@ export default function BoardPage() {
       
       // Ensure next video is preloaded before switching
       if (nextVideoSrc && !preloadedVideos.current.has(nextVideoSrc)) {
-        console.log("🔄 Preloading next video before switch:", nextVideoSrc);
         try {
           await preloadVideo(nextVideoSrc);
         } catch (error) {
@@ -390,8 +381,7 @@ export default function BoardPage() {
     if (videoRef.current) {
       const videoDuration = videoRef.current.duration;
       setDuration(videoDuration);
-      console.log("🎬 Video metadata loaded:", videoRef.current.src, "Duration:", videoDuration);
-      
+
       // Update video duration cache for timeline calculations
       const currentScene = scenes[currentSceneIndex];
       if (currentScene) {
@@ -419,7 +409,6 @@ export default function BoardPage() {
     });
     
     if (navigator.userAgent.includes('Safari') && !navigator.userAgent.includes('Chrome')) {
-      console.log("🍎 Safari video error - attempting fallback strategies");
       // Try reloading the video
       setTimeout(() => {
         video.load();
@@ -643,7 +632,6 @@ export default function BoardPage() {
   // Fetch board-specific videos
   const fetchTaskList = useCallback(async (reset = false) => {
     if (loadingRef.current || !boardId) {
-      console.log("❌ Already loading or no boardId");
       return;
     }
 
@@ -651,8 +639,6 @@ export default function BoardPage() {
     setLoading(true);
 
     try {
-      console.log("🔄 Fetching board videos...");
-
       const size = reset ? "50" : "25";
       const params = new URLSearchParams({ size });
 
@@ -662,7 +648,6 @@ export default function BoardPage() {
       }
 
       const url = `${config.apiUrl}/api/videos/board/${boardId}?${params}`;
-      console.log("📡 Board API URL:", url);
 
       const res = await api.get(url);
 
@@ -671,10 +656,8 @@ export default function BoardPage() {
       }
 
       const backendResponse: BackendResponse<TaskListData> = await res.json();
-      console.log("📦 Board videos response:", backendResponse);
 
       if (!backendResponse.data) {
-        console.log("⚠️ No data in response");
         if (reset) {
           setTaskList([]);
           taskListRef.current = [];
@@ -685,14 +668,11 @@ export default function BoardPage() {
       }
 
       const content = backendResponse.data.content || [];
-      console.log("📋 Board videos count:", content.length);
 
       if (reset) {
-        console.log("🔄 Reset: full replacement");
         taskListRef.current = content;
         setTaskList(content);
       } else {
-        console.log("➕ Append: adding to existing");
         const existingIds = new Set(taskListRef.current.map((t) => t.task.id));
         const newItems = content.filter(
           (item) => !existingIds.has(item.task.id)
@@ -777,12 +757,6 @@ export default function BoardPage() {
     uploadedImageFile?: File,
     libraryImageData?: { imageItem: ImageItem; imageUrl: string }
   ) => {
-    console.log("🎬 handleVideoGeneration called");
-    console.log("🎬 boardId:", boardId);
-    console.log("🎬 mode:", mode);
-    console.log("🎬 prompt:", prompt);
-    console.log("🎬 uploadedImageFile:", uploadedImageFile?.name);
-    console.log("🎬 libraryImageData:", libraryImageData?.imageUrl);
     
     if (!boardId) {
       console.error("❌ No board selected");
@@ -790,7 +764,6 @@ export default function BoardPage() {
       return;
     }
 
-    console.log("🎬 Setting isGenerating to true");
     setIsGenerating(true);
 
     const selectedLoraModel = options.style || options.character;
@@ -850,18 +823,9 @@ export default function BoardPage() {
           ? `/api/videos/create/i2v/v2/${boardId}`  // Library image uses v2 endpoint
           : `/api/videos/create/i2v/${boardId}`;     // Computer upload uses original endpoint
 
-      console.log("🎯 Board ID:", boardId);
-      console.log("🎯 Generation mode:", mode);
-      console.log("🎯 Using library image:", !!libraryImageData);
-      console.log("🎯 Using uploaded file:", !!uploadedImageFile);
-      console.log("🎯 Endpoint:", endpoint);
-      console.log("🎯 Full URL will be:", `${config.apiUrl}${endpoint}`);
-
       const frames = options.duration === 4 ? 81 : options.duration === 6 ? 101 : 161;
       const loraId = selectedLoraModel?.id || 1;
-      
-      console.log("🎯 LoRA ID:", loraId);
-      console.log("🎯 Frames:", frames);
+    
 
       let response: Response;
 
@@ -879,10 +843,6 @@ export default function BoardPage() {
             options.quality
           );
           
-          console.log(`📏 I2V Library Image dimensions: ${imageWidth}x${imageHeight}`);
-          console.log(`📏 I2V Resolution profile: ${resolutionProfile}`);
-          console.log(`🖼️ Library Image URL: ${libraryImageData.imageUrl}`);
-          
           // Create JSON payload for v2 endpoint (exactly like video create page)
           requestData = {
             prompt: prompt,
@@ -890,9 +850,7 @@ export default function BoardPage() {
             resolutionProfile: resolutionProfile,
             numFrames: frames
           };
-          
-          console.log("📦 I2V Board Library Request payload (JSON for v2):", requestData);
-          
+
         } else if (uploadedImageFile) {
           const imageDimensions = await getImageDimensions(uploadedImageFile);
           resolutionProfile = getI2VResolutionProfile(
@@ -913,30 +871,16 @@ export default function BoardPage() {
           
           formData.append("request", JSON.stringify(requestPayload));
           
-          console.log("📦 I2V Board Upload Request payload:", requestPayload);
-          console.log("📤 FormData created with image:", uploadedImageFile.name, "size:", uploadedImageFile.size);
-          
           requestData = formData;
         }
         
         // Make API call based on request type (same as video create page)
         if (libraryImageData) {
-          // Library image uses JSON POST to v2 endpoint
-          console.log("📤 Making library image API call (JSON) to:", `${config.apiUrl}${endpoint}`);
           response = await api.post(`${config.apiUrl}${endpoint}`, requestData);
-          console.log("📨 Library API response status:", response.status);
+
         } else {
-          // File upload uses FormData POST to v1 endpoint
-          console.log("📤 Making file upload API call (FormData) to:", `${config.apiUrl}${endpoint}`);
-          console.log("📤 FormData contents check:", requestData instanceof FormData);
-          
-          // Log FormData contents for debugging
-          for (let [key, value] of (requestData as FormData).entries()) {
-            console.log(`📦 FormData[${key}]:`, value instanceof File ? `File(${value.name}, ${value.size} bytes)` : value);
-          }
-          
           response = await api.postForm(`${config.apiUrl}${endpoint}`, requestData);
-          console.log("📨 Upload API response status:", response.status);
+
         }
       } else {
         // T2V case
@@ -949,14 +893,12 @@ export default function BoardPage() {
           numFrames: frames,
         };
         
-        console.log("📦 T2V Board Request payload:", requestData);
         
         response = await api.post(`${config.apiUrl}${endpoint}`, requestData);
       }
 
       if (response.ok) {
         const backendResponse: BackendResponse<any> = await response.json();
-        console.log("✅ Board video generation success!", backendResponse);
         setIsGenerating(false);
       } else {
         console.error("❌ Board API request failed:", response.statusText);
@@ -1199,7 +1141,7 @@ export default function BoardPage() {
   // Setup extend mode - prepare for I2V input (modified from builder page)
   const handleExtendFromLastFrame = () => {
     if (!videoRef.current || !activeVideoSrc || !boardId) {
-      console.log("❌ 활성 비디오가 없거나 보드 ID가 없습니다.");
+
       toast.error(t("messages.noActiveVideo"));
       return;
     }
@@ -1210,7 +1152,6 @@ export default function BoardPage() {
       return;
     }
 
-    console.log("🖼️ Setting up extend mode...");
     setIsExtending(true);
     setExtendingFromVideoId(lastScene.id);
     
@@ -1244,15 +1185,7 @@ export default function BoardPage() {
     }
 
     try {
-      console.log("🖼️ Starting video extension with prompt:", prompt);
       setIsGenerating(true);
-
-      // Use the new I2V v3 API endpoint
-      console.log("🎬 Calling new I2V v3 API with image URL and selected frames");
-      console.log("📹 Video details:", {
-        videoUrl: lastScene.src,
-        prompt: prompt
-      });
 
       // Calculate selected number of frames based on duration
       const selectedNumFrames = videoOptions.duration === 4 ? 81 : videoOptions.duration === 6 ? 101 : 161;
@@ -1269,12 +1202,6 @@ export default function BoardPage() {
         numFrames: selectedNumFrames
       };
 
-      console.log("📤 Calling new I2V v3 API...");
-      console.log("🔍 Request details:", {
-        url: `${config.apiUrl}/api/videos/create/i2v/v3/${boardId}`,
-        boardId: boardId,
-        payload: payload
-      });
       
       const response = await api.post(
         `${config.apiUrl}/api/videos/create/i2v/v3/${boardId}`, 
@@ -1283,7 +1210,6 @@ export default function BoardPage() {
 
       if (response.ok) {
         const backendResponse: BackendResponse<any> = await response.json();
-        console.log("✅ 비디오 확장 요청 성공!", backendResponse);
         
         toast.success(t("messages.videoExtensionStarted"));
         setPrompt(""); // Clear prompt after successful request
@@ -1325,7 +1251,6 @@ export default function BoardPage() {
     
     // Near the end of horizontal scroll, load more videos
     if (scrollLeft + clientWidth >= scrollWidth - threshold) {
-      console.log("🔄 Timeline scroll: Loading more videos");
       fetchTaskList(false);
     }
   }, [fetchTaskList]);
@@ -1349,7 +1274,6 @@ export default function BoardPage() {
   // SSE event listeners
   useEffect(() => {
     const handleVideoCompleted = () => {
-      console.log("🎬 Board page: Video completed notification received!");
       fetchTaskList(true);
       setIsGenerating(false);
       setIsExtending(false);
@@ -1357,13 +1281,11 @@ export default function BoardPage() {
     };
 
     const handleImageCompleted = () => {
-      console.log("🖼️ Board page: Image completed notification received!");
       fetchTaskList(true);
       setIsGenerating(false);
     };
 
     const handleUpscaleCompleted = () => {
-      console.log("⬆️ Board page: Upscale completed notification received!");
       fetchTaskList(true);
       setIsGenerating(false);
     };
@@ -1381,28 +1303,19 @@ export default function BoardPage() {
 
   // Video generation using models
   const handleGenerate = async () => {
-    console.log("🚀 handleGenerate called");
-    console.log("🚀 prompt:", prompt);
-    console.log("🚀 isGenerating:", isGenerating);
-    console.log("🚀 uploadedImageFile:", uploadedImageFile);
-    console.log("🚀 selectedImage:", selectedImage);
     
     if (!prompt.trim() || isGenerating) {
-      console.log("❌ Early return - no prompt or already generating");
       return;
     }
 
     // If in extending mode, perform extension instead of new generation
     if (isExtending) {
-      console.log("🔄 Extending mode, calling performExtendFromLastFrame");
       await performExtendFromLastFrame();
       return;
     }
 
     // Check if there's an uploaded file or selected image from library
     if (uploadedImageFile) {
-      console.log("🖼️ Using uploaded file for I2V:", uploadedImageFile.name, uploadedImageFile.type);
-      console.log("🖼️ About to call handleVideoGeneration with I2V mode");
       
       // Use uploaded file for I2V generation
       await handleVideoGeneration(
@@ -1412,7 +1325,6 @@ export default function BoardPage() {
         uploadedImageFile,
         undefined
       );
-      console.log("✅ handleVideoGeneration completed");
     } else if (selectedImage) {
       // Create mock image item for library image
       const mockImageItem = {
@@ -1470,9 +1382,6 @@ export default function BoardPage() {
     try {
       setIsExporting(true);
       
-      console.log("🎬 Starting board export...");
-      console.log(`📹 Exporting ${completedScenes.length} completed videos from board ${boardId}`);
-      
       const exportSettings = {
         format: "mp4",
         quality: "high", // You can make this configurable later
@@ -1485,21 +1394,11 @@ export default function BoardPage() {
 
       if (response.ok) {
         const result = await response.json();
-        console.log("✅ Export API Response:", result);
-        
         // The actual data is nested inside result.data
         const exportData = result.data || result;
-        console.log("🔍 Export data structure:", {
-          success: exportData.success,
-          message: exportData.message,
-          downloadUrl: exportData.downloadUrl,
-          hasDownloadUrl: !!exportData.downloadUrl
-        });
         
         // Check if we have a download URL in the nested data
         if (exportData.downloadUrl) {
-          console.log("📹 Starting download from:", exportData.downloadUrl);
-          
           // Use the same download method as create/video page
           const filename = `board_${boardId}_combined_${Date.now()}.mp4`;
           const downloadApiUrl = `/api/download?url=${encodeURIComponent(exportData.downloadUrl)}&filename=${encodeURIComponent(filename)}`;
@@ -1513,7 +1412,6 @@ export default function BoardPage() {
           link.click();
           document.body.removeChild(link);
           
-          console.log("✅ Board export download initiated");
           toast.success(t("messages.boardVideosExported"));
         } else {
           console.error("❌ No downloadUrl in response:", result);
@@ -1564,19 +1462,15 @@ export default function BoardPage() {
         if (reset) {
           // First load - replace all images
           setLibraryImages(data.content);
-          console.log("📸 Initial fetch - library images:", data.content.length);
         } else {
           // Load more - append to existing images
           setLibraryImages(prev => [...prev, ...data.content]);
-          console.log("📸 Loaded more images:", data.content.length, "Total:", libraryImages.length + data.content.length);
         }
         
         // Update pagination state
         setLibraryNextCursor(data.nextPageCursor);
         setLibraryHasMore(!!data.nextPageCursor);
         
-        console.log("📄 Next cursor:", data.nextPageCursor);
-        console.log("📄 Has more:", !!data.nextPageCursor);
       } else {
         console.error("❌ Invalid response structure:", { data, hasContent: data?.content });
         if (reset) {
@@ -1609,7 +1503,6 @@ export default function BoardPage() {
     // Load more when scrolled to bottom (with small buffer)
     if (scrollHeight - scrollTop <= clientHeight + 100) {
       if (libraryHasMore && !libraryLoading && libraryNextCursor) {
-        console.log("📜 Loading more images...");
         fetchLibraryImages(false); // false = don't reset, append to existing
       }
     }
@@ -1637,12 +1530,10 @@ export default function BoardPage() {
 
   // Handle file upload from computer
   const handleImageUpload = useCallback((file: File) => {
-    console.log("📁 File upload attempt:", file?.name, file?.type, file?.size);
     
     if (file && file.type.startsWith("image/")) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        console.log("✅ File read complete, setting state variables");
         setUploadedImage(reader.result as string);
         setUploadedImageFile(file);
         setSelectedImage(null); // Clear library selection
@@ -1651,7 +1542,6 @@ export default function BoardPage() {
         setVideoOptions(prev => ({ ...prev, mode: "i2v" as GenerationMode }));
         
         toast.success(t("messages.imageUploaded"));
-        console.log("📄 Upload complete - file set in state:", file.name);
       };
       reader.readAsDataURL(file);
     } else {
@@ -1662,9 +1552,7 @@ export default function BoardPage() {
 
   // Handle file input change
   const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("📝 File input change event triggered");
     const file = e.target.files?.[0];
-    console.log("📝 Selected file:", file?.name, file?.type);
     
     if (file) {
       handleImageUpload(file);
@@ -2110,7 +1998,6 @@ export default function BoardPage() {
                 <DropdownMenuItem 
                   onClick={(e) => {
                     e.preventDefault();
-                    console.log("🖼️ Change from last frame clicked - ACTIVE");
                     handleExtendFromLastFrame();
                   }}
                   disabled={scenes.length === 0 || !scenes.some(scene => 
@@ -2135,7 +2022,6 @@ export default function BoardPage() {
                 <DropdownMenuItem 
                   onClick={(e) => {
                     e.preventDefault();
-                    console.log("🎬 New scene clicked");
                     setIsModalOpen(true);
                     toast.success(t("messages.readyToCreate"));
                   }}

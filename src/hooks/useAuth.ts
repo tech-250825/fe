@@ -93,12 +93,10 @@ export const useAuth = () => {
       if (!res.ok) {
         // If 401 and we haven't tried refresh yet, attempt token refresh
         if (res.status === 401 && retryWithRefresh) {
-          console.log("🔄 Access token expired, attempting refresh...");
+        
           const refreshSuccess = await tokenManager.refreshToken();
           
           if (refreshSuccess) {
-            console.log("✅ Token refreshed, retrying profile fetch...");
-            // Retry the request with new token
             return await fetchProfile(false); // Prevent infinite recursion
           }
         }

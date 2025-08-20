@@ -54,52 +54,10 @@ class TokenManager {
   // Refresh the access token using refresh token
   async refreshToken(): Promise<boolean> {
     if (this.isRefreshing) {
-      console.log("Token refresh already in progress");
       return false;
     }
 
-    // COMMENTED OUT: /auth/token/verify API disabled
-    console.log("🚫 Token refresh disabled - /auth/token/verify API is commented out");
     return false;
-
-    /*
-    try {
-      this.isRefreshing = true;
-      console.log("🔄 Attempting to refresh token...");
-
-      // Try to get the refresh token from cookie
-      const refreshToken = this.getCookie("_hrauth");
-      
-      const payload = refreshToken ? { _hrauth: refreshToken } : {};
-      console.log("📦 Token refresh payload:", refreshToken ? "with _hrauth token" : "empty payload");
-
-      const response = await fetch(`${config.apiUrl}/auth/token/verify`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include", // This sends HttpOnly cookies to backend
-        body: JSON.stringify(payload),
-      });
-
-      if (response.ok) {
-        const data: TokenRefreshResponse = await response.json();
-        console.log("✅ Token refreshed successfully:", data.message);
-        
-        // Schedule next refresh
-        this.scheduleTokenRefresh();
-        return true;
-      } else {
-        console.log("❌ Token refresh failed:", response.statusText);
-        return false;
-      }
-    } catch (error) {
-      console.error("❌ Token refresh error:", error);
-      return false;
-    } finally {
-      this.isRefreshing = false;
-    }
-    */
   }
 
   // Schedule automatic token refresh based on current token expiration
@@ -111,13 +69,12 @@ class TokenManager {
 
     const accessToken = this.getCookie("_hoauth");
     if (!accessToken) {
-      console.log("No access token found for scheduling refresh");
+
       return;
     }
 
     const decoded = this.decodeJWT(accessToken);
     if (!decoded || !decoded.exp) {
-      console.log("Invalid token for scheduling refresh");
       return;
     }
 
@@ -126,8 +83,6 @@ class TokenManager {
     const refreshTime = expirationTime - 30 * 60; // Refresh 30 minutes before expiration
     const timeUntilRefresh = Math.max(0, (refreshTime - currentTime) * 1000);
 
-    console.log(`⏰ Scheduling token refresh in ${Math.floor(timeUntilRefresh / 1000 / 60)} minutes`);
-
     this.refreshTimeout = setTimeout(() => {
       this.refreshToken();
     }, timeUntilRefresh);
@@ -135,12 +90,11 @@ class TokenManager {
 
   // Initialize token management (call this on app startup)
   initialize(): void {
-    console.log("🚀 Initializing token manager...");
+
     
     // Check if token needs immediate refresh
     const accessToken = this.getCookie("_hoauth");
     if (accessToken && this.isTokenExpiringSoon(accessToken)) {
-      console.log("🔄 Token is expiring soon, refreshing immediately...");
       this.refreshToken();
     } else if (accessToken) {
       // Schedule future refresh
@@ -153,7 +107,6 @@ class TokenManager {
         if (!document.hidden) {
           const token = this.getCookie("_hoauth");
           if (token && this.isTokenExpiringSoon(token)) {
-            console.log("🔄 Page visible and token expiring, refreshing...");
             this.refreshToken();
           }
         }

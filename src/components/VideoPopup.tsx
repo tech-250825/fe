@@ -176,8 +176,6 @@ function VideoPopup({ isOpen, onClose, videoSrc }: VideoPopupProps) {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
-      console.log("✅ Download initiated via API route");
     } catch (error) {
       console.error("❌ Download failed:", error);
     }

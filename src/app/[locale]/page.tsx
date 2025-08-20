@@ -59,7 +59,6 @@ const DiscordIcon = ({ className }: { className?: string }) => (
 );
 
 const MinimalistLandingPage: React.FC = () => {
-  console.log("🎯 MinimalissstLandingPage component is rendering!");
 
   const t = useTranslations("LandingPage");
   const locale = useLocale();
