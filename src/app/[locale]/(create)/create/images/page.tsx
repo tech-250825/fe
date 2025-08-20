@@ -6,6 +6,7 @@ import { useSSE } from "@/components/SSEProvider";
 import { config } from "@/config";
 import ImageResultModal from "@/components/image-result-modal";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter as useI18nRouter } from "@/i18n/routing";
 import { ImageList } from "@/components/image/ImageList";
 import {
   ImageItem,
@@ -28,6 +29,7 @@ import { CreditInsufficientModal } from "@/components/CreditInsufficientModal";
 export default function CreateImagesPage() {
   const t = useTranslations("VideoCreation");
   const router = useRouter();
+  const i18nRouter = useI18nRouter();
   const searchParams = useSearchParams();
   const taskId = searchParams.get("taskId");
   const { isLoggedIn, userName, memberId } = useAuth();
@@ -750,8 +752,8 @@ export default function CreateImagesPage() {
   };
 
   const handleCloseModal = () => {
-    // URL에서 taskId 제거
-    router.push("/create/images");
+    // URL에서 taskId 제거 (locale-aware navigation)
+    i18nRouter.push("/create/images");
   };
 
   // Calculate aspect ratio and resolution for modal
