@@ -842,5 +842,12 @@
       "dropImageHere": "ここに画像をドロップ",
       "toGenerateVideo": "動画を生成するため"
     }
+  },
+  "NotFound": {
+    "title": "ページが見つかりません",
+    "description": "お探しのページは存在しないか、移動されました。",
+    "goHome": "ホームへ",
+    "goBack": "戻る",
+    "returnTo": "戻る"
   }
 }
