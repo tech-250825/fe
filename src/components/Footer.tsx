@@ -27,8 +27,7 @@ const DiscordIcon = ({ className }: { className?: string }) => (
 );
 
 export default function Footer() {
-  // Remove translations for now since they're not defined
-  // const t = useTranslations("Footer");
+  const t = useTranslations("Footer");
   
   return (
     <footer className="bg-gray-900 text-gray-300">

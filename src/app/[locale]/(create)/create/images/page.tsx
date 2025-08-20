@@ -6,7 +6,6 @@ import { useSSE } from "@/components/SSEProvider";
 import { config } from "@/config";
 import ImageResultModal from "@/components/image-result-modal";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useRouter as useI18nRouter } from "@/i18n/routing";
 import { ImageList } from "@/components/image/ImageList";
 import {
   ImageItem,
@@ -29,7 +28,6 @@ import { CreditInsufficientModal } from "@/components/CreditInsufficientModal";
 export default function CreateImagesPage() {
   const t = useTranslations("VideoCreation");
   const router = useRouter();
-  const i18nRouter = useI18nRouter();
   const searchParams = useSearchParams();
   const taskId = searchParams.get("taskId");
   const { isLoggedIn, userName, memberId } = useAuth();
@@ -83,6 +81,7 @@ export default function CreateImagesPage() {
       if (styleLoraResponse.ok) {
         const styleData = await styleLoraResponse.json();
         fetchedStyleModels = styleData.data || styleData;
+        console.log("🎨 Style LORA Models API Response:", styleData);
       }
 
       // CHARACTER LORA 모델 조회
@@ -93,6 +92,7 @@ export default function CreateImagesPage() {
       if (characterLoraResponse.ok) {
         const characterData = await characterLoraResponse.json();
         fetchedCharacterModels = characterData.data || characterData;
+        console.log("👤 Character LORA Models API Response:", characterData);
       }
 
       // CHECKPOINT 모델 조회
@@ -104,6 +104,7 @@ export default function CreateImagesPage() {
       if (checkpointResponse.ok) {
         const checkpointData = await checkpointResponse.json();
         fetchedCheckpointModels = checkpointData.data || checkpointData;
+        console.log("🏗️ Checkpoint Models API Response:", checkpointData);
       }
 
       // 모든 visible 모델들을 결합 (checkpoint + LoRAs)
@@ -117,6 +118,11 @@ export default function CreateImagesPage() {
         ...visibleStyleLoras.map(model => ({ ...model, type: 'LORA' })),
         ...visibleCharacterLoras.map(model => ({ ...model, type: 'LORA' }))
       ];
+
+      console.log("🔥 Combined Visible Models:", allCombinedModels.length, "total");
+      console.log("🔍 Checkpoint count:", visibleCheckpoints.length);
+      console.log("🔍 Style LoRA count:", visibleStyleLoras.length);
+      console.log("🔍 Character LoRA count:", visibleCharacterLoras.length);
 
       // 개별적으로도 설정 (기존 로직 호환성을 위해)
       setStyleModels(fetchedStyleModels);
@@ -144,6 +150,7 @@ export default function CreateImagesPage() {
       const isNearBottom = scrollTop + clientHeight >= scrollHeight - threshold;
 
       if (isNearBottom) {
+        console.log("🚀 무한 스크롤 트리거!");
         fetchTaskList(false);
       }
     };
@@ -164,6 +171,7 @@ export default function CreateImagesPage() {
   // fetchTaskList - 이미지 API 사용
   const fetchTaskList = useCallback(async (reset = false) => {
     if (loadingRef.current) {
+      console.log("❌ 이미 로딩 중이므로 요청 무시");
       return;
     }
 
@@ -171,6 +179,7 @@ export default function CreateImagesPage() {
     setLoading(true);
 
     try {
+      console.log("🔄 Image task list 새로고침 중...");
 
       const size = reset ? "8" : "6";
       const params = new URLSearchParams({ size });
@@ -178,9 +187,11 @@ export default function CreateImagesPage() {
       const currentCursor = nextCursorRef.current;
       if (!reset && currentCursor) {
         params.append("cursor", currentCursor);
+        console.log("📝 현재 커서 전달:", currentCursor);
       }
 
       const url = `${config.apiUrl}/api/images/task?${params}`;
+      console.log("📡 API 요청 URL:", url);
 
       const res = await api.get(url);
 
@@ -189,8 +200,10 @@ export default function CreateImagesPage() {
       }
 
       const backendResponse: BackendResponse<ImageListData> = await res.json();
+      console.log("📦 전체 응답:", backendResponse);
 
       if (!backendResponse.data) {
+        console.log("⚠️ data가 null입니다. 빈 배열로 처리");
         if (reset) {
           setTaskList([]);
           taskListRef.current = [];
@@ -201,6 +214,7 @@ export default function CreateImagesPage() {
       }
 
       const content = backendResponse.data.content || [];
+      console.log("📋 받은 데이터 개수:", content.length);
 
       // Group images by task.id to create grid layouts
       const groupedByTaskId = content.reduce((acc: { [key: number]: ImageItem[] }, item: ImageItem) => {
@@ -234,14 +248,21 @@ export default function CreateImagesPage() {
         // Sort by createdAt in descending order (newest first)
         .sort((a, b) => new Date(b.task.createdAt).getTime() - new Date(a.task.createdAt).getTime());
 
+      console.log("🖼️ 처리된 데이터:", processedContent.length, "개 태스크");
+      console.log("🖼️ 그리드 항목:", processedContent.filter(item => item.images && item.images.length > 1).length, "개");
+
       if (reset) {
+        console.log("🔄 Reset: 전체 교체");
         taskListRef.current = processedContent;
         setTaskList(processedContent);
       } else {
+        console.log("➕ Append: 기존 데이터에 추가");
         const existingIds = new Set(taskListRef.current.map((t) => t.task.id));
         const newItems = processedContent.filter(
           (item: ImageItem) => !existingIds.has(item.task.id)
         );
+
+        console.log("🔍 실제 추가될 새 항목:", newItems.length, "개");
 
         if (newItems.length === 0 && processedContent.length > 0) {
           console.warn("⚠️ 중복 데이터 - hasMore를 false로 설정");
@@ -256,12 +277,14 @@ export default function CreateImagesPage() {
       }
 
       const newNextCursor = backendResponse.data.nextPageCursor;
+      console.log("🔍 새 커서:", newNextCursor ? "있음" : "없음");
 
       setNextCursor(newNextCursor);
       nextCursorRef.current = newNextCursor;
       setHasMore(!!newNextCursor);
       hasMoreRef.current = !!newNextCursor;
 
+      console.log("✅ Image task list 업데이트 완료:", content.length, "개 항목 받음");
       setLastFetchTime(new Date().toLocaleTimeString());
     } catch (error) {
       console.error("❌ " + t("error.title") + ":", error);
@@ -339,6 +362,11 @@ export default function CreateImagesPage() {
             prompt: prompt,
             resolutionProfile: resolutionProfile,
           };
+          console.log("🔷 Checkpoint + 16:9 비율 감지 → v2 API + facedetailer LoRA 사용");
+          console.log("   Checkpoint Name:", selectedCheckpointModel.name);
+          console.log("   Checkpoint ID:", selectedCheckpointModel.id);
+          console.log("   LoRA ID: 23 (facedetailer)");
+          console.log("   Endpoint: v2 (/api/images/create/v2)");
         } else {
           // Use v3 endpoint for CHECKPOINT models with other ratios - no loraId needed
           apiEndpoint = '/api/images/create/v3';
@@ -347,13 +375,22 @@ export default function CreateImagesPage() {
             prompt: prompt,
             resolutionProfile: resolutionProfile,
           };
+          console.log("🏗️ Checkpoint + 다른 비율 감지 → v3 API 사용");
+          console.log("   Checkpoint Name:", selectedCheckpointModel.name);
+          console.log("   Checkpoint ID:", selectedCheckpointModel.id);
+          console.log("   Endpoint: v3 (/api/images/create/v3)");
         }
       } else {
         // Use existing LoRA-based logic for other models
         let autoSelectedLoraId = 0;
         let selectedLoraName = "None";
         let useV2Endpoint = false;
-      
+        
+        // Debug: 현재 사용 가능한 LoRA 모델들 확인
+        console.log("🔍 사용 가능한 LoRA 모델들:");
+        styleModels.forEach((model, index) => {
+          console.log(`  ${index + 1}. ${model.name} (ID: ${model.id})`);
+        });
         
         if (options.aspectRatio === "16:9") {
           // Use Face Detailer LoRA for 16:9 ratio and v2 endpoint
@@ -366,6 +403,10 @@ export default function CreateImagesPage() {
             autoSelectedLoraId = faceDetailerLora.id;
             selectedLoraName = faceDetailerLora.name;
             useV2Endpoint = true;
+            console.log("🔷 16:9 비율 감지 → Face Detailer LoRA 자동 선택");
+            console.log("   LoRA Name:", faceDetailerLora.name);
+            console.log("   LoRA ID:", autoSelectedLoraId);
+            console.log("   Endpoint: v2 (/api/images/create/v2)");
           } else {
             console.warn("⚠️ Face Detailer LoRA를 찾을 수 없습니다!");
           }
@@ -378,6 +419,10 @@ export default function CreateImagesPage() {
           if (animeLora) {
             autoSelectedLoraId = animeLora.id;
             selectedLoraName = animeLora.name;
+            console.log(`🔸 ${options.aspectRatio} 비율 감지 → Anime LoRA 자동 선택`);
+            console.log("   LoRA Name:", animeLora.name);
+            console.log("   LoRA ID:", autoSelectedLoraId);
+            console.log("   Endpoint: v1 (/api/images/create)");
           } else {
             console.warn("⚠️ Anime LoRA를 찾을 수 없습니다!");
           }
@@ -392,12 +437,19 @@ export default function CreateImagesPage() {
         
         apiEndpoint = useV2Endpoint ? '/api/images/create/v2' : '/api/images/create';
       }
-    
+      
+      console.log("🚀 === 이미지 생성 요청 정보 ===");
+      console.log("📐 Aspect Ratio:", options.aspectRatio);
+      console.log("🎨 Selected Model:", selectedCheckpointModel?.name || "None", "(ID:", selectedCheckpointModel?.id || 0, ")");
+      console.log("🔗 API Endpoint:", apiEndpoint);
+      console.log("📦 Request Payload:", requestData);
+      console.log("==============================");
       
       const response = await api.post(`${config.apiUrl}${apiEndpoint}`, requestData);
 
       if (response.ok) {
         const backendResponse: BackendResponse<any> = await response.json();
+        console.log("✅ 이미지 생성 요청 성공!", backendResponse);
 
         // Unlock the input immediately after successful submission
         setIsGenerating(false);
@@ -424,8 +476,10 @@ export default function CreateImagesPage() {
   // 초기 데이터 로드
   useEffect(() => {
     if (isLoggedIn) {
+      console.log("🚀 초기 데이터 로드 시작");
       fetchTaskList(true);
       fetchAvailableModels();
+      console.log("✅ 초기 로딩 완료");
     }
   }, [isLoggedIn]);
 
@@ -437,6 +491,7 @@ export default function CreateImagesPage() {
         const parsedData = JSON.parse(recreateDataStr);
         // Only use data if it's for image and not too old (within 5 minutes)
         if (parsedData.type === 'image' && Date.now() - parsedData.timestamp < 300000) {
+          console.log('Found recreate data for image:', parsedData);
           setRecreateData(parsedData);
           // Clear the data after using it
           localStorage.removeItem('recreateData');
@@ -460,11 +515,14 @@ export default function CreateImagesPage() {
   // SSE 알림을 받았을 때 새로고침 처리를 위한 이벤트 리스너
   useEffect(() => {
     const handleImageCompleted = (event: any) => {
+      console.log(
+        "🖼️ Images 페이지: 이미지 생성 완료 알림 받음! 데이터 새로고침..."
+      );
       
       // If SSE notification contains image data, update the optimistic task
       if (event.detail && event.detail.payload && event.detail.payload.imageUrl) {
         const { taskId, imageUrl, prompt } = event.detail.payload;
-        
+        console.log("🖼️ SSE 이미지 데이터:", { taskId, imageUrl, prompt });
         
         // Update optimistic task with actual image URLs
         setTaskList((prev) => prev.map((item) => {
@@ -498,6 +556,9 @@ export default function CreateImagesPage() {
     };
 
     const handleUpscaleCompleted = () => {
+      console.log(
+        "⬆️ Images 페이지: 업스케일 완료 알림 받음! 데이터 새로고침..."
+      );
       fetchTaskList(true);
       setIsGenerating(false);
     };
@@ -520,6 +581,9 @@ export default function CreateImagesPage() {
 
   // Debug selected task
   useEffect(() => {
+    console.log("🔍 TaskId from URL:", taskId);
+    console.log("🔍 TaskList length:", taskList.length);
+    console.log("🔍 Selected Task:", selectedTask);
     if (taskList.length > 0) {
       console.log("🔍 Available task IDs:", taskList.map(item => item.task.id));
     }
@@ -537,6 +601,7 @@ export default function CreateImagesPage() {
   const handleCopyPrompt = async (item: ImageItem) => {
     try {
       await navigator.clipboard.writeText(item.task.prompt);
+      console.log("Copied prompt:", item.task.prompt);
       toast.success(t("toast.promptCopied"));
     } catch (error) {
       console.error("Failed to copy:", error);
@@ -548,6 +613,7 @@ export default function CreateImagesPage() {
     // Handle multiple images
     if (item.images && item.images.length > 1) {
       try {
+        console.log("Starting download for multiple images, task:", item.task.id);
         
         // Download each image
         for (let i = 0; i < item.images.length; i++) {
@@ -570,6 +636,7 @@ export default function CreateImagesPage() {
           }
         }
         
+        console.log("✅ Download initiated for", item.images.length, "images");
         toast.success(t("toast.imagesDownloadStarted", { count: item.images.length }));
         
       } catch (error) {
@@ -584,6 +651,7 @@ export default function CreateImagesPage() {
     if (!imageUrl) return;
 
     try {
+      console.log("Starting download for task:", item.task.id);
       
       // Use the download API route with the image URL
       const filename = `image-${item.task.id}.jpg`;
@@ -597,7 +665,8 @@ export default function CreateImagesPage() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-    
+      
+      console.log("✅ Download initiated for task:", item.task.id);
       toast.success(t("toast.downloadStarted"));
       
     } catch (error) {
@@ -614,6 +683,7 @@ export default function CreateImagesPage() {
     }
 
     try {
+      console.log("Deleting task:", item.task.id);
       
       const response = await api.delete(`${config.apiUrl}/api/images/${item.task.id}`);
       
@@ -622,6 +692,7 @@ export default function CreateImagesPage() {
         setTaskList((prev) => prev.filter((task) => task.task.id !== item.task.id));
         
         toast.success(t("delete.success"));
+        console.log("✅ Successfully deleted task:", item.task.id);
         
         // Refresh the list to ensure consistency
         fetchTaskList(true);
@@ -642,6 +713,7 @@ export default function CreateImagesPage() {
   };
 
   const handleEnhancePrompt = async (prompt: string, selections: ImageOptions): Promise<string> => {
+    console.log("Enhancing prompt:", prompt);
     
     try {
       // Get the selected lora model
@@ -654,6 +726,7 @@ export default function CreateImagesPage() {
       
       if (selectedLoraModel?.id) {
         requestPayload.loraId = selectedLoraModel.id;
+        console.log("Using lora ID:", selectedLoraModel.id, "for prompt:", prompt);
       } else {
         console.log("No lora model selected, enhancing prompt without loraId");
       }
@@ -662,6 +735,7 @@ export default function CreateImagesPage() {
       
       if (response.ok) {
         const backendResponse: BackendResponse<string> = await response.json();
+        console.log("✅ Prompt enhanced successfully!", backendResponse);
         
         // Return the enhanced prompt from the response
         return backendResponse.data || prompt; // Fallback to original prompt if data is null
@@ -676,8 +750,8 @@ export default function CreateImagesPage() {
   };
 
   const handleCloseModal = () => {
-    // URL에서 taskId 제거 (locale-aware navigation)
-    i18nRouter.push("/create/images");
+    // URL에서 taskId 제거
+    router.push("/create/images");
   };
 
   // Calculate aspect ratio and resolution for modal
@@ -749,10 +823,16 @@ export default function CreateImagesPage() {
       
       {/* URL 기반 모달 */}
       {selectedTask && (() => {
+        // 디버깅을 위한 콘솔 로그
+        console.log("🖼️ Selected Task Data:", selectedTask);
+        console.log("📏 Task width:", selectedTask.task.width);
+        console.log("📏 Task height:", selectedTask.task.height);
         
         const aspectRatio = calculateAspectRatio(selectedTask.task.width || 1280, selectedTask.task.height || 720);
         const resolution = getResolutionLabel(selectedTask.task.width || 1280, selectedTask.task.height || 720);
-      
+        
+        console.log("🎯 Calculated aspect ratio:", aspectRatio);
+        console.log("🎯 Calculated resolution:", resolution);
         
         return (
           <ImageResultModal

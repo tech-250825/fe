@@ -19,25 +19,50 @@ export async function GET(request: NextRequest) {
 // 작품 생성 (디버그 버전)
 export async function POST(request: NextRequest) {
   try {
+    console.log("=== 작품 등록 시작 ===");
 
     // 인증 확인
     const token = request.cookies.get("admin-token")?.value;
+    console.log("Token exists:", !!token);
 
     if (!token || !verifyToken(token)) {
+      console.log("Authentication failed");
       return NextResponse.json({ error: "인증이 필요합니다" }, { status: 401 });
     }
+    console.log("Authentication success");
 
     const body = await request.json();
+    console.log("Request body:", body);
 
     const { title, description, imageUrl, videoUrl, userInfo } = body;
+    console.log("Extracted data:", {
+      title,
+      description,
+      imageUrl,
+      videoUrl,
+      userInfo,
+    });
 
     if (!title) {
+      console.log("Title is missing");
       return NextResponse.json(
         { error: "작품 제목은 필수입니다" },
         { status: 400 },
       );
     }
 
+    console.log("About to execute SQL query...");
+    console.log(
+      "SQL:",
+      "INSERT INTO works (title, description, image_url, video_url, user_info) VALUES (?, ?, ?, ?, ?)",
+    );
+    console.log("Params:", [
+      title,
+      description || null,
+      imageUrl || null,
+      videoUrl || null,
+      userInfo || null,
+    ]);
 
     const result = await query(
       "INSERT INTO works (title, description, image_url, video_url, user_info) VALUES (?, ?, ?, ?, ?)",

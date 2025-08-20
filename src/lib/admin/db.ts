@@ -32,6 +32,7 @@ export default pool;
 
 // Placeholder exports to prevent import errors
 export async function query(sql: string, params?: any[]): Promise<any> {
+  console.log("🚫 Database connection disabled - query() called but not executed");
   return [];
 }
 

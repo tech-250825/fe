@@ -54,8 +54,9 @@ import {
 } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/useAuth";
-import { usePathname, Link } from "@/i18n/routing";
+import { usePathname } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
+import Link from "next/link"; // ✅ Next.js Link 컴포넌트 추가
 import LocaleSwitcherDropdown from "@/components/LocaleSwitcher"; // 언어 스위처 추가
 import { useState } from "react"; // 드롭다운 상태 관리용
 import { useTheme } from "@/contexts/ThemeContext"; // 테마 컨텍스트 추가

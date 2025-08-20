@@ -82,6 +82,7 @@ export function ImageGenerationChatBar({
     });
     
     if (checkpointModels.length > 0 && !selections.checkpoint) {
+      console.log("🏗️ Setting first checkpoint as default:", checkpointModels[0]);
       setSelections(prev => ({
         ...prev,
         checkpoint: checkpointModels[0]
@@ -92,6 +93,7 @@ export function ImageGenerationChatBar({
   // Handle recreate data - set initial values from recreate data
   useEffect(() => {
     if (recreateData) {
+      console.log('Setting recreate data for images:', recreateData);
       
       // Set prompt
       setPrompt(recreateData.prompt);
