@@ -718,7 +718,8 @@ export default function BoardPage() {
       let fetchedStyleModels = [];
       if (styleResponse.ok) {
         const styleData = await styleResponse.json();
-        fetchedStyleModels = styleData.data || styleData;
+        const allStyleModels = styleData.data || styleData;
+        fetchedStyleModels = allStyleModels.filter((model: any) => model.visible === true);
         setStyleModels(fetchedStyleModels);
       }
 
@@ -729,7 +730,8 @@ export default function BoardPage() {
       let fetchedCharacterModels = [];
       if (characterResponse.ok) {
         const characterData = await characterResponse.json();
-        fetchedCharacterModels = characterData.data || characterData;
+        const allCharacterModels = characterData.data || characterData;
+        fetchedCharacterModels = allCharacterModels.filter((model: any) => model.visible === true);
         setCharacterModels(fetchedCharacterModels);
       }
 
