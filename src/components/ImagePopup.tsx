@@ -30,12 +30,10 @@ export default function ImagePopup({
   if (!isOpen || !imageSrc) return null;
 
   const handleBackgroundClick = (e: React.MouseEvent) => {
-    console.log("Background clicked!");
     onClose();
   };
 
   const handleImageClick = (e: React.MouseEvent) => {
-    console.log("Image clicked!");
     e.stopPropagation();
   };
 
@@ -61,7 +59,6 @@ export default function ImagePopup({
       {/* Close button */}
       <button
         onClick={(e) => {
-          console.log("Close button clicked!");
           e.stopPropagation();
           onClose();
         }}

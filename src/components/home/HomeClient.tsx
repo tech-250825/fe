@@ -405,10 +405,6 @@ const resumeAutoplay = () => {
                   // Skip items without image data
                   if (!item.image || !item.image.url) return null;
                   
-                  // Debug: Log video URLs
-                  if (isVideo) {
-                    console.log('Rendering video item:', item.image.url);
-                  }
                   
                   return (
                     <div 
@@ -418,10 +414,10 @@ const resumeAutoplay = () => {
                         if (isVideo) {
                           const video = e.currentTarget.querySelector('video');
                           if (video) {
-                            console.log('Div hover - attempting to play video:', video.src);
+                          
                             video.muted = true;
                             video.play().then(() => {
-                              console.log('Video started playing from div hover');
+    
                             }).catch((error) => {
                               console.error('Video play failed from div hover:', error);
                             });
@@ -432,7 +428,6 @@ const resumeAutoplay = () => {
                         if (isVideo) {
                           const video = e.currentTarget.querySelector('video');
                           if (video) {
-                            console.log('Div leave - pausing video');
                             video.pause();
                             video.currentTime = 0;
                           }
@@ -449,15 +444,12 @@ const resumeAutoplay = () => {
                           preload="metadata"
                           onMouseEnter={(e) => {
                             const video = e.currentTarget;
-                            console.log('Mouse entered, attempting to play video:', video.src);
-                            console.log('Video readyState:', video.readyState);
-                            console.log('Video muted:', video.muted);
+                            
                             video.muted = true; // Ensure it's muted for autoplay
                             video.play().then(() => {
-                              console.log('Video started playing successfully');
                             }).catch((error) => {
                               console.error('Video play failed:', error);
-                              console.log('Error details:', error.name, error.message);
+                
                             });
                           }}
                           onMouseLeave={(e) => {
@@ -468,11 +460,10 @@ const resumeAutoplay = () => {
                           onCanPlay={(e) => {
                             // Ensure video is ready to play
                             const video = e.currentTarget;
-                            console.log('Video can play:', video.src);
+                      
                             video.muted = true;
                           }}
                           onLoadedData={(e) => {
-                            console.log('Video loaded data:', e.currentTarget.src);
                           }}
                           onError={(e) => {
                             console.error('Video error:', e.currentTarget.error);
