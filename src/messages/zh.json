@@ -842,12 +842,5 @@
       "dropImageHere": "在此拖放您的图片",
       "toGenerateVideo": "以从中生成视频"
     }
-  },
-  "NotFound": {
-    "title": "页面未找到",
-    "description": "您查找的页面不存在或已被移动。",
-    "goHome": "回到首页",
-    "goBack": "返回",
-    "returnTo": "返回到"
   }
 }

@@ -97,6 +97,8 @@ export function VideoGenerationChatBar({
   // Handle recreate data - set initial values from recreate data
   useEffect(() => {
     if (recreateData) {
+      console.log('Setting recreate data:', recreateData);
+      
       // Set prompt
       setPrompt(recreateData.prompt);
       
@@ -109,7 +111,7 @@ export function VideoGenerationChatBar({
         // Clear other image sources
         setUploadedImageFile(null);
         setSelectedImageFromLibrary(null);
-
+        console.log('🖼️ Setting I2V mode with recreate image:', recreateData.imageUrl);
       } else {
         setMode("t2v");
         // Clear any existing images for t2v mode
@@ -173,7 +175,8 @@ export function VideoGenerationChatBar({
   }, []);
 
   const handleImageFromLibrary = useCallback((imageItem: ImageItem, imageUrl: string) => {
-
+    console.log("🖼️ Selected image from library:", imageItem.task.id, imageUrl);
+    
     // Set the image URL for display
     setUploadedImage(imageUrl);
     setUploadedImageFile(null); // Clear file since we're using URL
@@ -200,6 +203,8 @@ export function VideoGenerationChatBar({
       character: null,
       aspectRatio: aspectRatioString,
     }));
+    
+    console.log("🎯 Auto-selected aspect ratio:", aspectRatioString, "for dimensions", imageWidth, "x", imageHeight);
   }, []);
 
   const handleSelectFromComputer = useCallback(() => {
@@ -320,6 +325,7 @@ export function VideoGenerationChatBar({
           } as ImageItem,
           imageUrl: recreateImageUrl
         };
+        console.log('🔄 Using recreate image URL for I2V:', recreateImageUrl);
       }
       
       onSubmit(

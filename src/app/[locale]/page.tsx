@@ -59,6 +59,7 @@ const DiscordIcon = ({ className }: { className?: string }) => (
 );
 
 const MinimalistLandingPage: React.FC = () => {
+  console.log("🎯 MinimalissstLandingPage component is rendering!");
 
   const t = useTranslations("LandingPage");
   const locale = useLocale();
@@ -85,15 +86,13 @@ const MinimalistLandingPage: React.FC = () => {
           <div className="flex items-center space-x-4">
             <LocaleSwitcher />
             {/* Discord Button */}
-            <a
-              href="https://discord.gg/hpmPdaysuR"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-2 rounded-full hover:bg-white/10 transition-colors text-white hover:text-gray-200 inline-block"
+            <button
+              onClick={() => window.open('https://discord.gg/hpmPdaysuR', '_blank')}
+              className="p-2 rounded-full hover:bg-white/10 transition-colors text-white hover:text-gray-200"
               title="Join Discord"
             >
               <DiscordIcon className="w-5 h-5" />
-            </a>
+            </button>
             <a
               href="/home"
               className="bg-white text-black px-5 py-2 rounded-full hover:bg-gray-200 transition-colors flex items-center"

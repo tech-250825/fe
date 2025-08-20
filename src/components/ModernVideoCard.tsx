@@ -446,11 +446,13 @@ const InstagramVideoCard: React.FC<VideoCardProps> = ({
   };
 
   const handleInstagramDownload = () => {
+    console.log("🔍 Instagram download button clicked!"); // Debug log
     try {
       // Use the download API route with the video URL
       const filename = `instagram-video-${taskId}.mp4`;
       const downloadApiUrl = `/api/download?url=${encodeURIComponent(videoUrl)}&filename=${encodeURIComponent(filename)}`;
-
+      
+      console.log("📍 Download URL:", downloadApiUrl); // Debug log
       
       const link = document.createElement('a');
       link.href = downloadApiUrl;

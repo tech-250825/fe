@@ -118,6 +118,7 @@ export function ImageLibraryModal({
     const threshold = 100; // Load more when 100px from bottom
     
     if (scrollHeight - scrollTop <= clientHeight + threshold && hasMore && !loading) {
+      console.log("🔄 Loading more images...");
       fetchImages(false);
     }
   }, [hasMore, loading, fetchImages]);

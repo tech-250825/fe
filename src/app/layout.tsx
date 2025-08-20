@@ -14,17 +14,16 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const viewport = {
-  width: 'device-width',
-  initialScale: 1,
-};
-
 export const metadata: Metadata = {
   title: {
     template: '%s | Hoit - AI Video Generation Platform',
     default: 'Hoit - Create Stunning AI Videos from Text'
   },
   description: "Create professional AI-powered videos from simple text descriptions. Advanced video generation with multiple styles, HD quality, and real-time preview. Try Hoit for free today.",
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+  },
   keywords: ["AI video generation", "text to video", "AI video creator", "video generation AI", "automated video creation", "AI animation", "video maker"],
   authors: [{ name: "Hoit Team" }],
   creator: "Hoit",

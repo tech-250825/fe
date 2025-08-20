@@ -417,6 +417,7 @@ export const SSEProvider = ({
   const handleMessage = (event: MessageEvent) => {
     try {
       const data = JSON.parse(event.data);
+      console.log("SSE 원본 데이터:", data);
 
       let newNotifications: ProcessedNotification[] = [];
 
@@ -437,6 +438,7 @@ export const SSEProvider = ({
           timestamp: Date.now(),
         };
         newNotifications = [notification];
+        console.log("단일 알림 처리:", notification);
       } else if (data.memberId && data.taskId && (data.imageUrl || data.videoUrl)) {
         // 새로운 형태: {memberId, taskId, imageUrl/videoUrl, prompt, type}
         const isImageNotification = data.type === "image" || Array.isArray(data.imageUrl);
@@ -457,6 +459,7 @@ export const SSEProvider = ({
           timestamp: Date.now(),
         };
         newNotifications = [notification];
+        console.log(`${notificationType} 알림 처리:`, notification);
       } else {
         console.warn("알 수 없는 SSE 데이터 형태:", data);
         return;
@@ -492,6 +495,7 @@ export const SSEProvider = ({
         newNotifications.forEach((notification) => {
           switch (notification.type) {
             case "image":
+              console.log("🖼️ 이미지 생성 알림 받음:", notification);
               if (notification.status === "SUCCESS") {
                 showNotification("이미지 생성 완료", notification.message);
                 // 윈도우 이벤트 발생
@@ -513,6 +517,7 @@ export const SSEProvider = ({
               }
               break;
             case "video":
+              console.log("🎬 비디오 생성 알림 받음:", notification);
               if (notification.status === "SUCCESS") {
                 showNotification("비디오 생성 완료", notification.message);
                 // 윈도우 이벤트 발생

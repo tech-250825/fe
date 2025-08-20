@@ -885,12 +885,5 @@
       "dropImageHere": "이미지를 여기에 놓으세요",
       "toGenerateVideo": "비디오를 생성하기 위해"
     }
-  },
-  "NotFound": {
-    "title": "페이지를 찾을 수 없습니다",
-    "description": "찾으시는 페이지가 존재하지 않거나 이동되었습니다.",
-    "goHome": "홈으로 가기",
-    "goBack": "이전으로",
-    "returnTo": "돌아가기"
   }
 }

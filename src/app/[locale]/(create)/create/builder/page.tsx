@@ -178,6 +178,7 @@ export default function VideoGenerationScreen() {
 
   const handleGenerate = () => {
     if (prompt.trim()) {
+      console.log("동영상 생성:", prompt);
     }
   };
 
@@ -268,7 +269,7 @@ export default function VideoGenerationScreen() {
   // Extend 버튼 클릭 핸들러
   const handleExtend = async () => {
     if (!videoRef.current || !activeVideoSrc) {
-      
+      console.log("활성 비디오가 없습니다.");
       return;
     }
 
@@ -288,14 +289,23 @@ export default function VideoGenerationScreen() {
         })
       );
 
+      // 디버그용
+      console.log("FormData 내용:");
+      for (let [key, value] of formData.entries()) {
+        console.log(key, value);
+      }
+
       const response = await fetch(`${config.apiUrl}/api/videos/create/i2v`, {
         method: "POST",
         credentials: "include",
         body: formData,
       });
 
+      console.log("📤 Extend API 요청 완료, 응답 상태:", response.status);
+
       if (response.ok) {
         const backendResponse = await response.json();
+        console.log("✅ 비디오 확장 요청 성공!", backendResponse);
 
         // 상태 확인을 위한 주기적 체크 (실제 구현시)
         // const checkInterval = setInterval(() => {
@@ -365,11 +375,15 @@ export default function VideoGenerationScreen() {
   useEffect(() => {
     const handleVideoCompleted = (event: Event) => {
       const customEvent = event as VideoCompletedEvent;
+      console.log("🎬 SSE 비디오 알림 받음!", customEvent.detail);
+
       // 비디오 URL 추출
       if (customEvent.detail.payload && customEvent.detail.payload.imageUrl) {
         const videoUrl = Array.isArray(customEvent.detail.payload.imageUrl)
           ? customEvent.detail.payload.imageUrl[0]
           : customEvent.detail.payload.imageUrl;
+
+        console.log("📹 새 비디오 URL:", videoUrl);
 
         // 새로운 씬 추가
         const newScene: Scene = {
@@ -381,12 +395,14 @@ export default function VideoGenerationScreen() {
 
         setScenes((prevScenes) => {
           const updatedScenes = [...prevScenes, newScene];
+          console.log("📋 새 씬 추가됨, 총", updatedScenes.length, "개");
           return updatedScenes;
         });
 
         // Extend 상태 종료
         if (isExtending) {
           setIsExtending(false);
+          console.log("✅ Extend 완료");
         }
 
         // 새 씬으로 자동 전환

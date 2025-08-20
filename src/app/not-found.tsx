@@ -1,3 +1,6 @@
+"use client";
+
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Home, ArrowLeft, Search } from "lucide-react";
 
@@ -33,30 +36,32 @@ export default function NotFound() {
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Button asChild variant="default" className="w-full sm:w-auto">
-            <a href="/home" className="flex items-center gap-2">
+            <Link href="/home" className="flex items-center gap-2">
               <Home className="w-4 h-4" />
               Go Home
-            </a>
+            </Link>
           </Button>
-          <a 
-            href="javascript:history.back()" 
-            className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 w-full sm:w-auto"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Go Back
-          </a>
+          <Button asChild variant="outline" className="w-full sm:w-auto">
+            <button 
+              onClick={() => window.history.back()} 
+              className="flex items-center gap-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Go Back
+            </button>
+          </Button>
         </div>
 
         {/* Brand */}
         <div className="pt-8 border-t border-border">
           <p className="text-sm text-muted-foreground">
             Return to{" "}
-            <a 
+            <Link 
               href="/" 
               className="font-semibold text-foreground hover:text-primary transition-colors"
             >
               Hoit
-            </a>
+            </Link>
           </p>
         </div>
       </div>
