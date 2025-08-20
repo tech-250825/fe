@@ -81,7 +81,7 @@ export default function CreatePage() {
       if (styleResponse.ok) {
         const styleData = await styleResponse.json();
         const allStyleModels = styleData.data || styleData; // 백엔드 응답 구조에 따라 처리
-        const styleModels = allStyleModels.filter(model => model.visible === true);
+        const styleModels = allStyleModels.filter((model: any) => model.visible === true);
         setStyleModels(styleModels);
    
         
@@ -95,7 +95,7 @@ export default function CreatePage() {
       if (characterResponse.ok) {
         const characterData = await characterResponse.json();
         const allCharacterModels = characterData.data || characterData;
-        const characterModels = allCharacterModels.filter(model => model.visible === true);
+        const characterModels = allCharacterModels.filter((model: any) => model.visible === true);
         setCharacterModels(characterModels);
         
         
