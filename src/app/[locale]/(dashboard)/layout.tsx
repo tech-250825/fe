@@ -37,17 +37,14 @@ export default function DashboardLayout({
 
   // SSE 이벤트 핸들러들
   const handleVideoComplete = () => {
-    console.log("🎬 Dashboard Layout: 비디오 완료 알림 받음, 이벤트 발생");
     window.dispatchEvent(new CustomEvent("videoCompleted"));
   };
 
   const handleImageComplete = () => {
-    console.log("🖼️ Dashboard Layout: 이미지 완료 알림 받음, 이벤트 발생");
     window.dispatchEvent(new CustomEvent("imageCompleted"));
   };
 
   const handleUpscaleComplete = () => {
-    console.log("⬆️ Dashboard Layout: 업스케일 완료 알림 받음, 이벤트 발생");
     window.dispatchEvent(new CustomEvent("upscaleCompleted"));
   };
 

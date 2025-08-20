@@ -82,11 +82,8 @@ export default function CreatePage() {
         const styleData = await styleResponse.json();
         const styleModels = styleData.data || styleData; // 백엔드 응답 구조에 따라 처리
         setStyleModels(styleModels);
-        console.log("🎨 Style Models API Response:", styleData);
-        console.log("🎨 Style Models Array:", styleModels);
-        if (styleModels.length > 0) {
-          console.log("🎨 First Style Model Structure:", styleModels[0]);
-        }
+   
+        
       }
 
       // CHARACTER 모델 조회
@@ -98,11 +95,8 @@ export default function CreatePage() {
         const characterData = await characterResponse.json();
         const characterModels = characterData.data || characterData;
         setCharacterModels(characterModels);
-        console.log("👤 Character Models API Response:", characterData);
-        console.log("👤 Character Models Array:", characterModels);
-        if (characterModels.length > 0) {
-          console.log("👤 First Character Model Structure:", characterModels[0]);
-        }
+        
+        
       }
 
       // 전체 모델 목록 설정 (현재 탭에 따라)
@@ -140,7 +134,7 @@ export default function CreatePage() {
       const isNearBottom = scrollTop + clientHeight >= scrollHeight - threshold;
 
       if (isNearBottom) {
-        console.log("🚀 무한 스크롤 트리거!");
+     
         fetchTaskList(false);
       }
     };
@@ -161,7 +155,7 @@ export default function CreatePage() {
   // fetchTaskList - 백엔드 응답 구조에 맞게 수정
   const fetchTaskList = useCallback(async (reset = false) => {
     if (loadingRef.current) {
-      console.log("❌ 이미 로딩 중이므로 요청 무시");
+      
       return;
     }
 
@@ -169,7 +163,7 @@ export default function CreatePage() {
     setLoading(true);
 
     try {
-      console.log("🔄 Task list 새로고침 중...");
+  
 
       const size = reset ? "8" : "6";
       const params = new URLSearchParams({ size });
@@ -177,16 +171,11 @@ export default function CreatePage() {
       const currentCursor = nextCursorRef.current;
       if (!reset && currentCursor) {
         params.append("nextPageCursor", currentCursor);
-        console.log(
-          "📝 현재 커서 전달:",
-          typeof currentCursor === "string"
-            ? currentCursor.substring(0, 30) + "..."
-            : currentCursor
-        );
+        
       }
 
       const url = `${config.apiUrl}/api/videos/task?${params}`;
-      console.log("📡 API 요청 URL:", url);
+
 
       const res = await api.get(url);
 
@@ -196,11 +185,10 @@ export default function CreatePage() {
 
       // 백엔드 응답 구조에 맞게 파싱
       const backendResponse: BackendResponse<TaskListData> = await res.json();
-      console.log("📦 전체 응답:", backendResponse);
+ 
 
       // 데이터가 null인 경우 처리
       if (!backendResponse.data) {
-        console.log("⚠️ data가 null입니다. 빈 배열로 처리");
         if (reset) {
           setTaskList([]);
           taskListRef.current = [];
@@ -211,33 +199,23 @@ export default function CreatePage() {
       }
 
       const content = backendResponse.data.content || [];
-      console.log("📋 받은 데이터 개수:", content.length);
-      console.log(
-        "📋 받은 데이터 ID들:",
-        content.map((item) => item.task.id)
-      );
+   
       
       // Debug dimensions from backend
       content.forEach((item) => {
         if (item.task.imageUrl) { // I2V task
-          console.log(`📏 I2V Task ${item.task.id} dimensions from backend: ${item.task.width}x${item.task.height}`);
           const ratio = item.task.width / item.task.height;
-          console.log(`📏 Task ${item.task.id} calculated ratio: ${ratio > 1 ? 'landscape' : ratio < 1 ? 'portrait' : 'square'}`);
         }
       });
 
       if (reset) {
-        console.log("🔄 Reset: 전체 교체");
         taskListRef.current = content;
         setTaskList(content);
       } else {
-        console.log("➕ Append: 기존 데이터에 추가");
         const existingIds = new Set(taskListRef.current.map((t) => t.task.id));
         const newItems = content.filter(
           (item) => !existingIds.has(item.task.id)
         );
-
-        console.log("🔍 실제 추가될 새 항목:", newItems.length, "개");
 
         if (newItems.length === 0 && content.length > 0) {
           console.warn("⚠️ 중복 데이터 - hasMore를 false로 설정");
@@ -253,19 +231,12 @@ export default function CreatePage() {
 
       // 커서 처리
       const newNextCursor = backendResponse.data.nextPageCursor;
-      console.log("🔍 새 커서:", newNextCursor ? "있음" : "없음");
+
 
       setNextCursor(newNextCursor);
       nextCursorRef.current = newNextCursor;
       setHasMore(!!newNextCursor);
       hasMoreRef.current = !!newNextCursor;
-
-      console.log(
-        "✅ Task list 업데이트 완료:",
-        content.length,
-        "개 항목 받음"
-      );
-      console.log("📊 현재 전체 taskList 길이:", taskListRef.current.length);
 
       // 마지막 업데이트 시간 설정
       setLastFetchTime(new Date().toLocaleTimeString());
@@ -453,10 +424,7 @@ export default function CreatePage() {
             imageHeight,
             options.quality
           );
-          
-          console.log(`📏 I2V Library Image dimensions: ${imageWidth}x${imageHeight}`);
-          console.log(`📏 I2V Resolution profile: ${resolutionProfile}`);
-          console.log(`🖼️ Library Image URL: ${libraryImageData.imageUrl}`);
+   
           
           // Create JSON payload for v2 endpoint
           requestData = {
@@ -466,7 +434,7 @@ export default function CreatePage() {
             numFrames: frames
           };
           
-          console.log("📦 I2V Library Request payload (JSON):", requestData);
+  
           
         } else if (uploadedImageFile) {
           // File upload case - get actual image dimensions and calculate resolutionProfile
@@ -476,10 +444,7 @@ export default function CreatePage() {
             imageDimensions.height,
             options.quality
           );
-          
-          console.log(`📏 I2V File Image dimensions: ${imageDimensions.width}x${imageDimensions.height}`);
-          console.log(`📏 I2V Resolution profile: ${resolutionProfile}`);
-          
+
           const formData = new FormData();
           formData.append("image", uploadedImageFile);
           formData.append(
@@ -514,27 +479,16 @@ export default function CreatePage() {
           numFrames: frames,
         };
         
-        console.log("📦 T2V Request payload with resolutionProfile:", requestData);
         
         response = await api.post(`${config.apiUrl}${endpoint}`, requestData);
       }
 
       if (response.ok) {
         const backendResponse: BackendResponse<any> = await response.json();
-        console.log("✅ 비디오 생성 요청 성공!", backendResponse);
 
         // Unlock the input immediately after successful submission
         setIsGenerating(false);
 
-        // const checkInterval = setInterval(() => {
-        //   console.log("🔄 상태 확인을 위해 fetchTaskList 호출");
-        //   fetchTaskList(true);
-        // }, 5000);
-
-        // setTimeout(() => {
-        //   clearInterval(checkInterval);
-        //   console.log("⏰ 주기적 확인 중단");
-        // }, 30000);
       } else {
         console.error("❌ API 요청 실패:", response.statusText);
         
@@ -567,10 +521,8 @@ export default function CreatePage() {
   // 초기 데이터 로드
   useEffect(() => {
     if (isLoggedIn) {
-      console.log("🚀 초기 데이터 로드 시작");
       fetchTaskList(true);
       fetchAvailableModels();
-      console.log("✅ 초기 로딩 완료");
     }
   }, [isLoggedIn]);
 
@@ -597,7 +549,6 @@ export default function CreatePage() {
         const parsedData = JSON.parse(recreateDataStr);
         // Only use data if it's for video and not too old (within 5 minutes)
         if (parsedData.type === 'video' && Date.now() - parsedData.timestamp < 300000) {
-          console.log('Found recreate data for video:', parsedData);
           setRecreateData(parsedData);
           // Clear the data after using it
           localStorage.removeItem('recreateData');
@@ -622,25 +573,16 @@ export default function CreatePage() {
   // SSE 알림을 받았을 때 새로고침 처리를 위한 이벤트 리스너
   useEffect(() => {
     const handleVideoCompleted = () => {
-      console.log(
-        "🎬 Create 페이지: 비디오 생성 완료 알림 받음! 데이터 새로고침..."
-      );
       fetchTaskList(true);
       setIsGenerating(false);
     };
 
     const handleImageCompleted = () => {
-      console.log(
-        "🖼️ Create 페이지: 이미지 생성 완료 알림 받음! 데이터 새로고침..."
-      );
       fetchTaskList(true);
       setIsGenerating(false);
     };
 
     const handleUpscaleCompleted = () => {
-      console.log(
-        "⬆️ Create 페이지: 업스케일 완료 알림 받음! 데이터 새로고침..."
-      );
       fetchTaskList(true);
       setIsGenerating(false);
     };
@@ -665,7 +607,6 @@ export default function CreatePage() {
   const handleCopyPrompt = async (item: TaskItem) => {
     try {
       await navigator.clipboard.writeText(item.task.prompt);
-      console.log("Copied prompt:", item.task.prompt);
       toast.success(t("toast.promptCopied"));
     } catch (error) {
       console.error("Failed to copy:", error);
@@ -677,8 +618,6 @@ export default function CreatePage() {
     if (!item.image?.url) return;
 
     try {
-      console.log("Starting download for task:", item.task.id);
-      
       // Use the download API route with the video URL
       const filename = `video-${item.task.id}.mp4`;
       const downloadApiUrl = `/api/download?url=${encodeURIComponent(item.image.url)}&filename=${encodeURIComponent(filename)}`;
@@ -691,8 +630,6 @@ export default function CreatePage() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
-      console.log("✅ Download initiated for task:", item.task.id);
       toast.success(t("toast.downloadStarted"));
       
     } catch (error) {
@@ -709,8 +646,7 @@ export default function CreatePage() {
     }
 
     try {
-      console.log("Deleting task:", item.task.id);
-      
+
       const response = await api.delete(`${config.apiUrl}/api/videos/${item.task.id}`);
       
       if (response.ok) {
@@ -718,8 +654,7 @@ export default function CreatePage() {
         setTaskList((prev) => prev.filter((task) => task.task.id !== item.task.id));
         
         toast.success(t("delete.success"));
-        console.log("✅ Successfully deleted task:", item.task.id);
-        
+
         // Refresh the list to ensure consistency
         fetchTaskList(true);
       } else {
@@ -739,8 +674,7 @@ export default function CreatePage() {
   };
 
   const handleEnhancePrompt = async (prompt: string, selections: VideoOptions): Promise<string> => {
-    console.log("Enhancing prompt:", prompt);
-    
+
     try {
       // Get the selected lora model
       const selectedLoraModel = selections.style || selections.character;
@@ -752,7 +686,6 @@ export default function CreatePage() {
       
       if (selectedLoraModel?.id) {
         requestPayload.loraId = selectedLoraModel.id;
-        console.log("Using lora ID:", selectedLoraModel.id, "for prompt:", prompt);
       } else {
         console.log("No lora model selected, enhancing prompt without loraId");
       }
@@ -761,8 +694,7 @@ export default function CreatePage() {
       
       if (response.ok) {
         const backendResponse: BackendResponse<string> = await response.json();
-        console.log("✅ Prompt enhanced successfully!", backendResponse);
-        
+
         // Return the enhanced prompt from the response
         return backendResponse.data || prompt; // Fallback to original prompt if data is null
       } else {
@@ -828,19 +760,10 @@ export default function CreatePage() {
       />
       {/* ✅ URL 기반 모달 */}
       {selectedTask && (() => {
-        // 디버깅을 위한 콘솔 로그
-        console.log("🎬 Selected Task Data:", selectedTask);
-        console.log("📏 Task width:", selectedTask.task.width);
-        console.log("📏 Task height:", selectedTask.task.height);
-        console.log("⏱️ Task numFrames:", selectedTask.task.numFrames);
         
         const aspectRatio = calculateAspectRatio(selectedTask.task.width, selectedTask.task.height);
         const duration = calculateDuration(selectedTask.task.numFrames);
         const resolution = getResolutionLabel(selectedTask.task.width, selectedTask.task.height);
-        
-        console.log("🎯 Calculated aspect ratio:", aspectRatio);
-        console.log("🎯 Calculated duration:", duration);
-        console.log("🎯 Calculated resolution:", resolution);
         
         return (
           <VideoResultModal

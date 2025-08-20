@@ -228,17 +228,9 @@ export class VideoAPIService {
       let uploadFile = file;
       if (file.size > 1048576) {
         // 1MB
-        console.log(
-          `Compressing image from ${(file.size / 1024 / 1024).toFixed(2)}MB`,
-        );
         uploadFile = await this.compressImage(file);
-        console.log(
-          `Compressed to ${(uploadFile.size / 1024 / 1024).toFixed(2)}MB`,
-        );
       }
 
-      // 서버에 별도 업로드 API가 없으므로 base64로 직접 변환
-      console.log("Converting image to base64 for direct use");
       return this.convertFileToBase64(uploadFile);
     } catch (error) {
       console.error("Image processing failed:", error);
