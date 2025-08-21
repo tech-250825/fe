@@ -65,10 +65,10 @@ export default function DashboardLayout({
         {/* Mobile icon sidebar - only show on mobile */}
         <MobileIconSidebar />
         
-        <main className="flex-1 md:ml-0 ml-16">
+        <main className="flex-1 md:ml-0 px-4">
           {/* Mobile header with just title */}
           <div className="md:hidden flex items-center justify-center p-4 border-b bg-card">
-            <h1 className="text-lg font-semibold text-foreground">{getPageTitle()}</h1>
+            <h1 className="text-2xl font-bold text-foreground">Hoit</h1>
           </div>
           <div className="flex-1 overflow-y-auto">{children}</div>
         </main>
