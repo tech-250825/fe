@@ -53,7 +53,7 @@ export default function PaymentPage() {
       paymentId,
       orderName: item.name,
       totalAmount: item.price,
-      currency: item.currency,
+      currency: item.currency as any,
       payMethod: "CARD",
       customer: {
         fullName: "테스트 사용자",
