@@ -2042,7 +2042,7 @@ export default function BoardPage() {
         </div>
 
         {/* AI 생성 프롬프트 입력 */}
-        <div className="p-3">
+        <div className="p-3 pb-20 md:pb-3">
           <div className="flex flex-col gap-2">
             {/* 설정 배지들 */}
             <div className="flex items-center gap-2 flex-wrap">
