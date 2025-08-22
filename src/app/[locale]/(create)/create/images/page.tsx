@@ -405,7 +405,7 @@ export default function CreateImagesPage() {
         // Use the error handler utility
         await handleApiResponse(response, {
           t,
-          customMessages: {
+          customMessages: response.status === 403 ? {} : {
             [response.status]: `Image generation failed (Error ${response.status}). Please try again.`
           },
           onCreditInsufficient: () => setShowCreditModal(true)

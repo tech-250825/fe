@@ -623,7 +623,8 @@
       "serverError": "Server error occurred while generating video. Please try again later.",
       "invalidRequest": "Invalid request. Please check your settings and try again.",
       "authFailed": "Authentication failed. Please log in again.",
-      "networkError": "Network error occurred. Please check your connection and try again."
+      "networkError": "Network error occurred. Please check your connection and try again.",
+      "contentViolation": "Inappropriate content detected. Cannot generate. Please try again with a different prompt."
     },
     "messages": {
       "boardNotFound": "Board not found",
@@ -784,7 +785,8 @@
       "creditInsufficient": "Insufficient credits. Please recharge your credits.",
       "imagesDownloadStarted": "{count} images download started",
       "videoGenerationFailed": "Video generation failed (Error {status}). Please try again.",
-      "imagePastedSuccessfully": "Image pasted successfully!"
+      "imagePastedSuccessfully": "Image pasted successfully!",
+      "contentViolation": "Inappropriate content detected. Cannot generate. Please try again with a different prompt."
     },
     "badges": {
       "textToVideo": "Text-to-Video",
