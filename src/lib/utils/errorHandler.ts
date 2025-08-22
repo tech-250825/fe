@@ -57,6 +57,16 @@ export function handleApiError(
       }
       return true;
 
+    case 403:
+      if (customMessages[response.status]) {
+        if (showToast) {
+          toast.error(customMessages[response.status]);
+        }
+      } else if (showToast) {
+        toast.error(t("toast.contentViolation"));
+      }
+      return true;
+
     case 500:
       if (customMessages[response.status]) {
         if (showToast) {

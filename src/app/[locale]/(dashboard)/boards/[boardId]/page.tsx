@@ -914,6 +914,8 @@ export default function BoardPage() {
           toast.error(t("toast.invalidRequest"));
         } else if (response.status === 401) {
           toast.error(t("toast.authFailed"));
+        } else if (response.status === 403) {
+          toast.error(t("toast.contentViolation"));
         } else {
           toast.error(t("messages.videoGenerationFailed", {status: response.status}));
         }
