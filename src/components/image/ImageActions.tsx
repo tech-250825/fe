@@ -4,7 +4,7 @@ import React from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
-import { Copy, Download, Trash2, MoreHorizontal } from "lucide-react";
+import { Copy, Download, Trash2 } from "lucide-react";
 import type { ImageItem } from "@/services/types/image.types";
 
 interface ImageActionsProps {
@@ -84,18 +84,6 @@ export function ImageActions({
         </TooltipContent>
       </Tooltip>
 
-      {/* More Actions */}
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant="ghost" size="sm">
-            <MoreHorizontal className="w-4 h-4" />
-            <span className="sr-only">More actions</span>
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>More actions</p>
-        </TooltipContent>
-      </Tooltip>
     </div>
   );
 }

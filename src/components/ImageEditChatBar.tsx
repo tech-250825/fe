@@ -177,20 +177,11 @@ export function ImageEditChatBar({
   /** ----- Badges ----- */
   const selectionBadges = useMemo(() => {
     const badges = [];
-    if (options.checkpoint) {
-      badges.push(<Badge key="checkpoint" variant="secondary">모델: {options.checkpoint?.name}</Badge>);
-    } else if (options.style) {
-      badges.push(<Badge key="style" variant="secondary">스타일: {options.style?.name}</Badge>);
-    } else if (options.character) {
-      badges.push(<Badge key="character" variant="secondary">캐릭터: {options.character?.name}</Badge>);
-    }
-    badges.push(<Badge key="aspectRatio" variant="outline">{options.aspectRatio}</Badge>);
-    badges.push(<Badge key="quality" variant="outline">{options.quality}</Badge>);
     if (uploadedImageFile) {
       badges.push(<Badge key="uploaded" variant="default">{uploadedImageFile.name}</Badge>);
     }
     return badges;
-  }, [options, uploadedImageFile]);
+  }, [uploadedImageFile]);
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50 p-6 bg-transparent sm:left-64"
@@ -260,7 +251,7 @@ export function ImageEditChatBar({
             placeholder="이미지에 적용할 수정 내용을 입력하세요"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyPress}
             disabled={isGenerating}
             className="flex-1 h-14 pr-14 bg-card border-border text-foreground"
 

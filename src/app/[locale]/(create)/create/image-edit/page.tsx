@@ -408,6 +408,7 @@ export default function ImageEditPage() {
           isOpen={true}
           onClose={handleCloseModal}
           onDownload={handleDownload}
+          showParameters={false}
         />
       )}
 
