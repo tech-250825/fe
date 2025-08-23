@@ -118,18 +118,18 @@ const heroSlides = [
     src: "/hero/hero_2.mp4",
     titleKey: "hero.consistentCharacter",
   },
-  {
-    id: "hero2",
-    type: "mp4",
-    src: "https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/tomato_00582.mp4",
-    titleKey: "hero.unifiedStyle",
-  },
-  {
-    id: "hero3",
-    type: "mp4",
-    src: "https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/tomato_00467.mp4",
-    titleKey: "hero.continuousStories",
-  },
+  // {
+  //   id: "hero2",
+  //   type: "mp4",
+  //   src: "https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/tomato_00582.mp4",
+  //   titleKey: "hero.unifiedStyle",
+  // },
+  // {
+  //   id: "hero3",
+  //   type: "mp4",
+  //   src: "https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/tomato_00467.mp4",
+  //   titleKey: "hero.continuousStories",
+  // },
 ];
 
 const [currentSlide, setCurrentSlide] = useState(0);
@@ -352,14 +352,14 @@ const resumeAutoplay = () => {
                 })()}
 
               {/* Prev / Next / Indicators */}
-              <button onClick={prev} className="absolute left-3 top-1/2 -translate-y-1/2 z-10 rounded-full bg-black/40 hover:bg-black/60 px-3 py-2 text-white">‹</button>
-              <button onClick={next} className="absolute right-3 top-1/2 -translate-y-1/2 z-10 rounded-full bg-black/40 hover:bg-black/60 px-3 py-2 text-white">›</button>
-              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex gap-2">
+              {/* <button onClick={prev} className="absolute left-3 top-1/2 -translate-y-1/2 z-10 rounded-full bg-black/40 hover:bg-black/60 px-3 py-2 text-white">‹</button>
+              <button onClick={next} className="absolute right-3 top-1/2 -translate-y-1/2 z-10 rounded-full bg-black/40 hover:bg-black/60 px-3 py-2 text-white">›</button> */}
+              {/* <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex gap-2">
                 {heroSlides.map((s, i) => (
                   <button key={s.id} onClick={() => goTo(i)} className={`h-2.5 rounded-full transition-all ${i === currentSlide ? "w-6 bg-white" : "w-2.5 bg-white/50 hover:bg-white/70"}`} />
                 ))}
-              </div>
-              <button className="absolute inset-0 z-0" onClick={next} aria-label="Next slide" />
+              </div> */}
+              {/* <button className="absolute inset-0 z-0" onClick={next} aria-label="Next slide" /> */}
             </div>
           </div>
 
