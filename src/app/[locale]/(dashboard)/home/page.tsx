@@ -268,8 +268,8 @@ const handleRecreate = (item: PublicItem) => {
 };
 
 const goTo = (i: number) => setCurrentSlide((i + heroSlides.length) % heroSlides.length);
-const next = () => goTo(currentSlide + 1);
-const prev = () => goTo(currentSlide - 1);
+// const next = () => goTo(currentSlide + 1);
+// const prev = () => goTo(currentSlide - 1);
 
 const pauseAutoplay = () => {
   if (autoplayRef.current) {

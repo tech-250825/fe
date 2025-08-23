@@ -7,7 +7,7 @@ import { config } from "@/config";
 import ImageResultModal from "@/components/image-result-modal";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useRouter as useI18nRouter } from "@/i18n/routing";
-import { ImageList } from "@/components/image/ImageList";
+import { ImageEditList } from "@/components/image/ImageEditList";
 import {
   ImageItem,
   BackendResponse,
@@ -382,7 +382,7 @@ export default function ImageEditPage() {
 
   return (
     <>
-      <ImageList
+      <ImageEditList
         taskList={taskList}
         loading={loading}
         hasMore={hasMore}

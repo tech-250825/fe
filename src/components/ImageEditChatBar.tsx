@@ -204,7 +204,7 @@ export function ImageEditChatBar({
 
         {/* Badge 영역 */}
         <div className="flex flex-wrap items-center gap-2 mb-2">
-          <Badge variant="default">이미지 편집</Badge>
+          <Badge variant="default">이미지 아이콘을 클릭하여 편집할 이미지를 넣으세요</Badge>
           {selectionBadges}
         </div>
 
