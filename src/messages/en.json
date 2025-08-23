@@ -100,6 +100,7 @@
       "library": "Library"
     },
     "tools": {
+      "imageEdit": "Image Edit",
       "videoBoards": "Animation",
       "createImages": "Create Images",
       "createVideos": "Create Videos",

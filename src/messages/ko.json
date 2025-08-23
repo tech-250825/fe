@@ -87,6 +87,7 @@
       "library": "라이브러리"
     },
     "tools": {
+      "imageEdit": "이미지 편집",
       "videoBoards": "애니메이션",
       "createImages": "이미지 생성",
       "createVideos": "비디오 생성",

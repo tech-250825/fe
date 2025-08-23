@@ -95,6 +95,11 @@ export function AppSidebar() {
   // 도구 메뉴 아이템들 (번역 적용)
   const toolItems = [
     {
+      title: t("tools.imageEdit"),
+      url: "/create/image-edit",
+      icon: ImageIcon,
+    },
+    {
       title: t("tools.createImages"),
       url: "/create/images",
       icon: ImageIcon,
@@ -138,6 +143,7 @@ export function AppSidebar() {
     if (url === "/boards") return pathname === "/boards" || pathname.startsWith("/boards/");
     
     // Create 경로들은 더 구체적으로 매칭
+    if (url === "/create/image-edit") return pathname === "/create/image-edit";
     if (url === "/create/images") return pathname === "/create/images";
     if (url === "/create/videos") return pathname === "/create/videos";
     if (url === "/create/characters") return pathname === "/create/characters";

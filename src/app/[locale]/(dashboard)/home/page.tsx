@@ -327,13 +327,13 @@ const resumeAutoplay = () => {
                         <div className="text-left">
                           <div className="mb-4">
                             <span className="inline-block px-3 py-1 bg-blue-500 text-white text-sm font-medium rounded-full mb-2">
-                              New Feature
+                              새로운 기능 출시
                             </span>
                             <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">
-                              Image Editing Added
+                              이미지 편집 기능 출시
                             </h3>
                             <p className="text-white/80 text-sm">
-                              Transform your images with AI-powered editing
+                              이미지 에디팅으로 이미지를 바꿔보세요
                             </p>
                           </div>
                           <Button 
@@ -367,23 +367,23 @@ const resumeAutoplay = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3 md:gap-4 lg:gap-6">
             <div className="rounded-lg bg-black/55 backdrop-blur-md border border-white/10 p-3 sm:p-4 md:p-6 shadow-lg flex flex-col justify-between h-[120px] sm:h-[150px] md:h-[200px]">
               <div>
-                <h3 className="text-white/90 text-xs sm:text-sm font-medium mb-1 sm:mb-2">Quick Start</h3>
-                <p className="text-white text-sm sm:text-lg md:text-xl lg:text-2xl font-extrabold leading-tight mb-1">Create Videos</p>
-                <p className="text-white/70 text-xs sm:text-sm">Turn prompts into animation</p>
+                <h3 className="text-white/90 text-xs sm:text-sm font-medium mb-1 sm:mb-2">바로 시작</h3>
+                <p className="text-white text-sm sm:text-lg md:text-xl lg:text-2xl font-extrabold leading-tight mb-1">비디오 생성하기</p>
+                <p className="text-white/70 text-xs sm:text-sm">프롬프트로 애니메이션 제작하세요</p>
               </div>
               <a href="/create/videos" className="mt-2 sm:mt-4 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-4 py-2 sm:px-6 sm:py-3 text-xs sm:text-sm transition">
-                Create Videos
+                비디오 생성하기 
               </a>
             </div>
 
             <div className="rounded-lg bg-black/55 backdrop-blur-md border border-white/10 p-3 sm:p-4 md:p-6 shadow-lg flex flex-col justify-between h-[120px] sm:h-[150px] md:h-[200px]">
               <div>
-                <h3 className="text-white/90 text-xs sm:text-sm font-medium mb-1 sm:mb-2">Generate</h3>
-                <p className="text-white text-sm sm:text-lg md:text-xl lg:text-2xl font-extrabold leading-tight mb-1">Create Images</p>
-                <p className="text-white/70 text-xs sm:text-sm">AI-powered image creation</p>
+                <h3 className="text-white/90 text-xs sm:text-sm font-medium mb-1 sm:mb-2">바로 시작</h3>
+                <p className="text-white text-sm sm:text-lg md:text-xl lg:text-2xl font-extrabold leading-tight mb-1">이미지 생성하기</p>
+                <p className="text-white/70 text-xs sm:text-sm">AI로 이미지를 제작하세요</p>
               </div>
               <a href="/create/images" className="mt-2 sm:mt-4 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-4 py-2 sm:px-6 sm:py-3 text-xs sm:text-sm transition">
-                Create Images
+                이미지 생성하기
               </a>
             </div>
           </div>
