@@ -92,7 +92,7 @@ export default function ImageEditPage() {
         params.append("cursor", currentCursor);
       }
 
-      const url = `${config.apiUrl}/api/images/mypage?${params}`;
+      const url = `${config.apiUrl}/api/img2img/task?${params}`;
 
       const res = await api.get(url);
 
@@ -246,13 +246,12 @@ export default function ImageEditPage() {
 
       const requestPayload = {
         prompt: prompt,
-        loraId: loraId,
         resolutionProfile: resolutionProfile,
       };
 
       formData.append("request", JSON.stringify(requestPayload));
 
-      const response = await api.postForm(`${config.apiUrl}/api/images/edit`, formData);
+      const response = await api.postForm(`${config.apiUrl}/api/img2img/create`, formData);
 
       if (response.ok) {
         const backendResponse: BackendResponse<any> = await response.json();
