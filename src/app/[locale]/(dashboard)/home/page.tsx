@@ -295,40 +295,50 @@ const resumeAutoplay = () => {
             {/* TOP: Hero Carousel */}
             <div className="w-full">
               <div
-                className="relative w-full aspect-video rounded-lg overflow-hidden shadow-lg bg-black"
+                className="relative w-full h-48 sm:h-56 md:h-64 lg:h-72 rounded-lg overflow-hidden shadow-lg bg-gradient-to-r from-gray-900 to-gray-800"
                 onMouseEnter={pauseAutoplay}
                 onMouseLeave={resumeAutoplay}
               >
-              {(() => {
-                const slide = heroSlides[currentSlide];
-                return (
-                  <div className="absolute inset-0">
-                    {slide.type === "hls" ? (
-                      <HeroHlsVideo
-                        key={slide.id}
-                        src={slide.src}
-                        className="absolute inset-0 w-full h-full object-cover"
-                      />
-                    ) : (
-                      <video
-                        key={slide.id}
-                        src={slide.src}
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        preload="metadata"
-                        className="absolute inset-0 w-full h-full object-cover"
-                      />
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-2 sm:p-3 md:p-4 lg:p-6">
-                      <h2 className="text-sm sm:text-base md:text-lg lg:text-xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
-                        {t(slide.titleKey as any)}
-                      </h2>
+                {(() => {
+                  const slide = heroSlides[currentSlide];
+                  return (
+                    <div className="absolute inset-0 flex">
+                      {/* Left side - Text content */}
+                      <div className="flex-1 flex items-center justify-center p-4 sm:p-6 md:p-8">
+                        <div className="text-center">
+                          <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-extrabold text-white mb-2">
+                            {t(slide.titleKey as any)}
+                          </h2>
+                          <p className="text-sm sm:text-base text-white/80">
+                            Create stunning AI-powered animations
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {/* Right side - Video */}
+                      <div className="w-1/2 h-full relative">
+                        {slide.type === "hls" ? (
+                          <HeroHlsVideo
+                            key={slide.id}
+                            src={slide.src}
+                            className="absolute inset-0 w-full h-full object-cover rounded-r-lg"
+                          />
+                        ) : (
+                          <video
+                            key={slide.id}
+                            src={slide.src}
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                            preload="metadata"
+                            className="absolute inset-0 w-full h-full object-cover rounded-r-lg"
+                          />
+                        )}
+                      </div>
                     </div>
-                  </div>
-                );
-              })()}
+                  );
+                })()}
 
               {/* Prev / Next / Indicators */}
               <button onClick={prev} className="absolute left-3 top-1/2 -translate-y-1/2 z-10 rounded-full bg-black/40 hover:bg-black/60 px-3 py-2 text-white">‹</button>
