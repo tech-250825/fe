@@ -17,6 +17,7 @@ import {
   Moon,
   Folder, // 보드 아이콘 추가
   Gift, // Get Credits 아이콘 추가
+  Edit, // 이미지 편집 아이콘 추가
 } from "lucide-react";
 import { MessageCircle } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -97,7 +98,7 @@ export function AppSidebar() {
     {
       title: t("tools.imageEdit"),
       url: "/create/image-edit",
-      icon: ImageIcon,
+      icon: Edit,
     },
     {
       title: t("tools.createImages"),
