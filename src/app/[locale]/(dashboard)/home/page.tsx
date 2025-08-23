@@ -115,7 +115,7 @@ const heroSlides = [
   {
     id: "hero1",
     type: "mp4",
-    src: "/hero/hero_1.mp4",
+    src: "/hero/hero_2.mp4",
     titleKey: "hero.consistentCharacter",
   },
   {
@@ -295,46 +295,57 @@ const resumeAutoplay = () => {
             {/* TOP: Hero Carousel */}
             <div className="w-full">
               <div
-                className="relative w-full h-48 sm:h-56 md:h-64 lg:h-72 rounded-lg overflow-hidden shadow-lg bg-gradient-to-r from-gray-900 to-gray-800"
+                className="relative w-full h-48 sm:h-56 md:h-64 lg:h-72 rounded-lg overflow-hidden shadow-lg bg-white"
                 onMouseEnter={pauseAutoplay}
                 onMouseLeave={resumeAutoplay}
               >
                 {(() => {
                   const slide = heroSlides[currentSlide];
                   return (
-                    <div className="absolute inset-0 flex">
-                      {/* Left side - Text content */}
-                      <div className="flex-1 flex items-center justify-center p-4 sm:p-6 md:p-8">
-                        <div className="text-center">
-                          <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-extrabold text-white mb-2">
-                            {t(slide.titleKey as any)}
-                          </h2>
-                          <p className="text-sm sm:text-base text-white/80">
-                            Create stunning AI-powered animations
-                          </p>
-                        </div>
-                      </div>
+                    <div className="absolute inset-0">
+                      {slide.type === "hls" ? (
+                        <HeroHlsVideo
+                          key={slide.id}
+                          src={slide.src}
+                          className="absolute inset-0 w-full h-full object-cover"
+                        />
+                      ) : (
+                        <video
+                          key={slide.id}
+                          src={slide.src}
+                          autoPlay
+                          muted
+                          loop
+                          playsInline
+                          preload="metadata"
+                          className="absolute inset-0 w-full h-full object-cover"
+                        />
+                      )}
                       
-                      {/* Right side - Video */}
-                      <div className="w-1/2 h-full relative">
-                        {slide.type === "hls" ? (
-                          <HeroHlsVideo
-                            key={slide.id}
-                            src={slide.src}
-                            className="absolute inset-0 w-full h-full object-cover rounded-r-lg"
-                          />
-                        ) : (
-                          <video
-                            key={slide.id}
-                            src={slide.src}
-                            autoPlay
-                            muted
-                            loop
-                            playsInline
-                            preload="metadata"
-                            className="absolute inset-0 w-full h-full object-cover rounded-r-lg"
-                          />
-                        )}
+                      {/* Overlay with announcement and button - positioned left */}
+                      <div className="absolute inset-0 flex items-center justify-start pl-12 z-20">
+                        <div className="text-left">
+                          <div className="mb-4">
+                            <span className="inline-block px-3 py-1 bg-blue-500 text-white text-sm font-medium rounded-full mb-2">
+                              New Feature
+                            </span>
+                            <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">
+                              Image Editing Added
+                            </h3>
+                            <p className="text-white/80 text-sm">
+                              Transform your images with AI-powered editing
+                            </p>
+                          </div>
+                          <Button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              router.push('/create/image-edit');
+                            }}
+                            className="bg-white text-black hover:bg-white/90 font-semibold px-6 py-2 pointer-events-auto"
+                          >
+                            Try Image Edit
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   );
@@ -463,7 +474,7 @@ const resumeAutoplay = () => {
                       
                             video.muted = true;
                           }}
-                          onLoadedData={(e) => {
+                          onLoadedData={() => {
                           }}
                           onError={(e) => {
                             console.error('Video error:', e.currentTarget.error);
