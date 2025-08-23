@@ -32,7 +32,8 @@ interface ImageEditChatBarProps {
   onGenerate: (
     prompt: string,
     options: ImageOptions,
-    imageFile?: File
+    imageFile?: File,
+    libraryImageUrl?: string
   ) => void;
   isGenerating: boolean;
   options: ImageOptions;
@@ -55,6 +56,7 @@ export function ImageEditChatBar({
   const [prompt, setPrompt] = useState("");
   const [uploadedImageFile, setUploadedImageFile] = useState<File | null>(null);
   const [uploadedImagePreview, setUploadedImagePreview] = useState<string | null>(null);
+  const [libraryImageUrl, setLibraryImageUrl] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isLibraryModalOpen, setIsLibraryModalOpen] = useState(false); // ✅ 여기로 이동
 
@@ -66,6 +68,7 @@ export function ImageEditChatBar({
     if (file && file.type.startsWith("image/")) {
       setUploadedImageFile(file);
       setUploadedImagePreview(URL.createObjectURL(file));
+      setLibraryImageUrl(null); // Clear library image URL when uploading new file
       toast.success("이미지가 업로드되었습니다.");
     } else {
       toast.error("이미지 파일만 업로드 가능합니다.");
@@ -82,6 +85,7 @@ export function ImageEditChatBar({
 
   const handleImageFromLibrary = useCallback((imageItem: any, imageUrl: string) => {
     setUploadedImagePreview(imageUrl);
+    setLibraryImageUrl(imageUrl); // Store the library image URL
     setUploadedImageFile(null); // 파일 대신 URL을 사용하는 경우
   }, []);
 
@@ -97,6 +101,7 @@ export function ImageEditChatBar({
   const handleRemoveImage = useCallback(() => {
     setUploadedImageFile(null);
     setUploadedImagePreview(null);
+    setLibraryImageUrl(null);
   }, []);
 
   /** ----- Submit ----- */
@@ -109,9 +114,9 @@ export function ImageEditChatBar({
       toast.error("편집할 이미지를 먼저 업로드해주세요.");
       return;
     }
-    onGenerate(prompt.trim(), options, uploadedImageFile || undefined);
+    onGenerate(prompt.trim(), options, uploadedImageFile || undefined, libraryImageUrl || undefined);
     setPrompt("");
-  }, [prompt, options, uploadedImageFile, uploadedImagePreview, onGenerate]);
+  }, [prompt, options, uploadedImageFile, uploadedImagePreview, libraryImageUrl, onGenerate]);
 
   const handleKeyPress = useCallback(
     (e: React.KeyboardEvent) => {
