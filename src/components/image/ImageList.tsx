@@ -207,7 +207,7 @@ export function ImageList({
                     <img
                       src={item.image?.url || item.images?.[0]?.url}
                       alt={item.task.prompt}
-                      className="w-full h-auto object-cover transition-transform group-hover:scale-[1.02] pointer-events-none"
+                      className="w-full h-auto object-contain transition-transform group-hover:scale-[1.02] pointer-events-none max-h-96"
                       loading="lazy"
                     />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none rounded-2xl" />
