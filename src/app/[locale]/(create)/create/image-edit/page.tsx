@@ -404,12 +404,10 @@ export default function ImageEditPage() {
 
       {modalImage && (
         <ImageResultModal
-          item={modalImage}
+          imageItem={modalImage}
           isOpen={true}
           onClose={handleCloseModal}
-          onCopyPrompt={handleCopyPrompt}
           onDownload={handleDownload}
-          onDelete={handleDelete}
         />
       )}
 
