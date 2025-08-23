@@ -20,6 +20,7 @@ interface ImageResultModalProps {
   onClose: () => void;
   imageItem: ImageItem;
   onDownload?: (item: ImageItem) => void;
+  showParameters?: boolean;
 }
 
 export default function ImageResultModal({
@@ -27,6 +28,7 @@ export default function ImageResultModal({
   onClose,
   imageItem,
   onDownload,
+  showParameters = true,
 }: ImageResultModalProps) {
   const t = useTranslations("modal");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -189,24 +191,26 @@ export default function ImageResultModal({
               </div>
 
               {/* Parameters Section - Button Style */}
-              <div>
-                <h3 className="text-lg font-semibold text-foreground mb-3 text-center">
-                  {t("title.parameters")}
-                </h3>
-                <div className="flex flex-wrap gap-2 justify-center">
-                  {Object.entries(getParameters()).map(
-                    ([key, value]) => (
-                      <div 
-                        key={key}
-                        className="bg-card rounded-full px-4 py-2 border border-border hover:border-ring transition-colors"
-                      >
-                        <span className="text-xs text-muted-foreground mr-1">{key}:</span>
-                        <span className="text-xs text-foreground font-medium">{value}</span>
-                      </div>
-                    ),
-                  )}
+              {showParameters && (
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground mb-3 text-center">
+                    {t("title.parameters")}
+                  </h3>
+                  <div className="flex flex-wrap gap-2 justify-center">
+                    {Object.entries(getParameters()).map(
+                      ([key, value]) => (
+                        <div 
+                          key={key}
+                          className="bg-card rounded-full px-4 py-2 border border-border hover:border-ring transition-colors"
+                        >
+                          <span className="text-xs text-muted-foreground mr-1">{key}:</span>
+                          <span className="text-xs text-foreground font-medium">{value}</span>
+                        </div>
+                      ),
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Multiple Images Thumbnail Grid */}
               {hasMultipleImages && (

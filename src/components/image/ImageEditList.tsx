@@ -4,11 +4,10 @@ import React from "react";
 import { useTranslations } from "next-intl";
 import { Loader2 } from "lucide-react";
 import { ImageActions } from "./ImageActions";
-import { ImageParameters } from "./ImageParameters";
 import { ImageGenerationScreen } from "./ImageGenerationScreen";
 import type { ImageItem } from "@/services/types/image.types";
 
-interface ImageListProps {
+interface ImageEditListProps {
   taskList: ImageItem[];
   loading: boolean;
   hasMore: boolean;
@@ -18,7 +17,7 @@ interface ImageListProps {
   onDelete: (item: ImageItem) => void;
 }
 
-export function ImageList({
+export function ImageEditList({
   taskList,
   loading,
   hasMore,
@@ -26,7 +25,7 @@ export function ImageList({
   onCopyPrompt,
   onDownload,
   onDelete,
-}: ImageListProps) {
+}: ImageEditListProps) {
   const t = useTranslations("VideoCreation"); // Reuse VideoCreation translations
 
   if (taskList.length === 0 && !loading) {
@@ -47,14 +46,6 @@ export function ImageList({
     <div className="flex flex-col items-center w-full space-y-8 pb-32 pt-40">
       {taskList.map((item) => (
         <div key={item.task.id} className="w-full max-w-2xl">
-          {/* Image Parameters */}
-          <ImageParameters
-            lora={item.task.lora}
-            taskId={item.task.id}
-            width={item.task.width}
-            height={item.task.height}
-            className="mb-3"
-          />
 
           {/* Prompt */}
           <div className="mb-4">
@@ -126,11 +117,6 @@ export function ImageList({
                               ))}
                             </div>
                           </div>
-                          
-                          {/* Overlay for 9:16 layout */}
-                                <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full pointer-events-none transition-transform group-hover:scale-[1.02]">
-                            {item.images.length} images
-                          </div>
                         </div>
                       );
                     }
@@ -184,13 +170,6 @@ export function ImageList({
                             </div>
                           ))}
                         </div>
-                    
-                    {/* Grid overlay */}
-                    
-                    {/* Image count badge */}
-                    <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full pointer-events-none transition-transform group-hover:scale-[1.02]">
-                      {item.images.length} images
-                    </div>
                   </div>
                     );
                   })()

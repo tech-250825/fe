@@ -87,6 +87,7 @@
       "library": "라이브러리"
     },
     "tools": {
+      "imageEdit": "이미지 편집",
       "videoBoards": "애니메이션",
       "createImages": "이미지 생성",
       "createVideos": "비디오 생성",
@@ -698,8 +699,8 @@
     "loginRequired": "로그인이 필요합니다.",
     "list": {
       "empty": {
-        "title": "아직 생성된 영상이 없습니다.",
-        "description": "아래에서 프롬프트를 입력해 영상을 생성해보세요!"
+        "title": "아직 생성된 콘텐츠가 없습니다.",
+        "description": "아래에서 프롬프트를 입력해 생성해보세요!"
       },
       "loading": "더 불러오는 중...",
       "allLoaded": "모든 콘텐츠를 불러왔습니다."

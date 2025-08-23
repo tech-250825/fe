@@ -115,21 +115,21 @@ const heroSlides = [
   {
     id: "hero1",
     type: "mp4",
-    src: "/hero/hero_1.mp4",
+    src: "/hero/hero_2.mp4",
     titleKey: "hero.consistentCharacter",
   },
-  {
-    id: "hero2",
-    type: "mp4",
-    src: "https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/tomato_00582.mp4",
-    titleKey: "hero.unifiedStyle",
-  },
-  {
-    id: "hero3",
-    type: "mp4",
-    src: "https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/tomato_00467.mp4",
-    titleKey: "hero.continuousStories",
-  },
+  // {
+  //   id: "hero2",
+  //   type: "mp4",
+  //   src: "https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/tomato_00582.mp4",
+  //   titleKey: "hero.unifiedStyle",
+  // },
+  // {
+  //   id: "hero3",
+  //   type: "mp4",
+  //   src: "https://hoit-landingpage.han1000llm.workers.dev/landingpage_video/tomato_00467.mp4",
+  //   titleKey: "hero.continuousStories",
+  // },
 ];
 
 const [currentSlide, setCurrentSlide] = useState(0);
@@ -268,8 +268,8 @@ const handleRecreate = (item: PublicItem) => {
 };
 
 const goTo = (i: number) => setCurrentSlide((i + heroSlides.length) % heroSlides.length);
-const next = () => goTo(currentSlide + 1);
-const prev = () => goTo(currentSlide - 1);
+// const next = () => goTo(currentSlide + 1);
+// const prev = () => goTo(currentSlide - 1);
 
 const pauseAutoplay = () => {
   if (autoplayRef.current) {
@@ -295,50 +295,71 @@ const resumeAutoplay = () => {
             {/* TOP: Hero Carousel */}
             <div className="w-full">
               <div
-                className="relative w-full aspect-video rounded-lg overflow-hidden shadow-lg bg-black"
+                className="relative w-full h-48 sm:h-56 md:h-64 lg:h-72 rounded-lg overflow-hidden shadow-lg bg-white"
                 onMouseEnter={pauseAutoplay}
                 onMouseLeave={resumeAutoplay}
               >
-              {(() => {
-                const slide = heroSlides[currentSlide];
-                return (
-                  <div className="absolute inset-0">
-                    {slide.type === "hls" ? (
-                      <HeroHlsVideo
-                        key={slide.id}
-                        src={slide.src}
-                        className="absolute inset-0 w-full h-full object-cover"
-                      />
-                    ) : (
-                      <video
-                        key={slide.id}
-                        src={slide.src}
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        preload="metadata"
-                        className="absolute inset-0 w-full h-full object-cover"
-                      />
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-2 sm:p-3 md:p-4 lg:p-6">
-                      <h2 className="text-sm sm:text-base md:text-lg lg:text-xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
-                        {t(slide.titleKey as any)}
-                      </h2>
+                {(() => {
+                  const slide = heroSlides[currentSlide];
+                  return (
+                    <div className="absolute inset-0">
+                      {slide.type === "hls" ? (
+                        <HeroHlsVideo
+                          key={slide.id}
+                          src={slide.src}
+                          className="absolute inset-0 w-full h-full object-cover"
+                        />
+                      ) : (
+                        <video
+                          key={slide.id}
+                          src={slide.src}
+                          autoPlay
+                          muted
+                          loop
+                          playsInline
+                          preload="metadata"
+                          className="absolute inset-0 w-full h-full object-cover"
+                        />
+                      )}
+                      
+                      {/* Overlay with announcement and button - positioned left */}
+                      <div className="absolute inset-0 flex items-center justify-start pl-12 z-20">
+                        <div className="text-left">
+                          <div className="mb-4">
+                            <span className="inline-block px-3 py-1 bg-blue-500 text-white text-sm font-medium rounded-full mb-2">
+                              새로운 기능 출시
+                            </span>
+                            <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">
+                              이미지 편집 기능 출시
+                            </h3>
+                            <p className="text-white/80 text-sm">
+                              이미지 에디팅으로 이미지를 바꿔보세요
+                            </p>
+                          </div>
+                          <Button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              router.push('/create/image-edit');
+                            }}
+                            className="bg-white text-black hover:bg-white/90 font-semibold px-6 py-2 pointer-events-auto"
+                          >
+                            Try Image Edit
+                          </Button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                );
-              })()}
+                  );
+                })()}
 
               {/* Prev / Next / Indicators */}
-              <button onClick={prev} className="absolute left-3 top-1/2 -translate-y-1/2 z-10 rounded-full bg-black/40 hover:bg-black/60 px-3 py-2 text-white">‹</button>
-              <button onClick={next} className="absolute right-3 top-1/2 -translate-y-1/2 z-10 rounded-full bg-black/40 hover:bg-black/60 px-3 py-2 text-white">›</button>
-              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex gap-2">
+              {/* <button onClick={prev} className="absolute left-3 top-1/2 -translate-y-1/2 z-10 rounded-full bg-black/40 hover:bg-black/60 px-3 py-2 text-white">‹</button>
+              <button onClick={next} className="absolute right-3 top-1/2 -translate-y-1/2 z-10 rounded-full bg-black/40 hover:bg-black/60 px-3 py-2 text-white">›</button> */}
+              {/* <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex gap-2">
                 {heroSlides.map((s, i) => (
                   <button key={s.id} onClick={() => goTo(i)} className={`h-2.5 rounded-full transition-all ${i === currentSlide ? "w-6 bg-white" : "w-2.5 bg-white/50 hover:bg-white/70"}`} />
                 ))}
-              </div>
-              <button className="absolute inset-0 z-0" onClick={next} aria-label="Next slide" />
+              </div> */}
+              {/* <button className="absolute inset-0 z-0" onClick={next} aria-label="Next slide" /> */}
             </div>
           </div>
 
@@ -346,23 +367,23 @@ const resumeAutoplay = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3 md:gap-4 lg:gap-6">
             <div className="rounded-lg bg-black/55 backdrop-blur-md border border-white/10 p-3 sm:p-4 md:p-6 shadow-lg flex flex-col justify-between h-[120px] sm:h-[150px] md:h-[200px]">
               <div>
-                <h3 className="text-white/90 text-xs sm:text-sm font-medium mb-1 sm:mb-2">Quick Start</h3>
-                <p className="text-white text-sm sm:text-lg md:text-xl lg:text-2xl font-extrabold leading-tight mb-1">Create Videos</p>
-                <p className="text-white/70 text-xs sm:text-sm">Turn prompts into animation</p>
+                <h3 className="text-white/90 text-xs sm:text-sm font-medium mb-1 sm:mb-2">바로 시작</h3>
+                <p className="text-white text-sm sm:text-lg md:text-xl lg:text-2xl font-extrabold leading-tight mb-1">비디오 생성하기</p>
+                <p className="text-white/70 text-xs sm:text-sm">프롬프트로 애니메이션 제작하세요</p>
               </div>
               <a href="/create/videos" className="mt-2 sm:mt-4 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-4 py-2 sm:px-6 sm:py-3 text-xs sm:text-sm transition">
-                Create Videos
+                비디오 생성하기 
               </a>
             </div>
 
             <div className="rounded-lg bg-black/55 backdrop-blur-md border border-white/10 p-3 sm:p-4 md:p-6 shadow-lg flex flex-col justify-between h-[120px] sm:h-[150px] md:h-[200px]">
               <div>
-                <h3 className="text-white/90 text-xs sm:text-sm font-medium mb-1 sm:mb-2">Generate</h3>
-                <p className="text-white text-sm sm:text-lg md:text-xl lg:text-2xl font-extrabold leading-tight mb-1">Create Images</p>
-                <p className="text-white/70 text-xs sm:text-sm">AI-powered image creation</p>
+                <h3 className="text-white/90 text-xs sm:text-sm font-medium mb-1 sm:mb-2">바로 시작</h3>
+                <p className="text-white text-sm sm:text-lg md:text-xl lg:text-2xl font-extrabold leading-tight mb-1">이미지 생성하기</p>
+                <p className="text-white/70 text-xs sm:text-sm">AI로 이미지를 제작하세요</p>
               </div>
               <a href="/create/images" className="mt-2 sm:mt-4 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-4 py-2 sm:px-6 sm:py-3 text-xs sm:text-sm transition">
-                Create Images
+                이미지 생성하기
               </a>
             </div>
           </div>
@@ -453,7 +474,7 @@ const resumeAutoplay = () => {
                       
                             video.muted = true;
                           }}
-                          onLoadedData={(e) => {
+                          onLoadedData={() => {
                           }}
                           onError={(e) => {
                             console.error('Video error:', e.currentTarget.error);
