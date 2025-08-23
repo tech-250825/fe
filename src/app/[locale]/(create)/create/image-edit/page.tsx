@@ -208,9 +208,10 @@ export default function ImageEditPage() {
   const handleImageEdit = async (
     prompt: string,
     options: ImageOptions,
-    imageFile?: File
+    imageFile?: File,
+    libraryImageUrl?: string
   ) => {
-    if (!imageFile) {
+    if (!imageFile && !libraryImageUrl) {
       toast.error(t("messages.selectImageFirst"));
       return;
     }
@@ -239,19 +240,30 @@ export default function ImageEditPage() {
 
     try {
       const resolutionProfile = getResolutionProfile(options.aspectRatio, options.quality);
-      const loraId = selectedModel?.id || 1;
 
-      const formData = new FormData();
-      formData.append("image", imageFile);
-
-      const requestPayload = {
+      // Build request payload for img2img - no checkpointId/loraId needed
+      let requestPayload: any = {
         prompt: prompt,
         resolutionProfile: resolutionProfile,
       };
 
-      formData.append("request", JSON.stringify(requestPayload));
+      let response;
 
-      const response = await api.postForm(`${config.apiUrl}/api/img2img/create`, formData);
+      if (imageFile) {
+        // File upload approach - use FormData
+        const formData = new FormData();
+        formData.append("image", imageFile);
+        formData.append("request", JSON.stringify(requestPayload));
+        
+        response = await api.postForm(`${config.apiUrl}/api/img2img/create`, formData);
+      } else if (libraryImageUrl) {
+        // URL approach - use JSON payload
+        requestPayload.imageUrl = libraryImageUrl;
+        
+        response = await api.post(`${config.apiUrl}/api/img2img/create`, requestPayload);
+      } else {
+        throw new Error("No image provided");
+      }
 
       if (response.ok) {
         const backendResponse: BackendResponse<any> = await response.json();

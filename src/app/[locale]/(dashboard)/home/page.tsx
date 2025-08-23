@@ -343,7 +343,7 @@ const resumeAutoplay = () => {
                             }}
                             className="bg-white text-black hover:bg-white/90 font-semibold px-6 py-2 pointer-events-auto"
                           >
-                            Try Image Edit
+                            이미지 편집하러 가기
                           </Button>
                         </div>
                       </div>
