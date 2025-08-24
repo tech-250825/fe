@@ -138,21 +138,35 @@ export function VideoGenerationChatBar({
 
   const handleImageUpload = useCallback((file: File) => {
     if (file && file.type.startsWith("image/")) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setUploadedImage(reader.result as string);
-        setUploadedImageFile(file);
-        setSelectedImageFromLibrary(null); // Clear library selection
-        setRecreateImageUrl(null); // Clear recreate image URL
-        setMode("i2v");
-        setSelections((prev) => ({
-          ...prev,
-          style: null,
-          character: null,
-          aspectRatio: "1:1" as "1:1" | "16:9" | "9:16",
-        }));
+      const img = new Image();
+      img.onload = () => {
+        const pixelCount = img.width * img.height;
+        const maxPixels = 2000000; // 2M 픽셀 (예: 1414x1414)
+        
+        if (pixelCount > maxPixels) {
+          toast.error("이미지가 너무 큽니다. 더 작은 이미지를 사용해주세요.");
+          URL.revokeObjectURL(img.src);
+          return;
+        }
+        
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setUploadedImage(reader.result as string);
+          setUploadedImageFile(file);
+          setSelectedImageFromLibrary(null); // Clear library selection
+          setRecreateImageUrl(null); // Clear recreate image URL
+          setMode("i2v");
+          setSelections((prev) => ({
+            ...prev,
+            style: null,
+            character: null,
+            aspectRatio: "1:1" as "1:1" | "16:9" | "9:16",
+          }));
+          toast.success("이미지가 업로드되었습니다.");
+        };
+        reader.readAsDataURL(file);
       };
-      reader.readAsDataURL(file);
+      img.src = URL.createObjectURL(file);
     } else {
       // Show error toast for non-image files
       toast.error(t("chatBar.uploadError"));
