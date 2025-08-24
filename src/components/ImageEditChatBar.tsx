@@ -66,10 +66,23 @@ export function ImageEditChatBar({
   /** ----- Image Upload Common ----- */
   const handleImageUpload = useCallback((file: File) => {
     if (file && file.type.startsWith("image/")) {
-      setUploadedImageFile(file);
-      setUploadedImagePreview(URL.createObjectURL(file));
-      setLibraryImageUrl(null); // Clear library image URL when uploading new file
-      toast.success("이미지가 업로드되었습니다.");
+      const img = new Image();
+      img.onload = () => {
+        const pixelCount = img.width * img.height;
+        const maxPixels = 2000000; // 2M 픽셀 (예: 1414x1414)
+        
+        if (pixelCount > maxPixels) {
+          toast.error("이미지가 너무 큽니다. 더 작은 이미지를 사용해주세요.");
+          URL.revokeObjectURL(img.src);
+          return;
+        }
+        
+        setUploadedImageFile(file);
+        setUploadedImagePreview(URL.createObjectURL(file));
+        setLibraryImageUrl(null); // Clear library image URL when uploading new file
+        toast.success("이미지가 업로드되었습니다.");
+      };
+      img.src = URL.createObjectURL(file);
     } else {
       toast.error("이미지 파일만 업로드 가능합니다.");
     }
