@@ -289,7 +289,7 @@ export function ModelSelectionModal({
               }
               className="flex space-x-2"
             >
-              {[4, 6, 8].map((sec) => (
+              {[4, 6].map((sec) => (
                 <Label
                   key={sec}
                   htmlFor={`sec-${sec}`}
