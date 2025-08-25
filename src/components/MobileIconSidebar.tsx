@@ -71,12 +71,12 @@ export function MobileIconSidebar() {
       icon: ImageIcon,
       type: "tool",
     },
-    {
-      title: t("tools.videoBoards"),
-      url: "/boards",
-      icon: Folder,
-      type: "tool",
-    },
+    // {
+    //   title: t("tools.videoBoards"),
+    //   url: "/boards",
+    //   icon: Folder,
+    //   type: "tool",
+    // },
     {
       title: t("navigation.library"),
       url: "/library",

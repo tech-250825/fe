@@ -110,11 +110,11 @@ export function AppSidebar() {
       url: "/create/videos",
       icon: Video,
     },
-    {
-      title: t("tools.videoBoards"),
-      url: "/boards",
-      icon: Folder,
-    },
+    // {
+    //   title: t("tools.videoBoards"),
+    //   url: "/boards",
+    //   icon: Folder,
+    // },
     // {
     //   title: t("tools.trainCharacters"),
     //   url: "/create/characters",
