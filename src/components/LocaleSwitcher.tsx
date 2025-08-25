@@ -97,11 +97,11 @@ export default function LocaleSwitcherDropdown({
     onLanguageChange?.();
   };
 
-  // 언어 옵션들만 렌더링 (사이드바용)
+  // 언어 옵션들만 렌더링 (사이드바용) - 한국어 제외
   if (!showButton) {
     return (
       <>
-        {routing.locales.map((loc) => (
+        {routing.locales.filter(loc => loc !== 'ko').map((loc) => (
           <div
             key={loc}
             onClick={() => handleLocaleChange(loc)}
@@ -130,7 +130,7 @@ export default function LocaleSwitcherDropdown({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {routing.locales.map((loc) => (
+        {routing.locales.filter(loc => loc !== 'ko').map((loc) => (
           <DropdownMenuItem
             key={loc}
             onClick={() => handleLocaleChange(loc)}

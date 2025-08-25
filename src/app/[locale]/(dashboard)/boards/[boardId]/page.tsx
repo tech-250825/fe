@@ -2116,10 +2116,6 @@ export default function BoardPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="start" className="w-56">
-                        <DropdownMenuItem onClick={handleSelectFromComputer} className="flex items-center gap-2">
-                          <Upload className="h-4 w-4" />
-                          {t("menu.uploadFromComputer")}
-                        </DropdownMenuItem>
                         <DropdownMenuItem 
                           onClick={handleOpenImageLibrary}
                           className="flex items-center gap-2"

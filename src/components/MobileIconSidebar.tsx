@@ -16,6 +16,7 @@ import {
   Languages,
   LogOut,
   X,
+  Edit,
 } from "lucide-react";
 import { usePathname, Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
@@ -60,6 +61,12 @@ export function MobileIconSidebar() {
       type: "navigation",
     },
     {
+      title: t("tools.imageEdit"),
+      url: "/create/image-edit",
+      icon: Edit,
+      type: "tool",
+    },
+    {
       title: t("tools.createVideos"),
       url: "/create/videos",
       icon: Video,
@@ -71,12 +78,12 @@ export function MobileIconSidebar() {
       icon: ImageIcon,
       type: "tool",
     },
-    // {
-    //   title: t("tools.videoBoards"),
-    //   url: "/boards",
-    //   icon: Folder,
-    //   type: "tool",
-    // },
+    {
+      title: t("tools.videoBoards"),
+      url: "/boards",
+      icon: Folder,
+      type: "tool",
+    },
     {
       title: t("navigation.library"),
       url: "/library",
@@ -91,6 +98,7 @@ export function MobileIconSidebar() {
     if (url === "/profile") return pathname === "/profile";
     if (url === "/library") return pathname === "/library";
     if (url === "/boards") return pathname === "/boards" || pathname.startsWith("/boards/");
+    if (url === "/create/image-edit") return pathname === "/create/image-edit";
     if (url === "/create/images") return pathname === "/create/images";
     if (url === "/create/videos") return pathname === "/create/videos";
     return pathname === url;

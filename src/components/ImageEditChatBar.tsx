@@ -65,31 +65,13 @@ export function ImageEditChatBar({
 
   /** ----- Image Upload Common ----- */
   const handleImageUpload = useCallback((file: File) => {
-    if (file && file.type.startsWith("image/")) {
-      const img = new Image();
-      img.onload = () => {
-        const pixelCount = img.width * img.height;
-        const maxPixels = 2000000; // 2M 픽셀 (예: 1414x1414)
-        
-        if (pixelCount > maxPixels) {
-          toast.error("이미지가 너무 큽니다. 더 작은 이미지를 사용해주세요.");
-          URL.revokeObjectURL(img.src);
-          return;
-        }
-        
-        setUploadedImageFile(file);
-        setUploadedImagePreview(URL.createObjectURL(file));
-        setLibraryImageUrl(null); // Clear library image URL when uploading new file
-        toast.success("이미지가 업로드되었습니다.");
-      };
-      img.src = URL.createObjectURL(file);
-    } else {
-      toast.error("이미지 파일만 업로드 가능합니다.");
-    }
+    // Disabled: Computer upload functionality hidden
+    toast.error("Computer upload is disabled. Please use images from your library.");
   }, []);
 
   const handleSelectFromComputer = useCallback(() => {
-    fileInputRef.current?.click();
+    // Disabled: Computer upload functionality hidden
+    toast.error("Computer upload is disabled. Please use images from your library.");
   }, []);
 
   const handleUseFromLibrary = useCallback(() => {
@@ -104,11 +86,10 @@ export function ImageEditChatBar({
 
   const handleFileInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (file) handleImageUpload(file);
-      if (fileInputRef.current) fileInputRef.current.value = "";
+      // Disabled: Computer upload functionality hidden
+      toast.error("Computer upload is disabled. Please use images from your library.");
     },
-    [handleImageUpload]
+    []
   );
 
   const handleRemoveImage = useCallback(() => {
@@ -145,7 +126,10 @@ export function ImageEditChatBar({
   const handleDragEvents = (e: React.DragEvent<HTMLDivElement>, isEntering: boolean) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsDragging(isEntering);
+    // Disabled: Drag and drop functionality hidden
+    if (isEntering) {
+      toast.error("Drag and drop is disabled. Please use images from your library.");
+    }
   };
 
   const handleDrop = useCallback(
@@ -153,33 +137,28 @@ export function ImageEditChatBar({
       e.preventDefault();
       e.stopPropagation();
       setIsDragging(false);
-      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-        handleImageUpload(e.dataTransfer.files[0]);
-        e.dataTransfer.clearData();
-      }
+      // Disabled: Drag and drop functionality hidden
+      toast.error("Drag and drop is disabled. Please use images from your library.");
     },
-    [handleImageUpload]
+    []
   );
 
   /** ----- Paste ----- */
   const handlePaste = useCallback(
     (e: ClipboardEvent) => {
+      // Disabled: Computer upload functionality hidden
       const items = e.clipboardData?.items;
       if (!items) return;
       for (let i = 0; i < items.length; i++) {
         const item = items[i];
         if (item.type.startsWith("image/")) {
           e.preventDefault();
-          const file = item.getAsFile();
-          if (file) {
-            handleImageUpload(file);
-            toast.success("클립보드 이미지를 불러왔습니다.");
-          }
+          toast.error("Paste upload is disabled. Please use images from your library.");
           break;
         }
       }
     },
-    [handleImageUpload]
+    []
   );
 
   useEffect(() => {
@@ -214,8 +193,8 @@ export function ImageEditChatBar({
           <div className="absolute inset-0 z-50 flex items-center justify-center bg-background/90 backdrop-blur-sm rounded-lg">
             <div className="text-center p-4 border-2 border-dashed border-primary rounded-lg">
               <ImageIcon className="mx-auto h-8 w-8 text-muted-foreground" />
-              <p className="mt-2 text-sm font-semibold">이미지를 여기로 드래그</p>
-              <p className="text-xs text-muted-foreground">자동으로 업로드됩니다</p>
+              <p className="mt-2 text-sm font-semibold">Computer upload disabled</p>
+              <p className="text-xs text-muted-foreground">Use images from your library</p>
             </div>
           </div>
         )}
@@ -254,9 +233,6 @@ export function ImageEditChatBar({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-56">
-              <DropdownMenuItem onClick={handleSelectFromComputer} className="flex items-center gap-2">
-                <Upload className="h-4 w-4" /> 컴퓨터에서 선택
-              </DropdownMenuItem>
               <DropdownMenuItem onClick={handleUseFromLibrary} className="flex items-center gap-2">
                 <FolderOpen className="h-4 w-4" /> 라이브러리에서 선택
               </DropdownMenuItem>

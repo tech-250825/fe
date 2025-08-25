@@ -137,40 +137,8 @@ export function VideoGenerationChatBar({
   }, [recreateData, styleModels, characterModels]);
 
   const handleImageUpload = useCallback((file: File) => {
-    if (file && file.type.startsWith("image/")) {
-      const img = new Image();
-      img.onload = () => {
-        const pixelCount = img.width * img.height;
-        const maxPixels = 2000000; // 2M 픽셀 (예: 1414x1414)
-        
-        if (pixelCount > maxPixels) {
-          toast.error("이미지가 너무 큽니다. 더 작은 이미지를 사용해주세요.");
-          URL.revokeObjectURL(img.src);
-          return;
-        }
-        
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setUploadedImage(reader.result as string);
-          setUploadedImageFile(file);
-          setSelectedImageFromLibrary(null); // Clear library selection
-          setRecreateImageUrl(null); // Clear recreate image URL
-          setMode("i2v");
-          setSelections((prev) => ({
-            ...prev,
-            style: null,
-            character: null,
-            aspectRatio: "1:1" as "1:1" | "16:9" | "9:16",
-          }));
-          toast.success("이미지가 업로드되었습니다.");
-        };
-        reader.readAsDataURL(file);
-      };
-      img.src = URL.createObjectURL(file);
-    } else {
-      // Show error toast for non-image files
-      toast.error(t("chatBar.uploadError"));
-    }
+    // Disabled: Computer upload functionality hidden
+    toast.error("Computer upload is disabled. Please use images from your library.");
   }, []);
 
   const handleRemoveImage = useCallback(() => {
@@ -217,25 +185,21 @@ export function VideoGenerationChatBar({
   }, []);
 
   const handleSelectFromComputer = useCallback(() => {
-    fileInputRef.current?.click();
+    // Disabled: Computer upload functionality hidden
+    toast.error("Computer upload is disabled. Please use images from your library.");
   }, []);
 
   const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      handleImageUpload(file);
-    }
-    // Reset the input value so the same file can be selected again
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  }, [handleImageUpload]);
+    // Disabled: Computer upload functionality hidden
+    toast.error("Computer upload is disabled. Please use images from your library.");
+  }, []);
 
   const handleUseFromLibrary = useCallback(() => {
     setIsLibraryModalOpen(true);
   }, []);
 
   const handlePaste = useCallback(async (e: ClipboardEvent) => {
+    // Disabled: Computer upload functionality hidden
     const items = e.clipboardData?.items;
     if (!items) return;
 
@@ -243,20 +207,11 @@ export function VideoGenerationChatBar({
       const item = items[i];
       if (item.type.startsWith('image/')) {
         e.preventDefault();
-        const file = item.getAsFile();
-        if (file) {
-          // Create a filename with timestamp for pasted images
-          const timestamp = new Date().getTime();
-          const newFile = new File([file], `pasted-image-${timestamp}.${file.type.split('/')[1]}`, {
-            type: file.type
-          });
-          handleImageUpload(newFile);
-          toast.success(t("toast.imagePastedSuccessfully"));
-        }
+        toast.error("Paste upload is disabled. Please use images from your library.");
         break;
       }
     }
-  }, [handleImageUpload]);
+  }, []);
 
   // Add paste event listener for clipboard images
   useEffect(() => {
@@ -288,13 +243,9 @@ export function VideoGenerationChatBar({
   ) => {
     e.preventDefault();
     e.stopPropagation();
+    // Disabled: Drag and drop functionality hidden
     if (isEntering) {
-      setIsDragging(true);
-    } else if (
-      e.relatedTarget === null ||
-      (e.relatedTarget as Node).parentElement !== e.currentTarget
-    ) {
-      setIsDragging(false);
+      toast.error("Drag and drop is disabled. Please use images from your library.");
     }
   };
 
@@ -303,12 +254,10 @@ export function VideoGenerationChatBar({
       e.preventDefault();
       e.stopPropagation();
       setIsDragging(false);
-      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-        handleImageUpload(e.dataTransfer.files[0]);
-        e.dataTransfer.clearData();
-      }
+      // Disabled: Drag and drop functionality hidden
+      toast.error("Drag and drop is disabled. Please use images from your library.");
     },
-    [handleImageUpload]
+    []
   );
 
   const handleBadgeRemove = (key: keyof VideoOptions) => {
@@ -448,9 +397,9 @@ export function VideoGenerationChatBar({
         >
           <div className="text-center p-4 border-2 border-dashed border-primary rounded-lg">
             <ImageIcon className="mx-auto h-8 w-8 text-muted-foreground" />
-            <p className="mt-2 text-sm font-semibold">{t("modal.dragDrop.dropImageHere")}</p>
+            <p className="mt-2 text-sm font-semibold">Computer upload disabled</p>
             <p className="text-xs text-muted-foreground">
-              {t("modal.dragDrop.toGenerateVideo")}
+              Use images from your library
             </p>
           </div>
         </div>
@@ -511,10 +460,6 @@ export function VideoGenerationChatBar({
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start" className="w-56">
-                    <DropdownMenuItem onClick={handleSelectFromComputer} className="flex items-center gap-2">
-                      <Upload className="h-4 w-4" />
-                      {t("chatBar.buttons.selectFromComputer")}
-                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={handleUseFromLibrary} className="flex items-center gap-2">
                       <FolderOpen className="h-4 w-4" />
                       {t("chatBar.buttons.useFromLibrary")}

@@ -21,14 +21,14 @@ export const viewport = {
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Hoit - AI Video Generation Platform',
-    default: 'Hoit - Create Stunning AI Videos from Text'
+    template: '%s | Katin - AI Video Generation Platform',
+    default: 'Katin - Create Stunning AI Videos from Text'
   },
-  description: "Create professional AI-powered videos from simple text descriptions. Advanced video generation with multiple styles, HD quality, and real-time preview. Try Hoit for free today.",
+  description: "Create professional AI-powered videos from simple text descriptions. Advanced video generation with multiple styles, HD quality, and real-time preview. Try Katin for free today.",
   keywords: ["AI video generation", "text to video", "AI video creator", "video generation AI", "automated video creation", "AI animation", "video maker"],
-  authors: [{ name: "Hoit Team" }],
-  creator: "Hoit",
-  publisher: "Hoit",
+  authors: [{ name: "Katin Team" }],
+  creator: "Katn",
+  publisher: "Katin",
   formatDetection: {
     email: false,
     address: false,

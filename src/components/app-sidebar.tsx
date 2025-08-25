@@ -110,11 +110,11 @@ export function AppSidebar() {
       url: "/create/videos",
       icon: Video,
     },
-    // {
-    //   title: t("tools.videoBoards"),
-    //   url: "/boards",
-    //   icon: Folder,
-    // },
+    {
+      title: t("tools.videoBoards"),
+      url: "/boards",
+      icon: Folder,
+    },
     // {
     //   title: t("tools.trainCharacters"),
     //   url: "/create/characters",
@@ -160,7 +160,7 @@ export function AppSidebar() {
         <div className="flex items-center px-4 py-2">
           <Link href="/home" className="cursor-pointer hover:opacity-80 transition-opacity">
             <div className="text-3xl font-extrabold text-sidebar-foreground tracking-tight">
-              Hoit
+              Katin
             </div>
           </Link>
         </div>
