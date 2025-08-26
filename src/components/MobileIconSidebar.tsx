@@ -17,6 +17,7 @@ import {
   LogOut,
   X,
   Edit,
+  Coins, // 크레딧 아이콘 추가
 } from "lucide-react";
 import { usePathname, Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
@@ -46,7 +47,7 @@ const DiscordIcon = ({ className }: { className?: string }) => (
 export function MobileIconSidebar() {
   const t = useTranslations("Sidebar");
   const { theme, toggleTheme } = useTheme();
-  const { isLoggedIn, userName, handleLogout } = useAuth();
+  const { isLoggedIn, userName, handleLogout, userProfile } = useAuth();
   const pathname = usePathname();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isMenuModalOpen, setIsMenuModalOpen] = useState(false);
@@ -183,7 +184,12 @@ export function MobileIconSidebar() {
                 </Avatar>
                 <div className="flex-1">
                   <div className="font-semibold">{userName}</div>
-                  <div className="text-sm text-muted-foreground">{t("user.loggedIn")}</div>
+                  <div className="flex items-center gap-1">
+                    <Coins className="w-3 h-3 text-yellow-500" />
+                    <div className="text-sm text-muted-foreground">
+                      {userProfile?.credit?.toLocaleString() || '0'} credits
+                    </div>
+                  </div>
                 </div>
               </div>
             ) : (

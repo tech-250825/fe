@@ -2,8 +2,8 @@ import { defineRouting } from "next-intl/routing";
 import { createNavigation } from "next-intl/navigation";
 
 export const routing = defineRouting({
-  locales: ["ko", "en", "ja", "zh"],
-  defaultLocale: "ko",
+  locales: [ "en", "ja", "zh"],
+  defaultLocale: "en",
 });
 
 // Navigation APIs 생성 (최신 방식)

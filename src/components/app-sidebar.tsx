@@ -18,6 +18,7 @@ import {
   Folder, // 보드 아이콘 추가
   Gift, // Get Credits 아이콘 추가
   Edit, // 이미지 편집 아이콘 추가
+  Coins, // 크레딧 아이콘 추가
 } from "lucide-react";
 import { MessageCircle } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -65,7 +66,7 @@ import { GetCreditsModal } from "@/components/GetCreditsModal"; // Get Credits �
 
 export function AppSidebar() {
   const t = useTranslations("Sidebar");
-  const { isLoggedIn, userName, isLoading, handleLogout } = useAuth();
+  const { isLoggedIn, userName, isLoading, handleLogout, userProfile } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
 
@@ -287,11 +288,14 @@ export function AppSidebar() {
                         {getUserInitials(userName)}
                       </AvatarFallback>
                     </Avatar>
-                    <div className="flex flex-col items-start text-left">
+                    <div className="flex flex-col items-start text-left flex-1">
                       <span className="font-semibold text-sm">{userName}</span>
-                      <span className="text-xs text-sidebar-foreground/70">
-                        {t("user.loggedIn")}
-                      </span>
+                      <div className="flex items-center gap-1">
+                        <Coins className="w-3 h-3 text-yellow-500" />
+                        <span className="text-xs text-sidebar-foreground/70">
+                          {userProfile?.credit?.toLocaleString() || '0'} credits
+                        </span>
+                      </div>
                     </div>
                     <ChevronUp className="ml-auto" />
                   </SidebarMenuButton>
