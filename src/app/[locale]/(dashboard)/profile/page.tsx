@@ -10,11 +10,12 @@ import {
   Crown, 
   Activity, 
   Package, 
-  CreditCard 
+  CreditCard, 
+  UserX
 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { getProfile, getUserNameFromEmail, getInitialsFromEmail } from "@/lib/profile";
-import { BuyCreditsButton, LogoutButton } from "@/components/profile/ProfileClientActions";
+import { BuyCreditsButton, LogoutButton, WithdrawButton } from "@/components/profile/ProfileClientActions";
 
 export default async function ProfilePage() {
   const t = await getTranslations("Profile");
@@ -73,7 +74,7 @@ export default async function ProfilePage() {
                       <p className="text-muted-foreground text-sm">{profile.email}</p>
                     </div>
                     <p className="text-muted-foreground text-sm">
-                      {t("user.userId")}: {profile.id} • {t("user.joinedDate")}:{" "}
+                      {t("user.joinedDate")}:{" "}
                       {new Date().toLocaleDateString()}
                     </p>
                   </div>
@@ -122,106 +123,47 @@ export default async function ProfilePage() {
         </Card>
 
         {/* Account Management */}
-        <Card className="p-0">
-          <CardContent className="p-6">
-            <div className="mb-6 flex flex-col items-start justify-between gap-3 sm:flex-row">
-              <h2 className="text-lg font-semibold">{t("account.title")}</h2>
-            </div>
-            <div className="space-y-4">
-              <div className="flex flex-col items-start justify-between gap-3 border-b py-3 last:border-0 sm:flex-row sm:items-center">
-                <div className="flex items-center gap-3">
-                  <div className="bg-muted rounded-md p-2">
-                    <Crown className="text-muted-foreground size-4" />
-                  </div>
-                  <div>
-                    <p className="font-medium">{t("account.accountType.title")}</p>
-                    <p className="text-muted-foreground text-sm">
-                      {t("account.accountType.description")}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <Badge variant="outline">{t("account.accountType.badge")}</Badge>
-                  <Button variant="ghost" size="sm">
-                    <Package className="size-4" />
-                  </Button>
-                </div>
-              </div>
+{/* Account Management */}
+<Card className="p-0">
+  <CardContent className="p-6">
+    <h2 className="mb-6 text-lg font-semibold">{t("account.title")}</h2>
 
-              <div className="flex flex-col items-start justify-between gap-3 border-b py-3 last:border-0 sm:flex-row sm:items-center">
-                <div className="flex items-center gap-3">
-                  <div className="bg-muted rounded-md p-2">
-                    <Mail className="text-muted-foreground size-4" />
-                  </div>
-                  <div>
-                    <p className="font-medium">{t("account.email.title")}</p>
-                    <p className="text-muted-foreground text-sm">{profile.email}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <Badge variant="outline">{t("account.email.badge")}</Badge>
-                  <Button variant="ghost" size="sm">
-                    <Activity className="size-4" />
-                  </Button>
-                </div>
-              </div>
+    {/* 로그아웃 */}
+    <div className="flex flex-col items-start justify-between gap-3 border-b py-3 sm:flex-row sm:items-center">
+      <div className="flex items-center gap-3">
+        <div className="bg-muted rounded-md p-2">
+          <Mail className="text-muted-foreground size-4" />
+        </div>
+        <div>
+          <p className="font-medium">{t("account.logout.title")}</p>
+          <p className="text-muted-foreground text-sm">
+            {t("account.logout.description")}
+          </p>
+        </div>
+      </div>
+      <div className="flex items-center gap-4">
+        <LogoutButton />
+      </div>
+    </div>
 
-              <div className="flex flex-col items-start justify-between gap-3 border-b py-3 last:border-0 sm:flex-row sm:items-center">
-                <div className="flex items-center gap-3">
-                  <div className="bg-muted rounded-md p-2">
-                    <Calendar className="text-muted-foreground size-4" />
-                  </div>
-                  <div>
-                    <p className="font-medium">{t("account.joinDate.title")}</p>
-                    <p className="text-muted-foreground text-sm">
-                      {new Date().toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <Badge variant="outline">{t("account.joinDate.badge")}</Badge>
-                  <Button variant="ghost" size="sm">
-                    <Activity className="size-4" />
-                  </Button>
-                </div>
-              </div>
+    {/* 탈퇴 */}
+    <div className="flex flex-col items-start justify-between gap-3 border-b py-3 sm:flex-row sm:items-center">
+      <div className="flex items-center gap-3">
+        <div className="bg-red-50 rounded-md p-2">
+          <UserX className="text-red-500 size-4" />
+        </div>
+        <div>
+          <p className="font-medium text-red-600">{t("account.withdraw.title")}</p>
+          <p className="text-muted-foreground text-sm">{t("account.withdraw.description")}</p>
+        </div>
+      </div>
+      <div className="flex items-center gap-4">
+        <WithdrawButton userId={profile.id} />
+      </div>
+    </div>
+  </CardContent>
+</Card>
 
-              <div className="flex flex-col items-start justify-between gap-3 border-b py-3 last:border-0 sm:flex-row sm:items-center">
-                <div className="flex items-center gap-3">
-                  <div className="bg-muted rounded-md p-2">
-                    <Mail className="text-muted-foreground size-4" />
-                  </div>
-                  <div>
-                    <p className="font-medium">{t("account.logout.title")}</p>
-                    <p className="text-muted-foreground text-sm">
-                      {t("account.logout.description")}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <LogoutButton />
-                </div>
-              </div>
-
-              {/* Uncomment if withdraw functionality is needed
-              <div className="flex flex-col items-start justify-between gap-3 border-b py-3 last:border-0 sm:flex-row sm:items-center">
-                <div className="flex items-center gap-3">
-                  <div className="bg-red-50 rounded-md p-2">
-                    <UserX className="text-red-500 size-4" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-red-600">{t("account.withdraw.title")}</p>
-                    <p className="text-muted-foreground text-sm">{t("account.withdraw.description")}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <WithdrawButton userId={profile.id} />
-                </div>
-              </div>
-              */}
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );

@@ -101,7 +101,7 @@ export default function LocaleSwitcherDropdown({
   if (!showButton) {
     return (
       <>
-        {routing.locales.filter(loc => loc !== 'ko').map((loc) => (
+        {routing.locales.filter(loc => loc !== 'en').map((loc) => (
           <div
             key={loc}
             onClick={() => handleLocaleChange(loc)}
@@ -130,7 +130,7 @@ export default function LocaleSwitcherDropdown({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {routing.locales.filter(loc => loc !== 'ko').map((loc) => (
+        {routing.locales.filter(loc => loc !== 'en').map((loc) => (
           <DropdownMenuItem
             key={loc}
             onClick={() => handleLocaleChange(loc)}

@@ -17,10 +17,10 @@ interface OxaPayStatusResponse {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { trackId: string } }
+  { params }: { params: Promise<{ trackId: string }> }
 ) {
   try {
-    const { trackId } = params;
+    const { trackId } = await params;
 
     if (!trackId) {
       return NextResponse.json(
