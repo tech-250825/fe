@@ -91,6 +91,32 @@
       "clickToPlay": "Click to play",
       "by": "by",
       "author": "Author"
+    },
+    "announcement": {
+      "newFeature": "New Feature Released",
+      "imageEditTitle": "Image Editing Feature Released",
+      "imageEditDescription": "Transform your images with our new editing feature",
+      "goToImageEdit": "Start Image Editing"
+    },
+    "cta": {
+      "quickStart": "Quick Start",
+      "createVideoTitle": "Create Videos",
+      "createVideoDescription": "Generate animations with prompts",
+      "createVideoButton": "Create Videos",
+      "createImageTitle": "Create Images",
+      "createImageDescription": "Create images with AI",
+      "createImageButton": "Create Images"
+    },
+    "tabs": {
+      "all": "All",
+      "animation": "Animation", 
+      "videos": "Videos",
+      "images": "Images"
+    },
+    "content": {
+      "loadingMore": "Loading more content...",
+      "endOfContent": "You've reached the end!",
+      "recreate": "Recreate"
     }
   },
   "Sidebar": {

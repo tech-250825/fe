@@ -327,13 +327,13 @@ const resumeAutoplay = () => {
                         <div className="text-left">
                           <div className="mb-4">
                             <span className="inline-block px-3 py-1 bg-blue-500 text-white text-sm font-medium rounded-full mb-2">
-                              새로운 기능 출시
+                              {t("announcement.newFeature")}
                             </span>
                             <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">
-                              이미지 편집 기능 출시
+                              {t("announcement.imageEditTitle")}
                             </h3>
                             <p className="text-white/80 text-sm">
-                              이미지 에디팅으로 이미지를 바꿔보세요
+                              {t("announcement.imageEditDescription")}
                             </p>
                           </div>
                           <Button 
@@ -343,7 +343,7 @@ const resumeAutoplay = () => {
                             }}
                             className="bg-white text-black hover:bg-white/90 font-semibold px-6 py-2 pointer-events-auto"
                           >
-                            이미지 편집하러 가기
+                            {t("announcement.goToImageEdit")}
                           </Button>
                         </div>
                       </div>
@@ -367,23 +367,23 @@ const resumeAutoplay = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3 md:gap-4 lg:gap-6">
             <div className="rounded-lg bg-black/55 backdrop-blur-md border border-white/10 p-3 sm:p-4 md:p-6 shadow-lg flex flex-col justify-between h-[120px] sm:h-[150px] md:h-[200px]">
               <div>
-                <h3 className="text-white/90 text-xs sm:text-sm font-medium mb-1 sm:mb-2">바로 시작</h3>
-                <p className="text-white text-sm sm:text-lg md:text-xl lg:text-2xl font-extrabold leading-tight mb-1">비디오 생성하기</p>
-                <p className="text-white/70 text-xs sm:text-sm">프롬프트로 애니메이션 제작하세요</p>
+                <h3 className="text-white/90 text-xs sm:text-sm font-medium mb-1 sm:mb-2">{t("cta.quickStart")}</h3>
+                <p className="text-white text-sm sm:text-lg md:text-xl lg:text-2xl font-extrabold leading-tight mb-1">{t("cta.createVideoTitle")}</p>
+                <p className="text-white/70 text-xs sm:text-sm">{t("cta.createVideoDescription")}</p>
               </div>
               <a href="/create/videos" className="mt-2 sm:mt-4 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-4 py-2 sm:px-6 sm:py-3 text-xs sm:text-sm transition">
-                비디오 생성하기 
+                {t("cta.createVideoButton")}
               </a>
             </div>
 
             <div className="rounded-lg bg-black/55 backdrop-blur-md border border-white/10 p-3 sm:p-4 md:p-6 shadow-lg flex flex-col justify-between h-[120px] sm:h-[150px] md:h-[200px]">
               <div>
-                <h3 className="text-white/90 text-xs sm:text-sm font-medium mb-1 sm:mb-2">바로 시작</h3>
-                <p className="text-white text-sm sm:text-lg md:text-xl lg:text-2xl font-extrabold leading-tight mb-1">이미지 생성하기</p>
-                <p className="text-white/70 text-xs sm:text-sm">AI로 이미지를 제작하세요</p>
+                <h3 className="text-white/90 text-xs sm:text-sm font-medium mb-1 sm:mb-2">{t("cta.quickStart")}</h3>
+                <p className="text-white text-sm sm:text-lg md:text-xl lg:text-2xl font-extrabold leading-tight mb-1">{t("cta.createImageTitle")}</p>
+                <p className="text-white/70 text-xs sm:text-sm">{t("cta.createImageDescription")}</p>
               </div>
               <a href="/create/images" className="mt-2 sm:mt-4 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-4 py-2 sm:px-6 sm:py-3 text-xs sm:text-sm transition">
-                이미지 생성하기
+                {t("cta.createImageButton")}
               </a>
             </div>
           </div>
@@ -395,16 +395,16 @@ const resumeAutoplay = () => {
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "all" | "animation" | "videos" | "images")} className="w-full">
           <TabsList className="flex gap-1 sm:gap-2 md:gap-4">
             <TabsTrigger value="all" className="text-xs sm:text-sm font-medium">
-              All ({publicContent?.length || 0})
+              {t("tabs.all")} ({publicContent?.length || 0})
             </TabsTrigger>
             <TabsTrigger value="animation" className="text-xs sm:text-sm font-medium">
-              Animation ({publicContent?.filter(item => item.type === "video").length || 0})
+              {t("tabs.animation")} ({publicContent?.filter(item => item.type === "video").length || 0})
             </TabsTrigger>
             <TabsTrigger value="videos" className="text-xs sm:text-sm font-medium">
-              Videos ({publicContent?.filter(item => item.type === "video").length || 0})
+              {t("tabs.videos")} ({publicContent?.filter(item => item.type === "video").length || 0})
             </TabsTrigger>
             <TabsTrigger value="images" className="text-xs sm:text-sm font-medium">
-              Images ({publicContent?.filter(item => item.type === "image").length || 0})
+              {t("tabs.images")} ({publicContent?.filter(item => item.type === "image").length || 0})
             </TabsTrigger>
           </TabsList>
 
@@ -499,7 +499,7 @@ const resumeAutoplay = () => {
                         <div className={`px-2 py-1 rounded-full text-xs font-medium ${
                           isVideo ? 'bg-red-500 text-white' : 'bg-blue-500 text-white'
                         }`}>
-                          {isVideo ? 'Video' : 'Image'}
+                          {isVideo ? t("tabs.videos") : t("tabs.images")}
                         </div>
                       </div>
                       
@@ -522,7 +522,7 @@ const resumeAutoplay = () => {
                           className="text-xs h-7 px-2 bg-white/90 hover:bg-white text-black font-medium pointer-events-auto"
                         >
                           <Copy className="w-3 h-3 mr-1" />
-                          Recreate
+                          {t("content.recreate")}
                         </Button>
                       </div>
                     </div>
@@ -535,7 +535,7 @@ const resumeAutoplay = () => {
               <div className="text-center py-8">
                 <div className="inline-flex items-center gap-2 text-muted-foreground">
                   <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-                  Loading more content...
+                  {t("content.loadingMore")}
                 </div>
               </div>
             )}
@@ -543,7 +543,7 @@ const resumeAutoplay = () => {
             {!hasMore && getTabContent().length > 0 && (
               <div className="text-center py-8">
                 <div className="text-sm text-muted-foreground">
-                  You've reached the end!
+                  {t("content.endOfContent")}
                 </div>
               </div>
             )}

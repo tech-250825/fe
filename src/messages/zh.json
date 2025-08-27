@@ -91,6 +91,32 @@
       "clickToPlay": "点击播放",
       "by": "作者",
       "author": "作者"
+    },
+    "announcement": {
+      "newFeature": "新功能发布",
+      "imageEditTitle": "图像编辑功能已发布",
+      "imageEditDescription": "使用新的编辑功能来变换您的图像",
+      "goToImageEdit": "开始图像编辑"
+    },
+    "cta": {
+      "quickStart": "快速开始",
+      "createVideoTitle": "创建视频",
+      "createVideoDescription": "用提示词制作动画",
+      "createVideoButton": "创建视频",
+      "createImageTitle": "创建图像",
+      "createImageDescription": "用AI制作图像",
+      "createImageButton": "创建图像"
+    },
+    "tabs": {
+      "all": "全部",
+      "animation": "动画", 
+      "videos": "视频",
+      "images": "图像"
+    },
+    "content": {
+      "loadingMore": "加载更多内容中...",
+      "endOfContent": "已到达底部！",
+      "recreate": "重新创建"
     }
   },
   "Sidebar": {

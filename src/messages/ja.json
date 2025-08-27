@@ -91,6 +91,32 @@
       "clickToPlay": "クリックして再生",
       "by": "作者",
       "author": "作者"
+    },
+    "announcement": {
+      "newFeature": "新機能リリース",
+      "imageEditTitle": "画像編集機能がリリースされました",
+      "imageEditDescription": "新しい編集機能で画像を変換してみましょう",
+      "goToImageEdit": "画像編集を始める"
+    },
+    "cta": {
+      "quickStart": "クイックスタート",
+      "createVideoTitle": "動画作成",
+      "createVideoDescription": "プロンプトでアニメーション制作",
+      "createVideoButton": "動画を作成",
+      "createImageTitle": "画像作成",
+      "createImageDescription": "AIで画像を制作",
+      "createImageButton": "画像を作成"
+    },
+    "tabs": {
+      "all": "すべて",
+      "animation": "アニメーション", 
+      "videos": "動画",
+      "images": "画像"
+    },
+    "content": {
+      "loadingMore": "コンテンツを読み込み中...",
+      "endOfContent": "すべて表示しました！",
+      "recreate": "再作成"
     }
   },
   "Sidebar": {

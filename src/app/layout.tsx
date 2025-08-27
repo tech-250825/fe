@@ -34,14 +34,13 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://hoit.ai.kr'),
+  metadataBase: new URL('https://katin.org'),
   alternates: {
-    canonical: 'https://hoit.ai.kr',
+    canonical: 'https://katin.org',
     languages: {
-      'ko': 'https://hoit.ai.kr/ko',
-      'en': 'https://hoit.ai.kr/en',
-      'ja': 'https://hoit.ai.kr/ja',
-      'zh': 'https://hoit.ai.kr/zh',
+      'en': 'https://katin.org/en',
+      'ja': 'https://katin.org/ja',
+      'zh': 'https://katin.org/zh',
     },
   },
   robots: {
@@ -58,16 +57,16 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'ko_KR',
-    url: 'https://hoit.ai.kr',
-    siteName: 'Hoit - AI Video Generation Platform',
-    title: 'Hoit - Create Stunning AI Videos from Text',
+    url: 'https://katin.org',
+    siteName: 'Katin - AI Video Generation Platform',
+    title: 'Katin - Create Stunning AI Videos from Text',
     description: 'Create professional AI-powered videos from simple text descriptions. Advanced video generation with multiple styles and HD quality.',
     images: [
       {
         url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'Hoit AI Video Generation Platform',
+        alt: 'Katin AI Video Generation Platform',
       },
     ],
   },
