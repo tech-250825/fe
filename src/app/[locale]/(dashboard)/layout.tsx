@@ -68,7 +68,7 @@ export default function DashboardLayout({
         <main className="flex-1 md:ml-0 px-4">
           {/* Mobile header with just title */}
           <div className="md:hidden flex items-center justify-center p-4 border-b bg-card">
-            <h1 className="text-2xl font-bold text-foreground">Hoit</h1>
+            <h1 className="text-2xl font-bold text-foreground">Katin</h1>
           </div>
           <div className="flex-1 overflow-y-auto">{children}</div>
         </main>
