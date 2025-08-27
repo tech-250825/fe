@@ -26,6 +26,8 @@ import { LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { VideoTutorial } from "@/components/VideoTutorial";
 import { CreditInsufficientModal } from "@/components/CreditInsufficientModal";
+import AgeVerificationDialog from "@/components/AgeVerificationDialog";
+import { useAgeVerification } from "@/hooks/useAgeVerification";
 
 export default function CreatePage() {
   const t = useTranslations("VideoCreation");
@@ -34,6 +36,7 @@ export default function CreatePage() {
   const taskId = searchParams.get("taskId"); // URL에서 taskId 읽기
   const { isLoggedIn, userName, memberId } = useAuth();
   const { isConnected, notifications } = useSSE(); // lastNotification 제거
+  const { showVerificationDialog, isVerified, handleVerificationSuccess, closeVerificationDialog } = useAgeVerification();
 
   //   const listRef = useRef(null)
   const [isGenerating, setIsGenerating] = useState(false);
@@ -755,6 +758,13 @@ export default function CreatePage() {
       <VideoTutorial
         isOpen={showTutorial}
         onClose={() => setShowTutorial(false)}
+      />
+      
+      {/* Age Verification Dialog */}
+      <AgeVerificationDialog
+        isOpen={showVerificationDialog}
+        onClose={closeVerificationDialog}
+        onVerified={handleVerificationSuccess}
       />
       
       {/* Credit Insufficient Modal */}

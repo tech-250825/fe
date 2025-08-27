@@ -25,6 +25,8 @@ import { LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { handleApiResponse, handleNetworkError } from "@/lib/utils/errorHandler";
 import { CreditInsufficientModal } from "@/components/CreditInsufficientModal";
+import AgeVerificationDialog from "@/components/AgeVerificationDialog";
+import { useAgeVerification } from "@/hooks/useAgeVerification";
 
 export default function CreateImagesPage() {
   const t = useTranslations("VideoCreation");
@@ -34,6 +36,7 @@ export default function CreateImagesPage() {
   const taskId = searchParams.get("taskId");
   const { isLoggedIn, userName, memberId } = useAuth();
   const { isConnected, notifications } = useSSE();
+  const { showVerificationDialog, isVerified, handleVerificationSuccess, closeVerificationDialog } = useAgeVerification();
 
   const [isGenerating, setIsGenerating] = useState(false);
   const [taskList, setTaskList] = useState<ImageItem[]>([]);
@@ -741,6 +744,13 @@ export default function CreateImagesPage() {
         recreateData={recreateData}
       />
       
+      {/* Age Verification Dialog */}
+      <AgeVerificationDialog
+        isOpen={showVerificationDialog}
+        onClose={closeVerificationDialog}
+        onVerified={handleVerificationSuccess}
+      />
+
       {/* Credit Insufficient Modal */}
       <CreditInsufficientModal
         isOpen={showCreditModal}

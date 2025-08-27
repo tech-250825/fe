@@ -18,6 +18,7 @@ interface UserProfile {
   email: string;
   profileImage: string;
   credit: number;
+  role?: string; // USER, ADMIN 등
 }
 
 export const useAuth = () => {
