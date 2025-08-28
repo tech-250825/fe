@@ -86,7 +86,7 @@ const MinimalistLandingPage: React.FC = () => {
             <LocaleSwitcher />
             {/* Discord Button */}
             <a
-              href="https://discord.gg/hpmPdaysuR"
+              href="https://t.me/+r0oBvmb0rb43ZTVl"
               target="_blank"
               rel="noopener noreferrer"
               className="p-2 rounded-full hover:bg-white/10 transition-colors text-white hover:text-gray-200 inline-block"

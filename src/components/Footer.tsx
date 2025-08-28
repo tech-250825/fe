@@ -48,7 +48,7 @@ export default function Footer() {
               <a href="https://x.com/han1000llm" className="text-gray-400 hover:text-white transition-colors">
                 <Twitter className="w-5 h-5" />
               </a>
-              <a href="https://discord.gg/hpmPdaysuR" className="text-gray-400 hover:text-white transition-colors">
+              <a href="https://t.me/+r0oBvmb0rb43ZTVl" className="text-gray-400 hover:text-white transition-colors">
                 <DiscordIcon className="w-5 h-5" />
               </a>
               <a href="https://www.instagram.com/hoitstudio/" className="text-gray-400 hover:text-white transition-colors">
