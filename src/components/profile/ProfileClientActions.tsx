@@ -1,24 +1,34 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CreditCard, LogOut } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { config } from "@/config";
 import { useTranslations } from "next-intl";
+import { GetCreditsModal } from "@/components/GetCreditsModal";
 
 export const BuyCreditsButton: React.FC = () => {
   const t = useTranslations("Profile");
+  const [showModal, setShowModal] = useState(false);
 
   const handleBuyCredits = () => {
-    toast.info(t("messages.creditsPending"));
+    setShowModal(true);
   };
 
   return (
-    <Button onClick={handleBuyCredits} className="bg-blue-600 hover:bg-blue-700">
-      <CreditCard className="mr-2 size-4" />
-      {t("credit.purchase")}
-    </Button>
+    <>
+      <Button onClick={handleBuyCredits} className="bg-blue-600 hover:bg-blue-700">
+        <CreditCard className="mr-2 size-4" />
+        {t("credit.purchase")}
+      </Button>
+      
+      <GetCreditsModal 
+        isOpen={showModal} 
+        onClose={() => setShowModal(false)} 
+      />
+    </>
   );
 };
 
