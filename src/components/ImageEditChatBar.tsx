@@ -8,16 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import type { ImageOptions } from "@/services/types/image.types";
-import { Send, ImageIcon, X, Upload, FolderOpen } from "lucide-react";
+import { Send, ImageIcon, X, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { ImageLibraryModal } from "@/components/ImageLibraryModal";
 
 const defaultOptions: ImageOptions = {
@@ -225,19 +219,15 @@ export function ImageEditChatBar({
 
 
 
-          {/* 이미지 아이콘 메뉴 */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="hover:bg-blue-500/10 hover:text-blue-600">
-                <ImageIcon className="h-5 w-5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-56">
-              <DropdownMenuItem onClick={handleUseFromLibrary} className="flex items-center gap-2">
-                <FolderOpen className="h-4 w-4" /> 라이브러리에서 선택
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* 이미지 아이콘 - 직접 라이브러리 모달 열기 */}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="hover:bg-blue-500/10 hover:text-blue-600"
+            onClick={handleUseFromLibrary}
+          >
+            <ImageIcon className="h-5 w-5" />
+          </Button>
 
           <Input
             ref={inputRef}
