@@ -20,6 +20,7 @@ import { api } from "@/lib/auth/apiClient";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { getResolutionProfile } from "@/lib/types";
+import { AuthGuard } from "@/components/auth/AuthGuard";
 import { LoginModal } from "@/components/login-modal";
 import { LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -708,21 +709,8 @@ export default function CreateImagesPage() {
     return `${width}x${height}`;
   };
 
-  if (!isLoggedIn) {
-    return (
-      <>
-        <div className="flex items-center justify-center min-h-screen">
-          <p className="text-muted-foreground">{t("loginRequired")}</p>
-        </div>
-        <LoginModal
-          isOpen={true}
-          onClose={() => {}}
-        />
-      </>
-    );
-  }
-
   return (
+    <AuthGuard>
     <>
       <ImageList
         taskList={taskList}
@@ -774,5 +762,6 @@ export default function CreateImagesPage() {
         );
       })()}
     </>
+    </AuthGuard>
   );
 }

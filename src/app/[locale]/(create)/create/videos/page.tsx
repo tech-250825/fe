@@ -21,6 +21,7 @@ import { api } from "@/lib/auth/apiClient";
 import type { ImageItem } from "@/services/types/image.types";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
+import { AuthGuard } from "@/components/auth/AuthGuard";
 import { LoginModal } from "@/components/login-modal";
 import { LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -719,21 +720,8 @@ export default function CreatePage() {
     router.push("/create/videos");
   };
 
-  if (!isLoggedIn) {
-    return (
-      <>
-        <div className="flex items-center justify-center min-h-screen">
-          <p className="text-muted-foreground">{t("loginRequired")}</p>
-        </div>
-        <LoginModal
-          isOpen={true}
-          onClose={() => {}}
-        />
-      </>
-    );
-  }
-
   return (
+    <AuthGuard>
     <>
       <VideoList
         taskList={taskList}
@@ -802,5 +790,6 @@ export default function CreatePage() {
         );
       })()}
     </>
+    </AuthGuard>
   );
 }

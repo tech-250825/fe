@@ -81,7 +81,7 @@ export const generateOrganizationSchema = () => ({
     availableLanguage: ['Korean', 'English', 'Japanese', 'Chinese'],
   },
   sameAs: [
-    'https://discord.gg/hpmPdaysuR',
+    'https://t.me/+r0oBvmb0rb43ZTVl',
     'https://instagram.com/hoit.studio',
   ],
 });

@@ -39,7 +39,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
           <div>
-            <div className="text-2xl font-bold text-white mb-4">Hoit</div>
+            <div className="text-2xl font-bold text-white mb-4">Katin</div>
             <p className="text-gray-400 mb-6 leading-relaxed">
               Transform your ideas into stunning AI-powered animations. Create professional videos 
               and images with our cutting-edge artificial intelligence platform.
@@ -48,7 +48,7 @@ export default function Footer() {
               <a href="https://x.com/han1000llm" className="text-gray-400 hover:text-white transition-colors">
                 <Twitter className="w-5 h-5" />
               </a>
-              <a href="https://discord.gg/hpmPdaysuR" className="text-gray-400 hover:text-white transition-colors">
+              <a href="https://t.me/+r0oBvmb0rb43ZTVl" className="text-gray-400 hover:text-white transition-colors">
                 <DiscordIcon className="w-5 h-5" />
               </a>
               <a href="https://www.instagram.com/hoitstudio/" className="text-gray-400 hover:text-white transition-colors">
@@ -84,48 +84,6 @@ export default function Footer() {
               <li><a href="/changelog" className="text-gray-400 hover:text-white transition-colors">Changelog</a></li>
             </ul>
           </div> */}
-
-          {/* Company Information */}
-          <div>
-            <h4 className="text-white font-semibold mb-6">회사 정보</h4>
-            <div className="space-y-3 text-sm">
-              <div>
-                <span className="text-gray-400">대표: </span>
-                <span className="text-white">김민재</span>
-              </div>
-              <div>
-                <span className="text-gray-400">사업자등록번호: </span>
-                <span className="text-white">109-43-51540</span>
-              </div>
-              <div>
-                <span className="text-gray-400">개인정보책임자: </span>
-                <span className="text-white">김민재</span>
-              </div>
-              <div>
-                <span className="text-gray-400">호스팅 서비스: </span>
-                <span className="text-white">호잇 스튜디오</span>
-              </div>
-            </div>
-            
-            <div className="mt-8">
-              <h5 className="text-white font-semibold mb-4">연락처</h5>
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center">
-                  <Mail className="w-4 h-4 mr-2" />
-                  <a href="mailto:han1000llm@gmail.com" className="text-gray-400 hover:text-white transition-colors">
-                    han1000llm@gmail.com
-                  </a>
-                </div>
-                <div className="flex items-start">
-                  <MapPin className="w-4 h-4 mr-2 mt-0.5" />
-                  <span className="text-gray-400">
-                    서울시 성북구 동소문로 63<br />
-                    드림트리 빌딩
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -134,17 +92,17 @@ export default function Footer() {
         <div className="container mx-auto px-6 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="text-gray-400 text-sm">
-              © {new Date().getFullYear()} Hoit, Inc. All rights reserved.
+              © {new Date().getFullYear()} Katin, Inc. All rights reserved.
             </div>
             <div className="flex flex-wrap gap-6 text-sm">
               <a href="/privacy-policy" className="text-gray-400 hover:text-white transition-colors">
-                개인정보 처리방침
+                Privacy Policy
               </a>
               <a href="/terms-of-service" className="text-gray-400 hover:text-white transition-colors">
-                서비스 이용약관
+                Service Term
               </a>
               <a href="/contact" className="text-gray-400 hover:text-white transition-colors">
-                문의하기
+                Contact Us
               </a>
             </div>
           </div>

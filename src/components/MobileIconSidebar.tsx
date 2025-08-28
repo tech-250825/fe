@@ -264,7 +264,7 @@ export function MobileIconSidebar() {
             {/* Discord */}
             <Button
               onClick={() => {
-                window.open('https://discord.gg/hpmPdaysuR', '_blank');
+                window.open('https://t.me/+r0oBvmb0rb43ZTVl', '_blank');
                 setIsMenuModalOpen(false);
               }}
               className="w-full justify-start h-12"

@@ -7,15 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import type { VideoOptions, GenerationMode } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { Settings2, Send, X, ImageIcon, Sparkles, Images, Upload, FolderOpen } from "lucide-react";
+import { Settings2, Send, X, ImageIcon, Sparkles, Images, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { ImageLibraryModal } from "@/components/ImageLibraryModal";
@@ -448,24 +442,15 @@ export function VideoGenerationChatBar({
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="hover:bg-blue-500/10 hover:text-blue-600"
-                    >
-                      <ImageIcon className="h-5 w-5" />
-                      <span className="sr-only">{t("badges.imageToVideo")}</span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-56">
-                    <DropdownMenuItem onClick={handleUseFromLibrary} className="flex items-center gap-2">
-                      <FolderOpen className="h-4 w-4" />
-                      {t("chatBar.buttons.useFromLibrary")}
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="hover:bg-blue-500/10 hover:text-blue-600"
+                  onClick={handleUseFromLibrary}
+                >
+                  <ImageIcon className="h-5 w-5" />
+                  <span className="sr-only">{t("badges.imageToVideo")}</span>
+                </Button>
               </TooltipTrigger>
               <TooltipContent>
                 <p className="max-w-xs text-center">{t("settings.tooltips.imageUploadTooltip")}</p>

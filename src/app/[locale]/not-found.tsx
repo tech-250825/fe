@@ -63,7 +63,7 @@ export default function LocaleNotFound() {
               href="/" 
               className="font-semibold text-foreground hover:text-primary transition-colors"
             >
-              Hoit
+              Katin
             </Link>
           </p>
         </div>

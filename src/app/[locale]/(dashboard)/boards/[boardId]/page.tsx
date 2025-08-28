@@ -16,6 +16,7 @@ import { api } from "@/lib/auth/apiClient";
 import type { ImageItem } from "@/services/types/image.types";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
+import { AuthGuard } from "@/components/auth/AuthGuard";
 import { LoginModal } from "@/components/login-modal";
 import { Button } from "@/components/ui/button";
 import { CreditInsufficientModal } from "@/components/CreditInsufficientModal";
@@ -1593,32 +1594,16 @@ export default function BoardPage() {
     };
   }, []);
 
-  if (!isLoggedIn) {
-    return (
-      <>
-        <div className="flex items-center justify-center min-h-screen">
-          <p className="text-muted-foreground">{t("loginRequired")}</p>
-        </div>
-        <LoginModal
-          isOpen={true}
-          onClose={() => {}}
-        />
-      </>
-    );
-  }
-
-  if (boardLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="w-8 h-8 border-2 border-muted-foreground border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">{t("loadingBoard")}</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
+    <AuthGuard>
+      {boardLoading ? (
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="w-8 h-8 border-2 border-muted-foreground border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-muted-foreground">{t("loadingBoard")}</p>
+          </div>
+        </div>
+      ) : (
     <div className="flex flex-col h-screen bg-background overflow-hidden">
       {/* 상단 툴바 */}
       <div className="bg-card border-b border-border px-4 py-2 flex items-center justify-between flex-shrink-0">
@@ -2305,5 +2290,7 @@ export default function BoardPage() {
         onClose={() => setShowCreditModal(false)}
       />
     </div>
+      )}
+    </AuthGuard>
   );
 }

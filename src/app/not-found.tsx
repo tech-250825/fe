@@ -55,7 +55,7 @@ export default function NotFound() {
               href="/" 
               className="font-semibold text-foreground hover:text-primary transition-colors"
             >
-              Hoit
+              Katin
             </a>
           </p>
         </div>

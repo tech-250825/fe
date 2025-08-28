@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import type { Board, BoardListResponse, CreateBoardRequest, CreateBoardResponse } from "@/lib/types";
+import { AuthGuard } from "@/components/auth/AuthGuard";
 import { LoginModal } from "@/components/login-modal";
 import { LogIn } from "lucide-react";
 
@@ -100,21 +101,8 @@ export default function BoardsPage() {
     }
   }, [isLoggedIn]);
 
-  if (!isLoggedIn) {
-    return (
-      <>
-        <div className="flex items-center justify-center min-h-screen">
-          <p className="text-muted-foreground">{t("loginRequired")}</p>
-        </div>
-        <LoginModal
-          isOpen={true}
-          onClose={() => {}}
-        />
-      </>
-    );
-  }
-
   return (
+    <AuthGuard>
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
@@ -265,5 +253,6 @@ export default function BoardsPage() {
         </DialogContent>
       </Dialog>
     </div>
+    </AuthGuard>
   );
 }

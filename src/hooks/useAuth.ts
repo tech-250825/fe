@@ -22,13 +22,7 @@ interface UserProfile {
 }
 
 export const useAuth = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userName, setUserName] = useState<string>("");
-  const [memberId, setMemberId] = useState<string | null>(null);
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // 쿠키에서 값을 읽는 함수
+    // ⬇️ 먼저 쿠키 읽는 함수 선언
   const getCookie = (name: string): string | null => {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
@@ -36,12 +30,7 @@ export const useAuth = () => {
     return null;
   };
 
-  // 쿠키를 삭제하는 함수 (로그아웃용)
-  const deleteCookie = (name: string) => {
-    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-  };
-
-  // JWT 토큰에서 사용자 정보를 디코드하는 함수
+  // ⬇️ 먼저 JWT 디코드 함수 선언
   const decodeJWT = (token: string) => {
     try {
       const base64Url = token.split(".")[1];
@@ -49,9 +38,7 @@ export const useAuth = () => {
       const jsonPayload = decodeURIComponent(
         atob(base64)
           .split("")
-          .map(function (c) {
-            return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-          })
+          .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
           .join(""),
       );
       return JSON.parse(jsonPayload);
@@ -60,6 +47,56 @@ export const useAuth = () => {
       return null;
     }
   };
+  // ✅ 이제 여기서 초기값 계산 가능
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
+    const token = getCookie("_hoauth");
+    if (!token) return false;
+
+    const decoded = decodeJWT(token);
+    if (decoded && decoded.exp * 1000 > Date.now()) {
+      return true;
+    }
+    return false;
+  });
+
+  const [userName, setUserName] = useState<string>("");
+  const [memberId, setMemberId] = useState<string | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+
+  // 쿠키에서 값을 읽는 함수
+  // const getCookie = (name: string): string | null => {
+  //   const value = `; ${document.cookie}`;
+  //   const parts = value.split(`; ${name}=`);
+  //   if (parts.length === 2) return parts.pop()?.split(";").shift() || null;
+  //   return null;
+  // };
+
+  // 쿠키를 삭제하는 함수 (로그아웃용)
+  const deleteCookie = (name: string) => {
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+  };
+
+  // JWT 토큰에서 사용자 정보를 디코드하는 함수
+  // const decodeJWT = (token: string) => {
+  //   try {
+  //     const base64Url = token.split(".")[1];
+  //     const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  //     const jsonPayload = decodeURIComponent(
+  //       atob(base64)
+  //         .split("")
+  //         .map(function (c) {
+  //           return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+  //         })
+  //         .join(""),
+  //     );
+  //     return JSON.parse(jsonPayload);
+  //   } catch (error) {
+  //     console.error("JWT decode error:", error);
+  //     return null;
+  //   }
+  // };
 
   // 로그아웃 함수
   const handleLogout = async () => {
