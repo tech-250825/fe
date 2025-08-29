@@ -339,7 +339,7 @@ export default function CreateImagesPage() {
           apiEndpoint = '/api/images/create/v2';
           requestData = {
             checkpointId: selectedCheckpointModel.id,
-            loraId: 23, // facedetailer LoRA ID
+            loraId: 13, // facedetailer LoRA ID
             prompt: prompt,
             resolutionProfile: resolutionProfile,
           };
