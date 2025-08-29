@@ -661,6 +661,17 @@
       "noDownloadUrl": "未提供下载URL"
     }
   },
+  "ImageEdit": {
+    "title": "图像编辑",
+    "subtitle": "编辑和修改您的图像",
+    "loginRequired": "请登录以编辑图像。",
+    "placeholder": "输入要应用于图像的修改内容",
+    "instructionBadge": "点击图像图标添加要编辑的图像",
+    "errors": {
+      "enterPrompt": "请输入要修改的内容。",
+      "uploadImageFirst": "请先上传要编辑的图像。"
+    }
+  },
   "VideoCreation": {
     "title": "视频创建",
     "subtitle": "创建新视频",

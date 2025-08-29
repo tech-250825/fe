@@ -661,6 +661,17 @@
       "noDownloadUrl": "ダウンロードURLが提供されませんでした"
     }
   },
+  "ImageEdit": {
+    "title": "画像編集",
+    "subtitle": "画像を編集・修正します",
+    "loginRequired": "画像を編集するにはログインしてください。",
+    "placeholder": "画像に適用する修正内容を入力してください",
+    "instructionBadge": "画像アイコンをクリックして編集する画像を追加してください",
+    "errors": {
+      "enterPrompt": "修正内容を入力してください。",
+      "uploadImageFirst": "編集する画像を最初にアップロードしてください。"
+    }
+  },
   "VideoCreation": {
     "title": "動画生成",
     "subtitle": "新しい動画を生成してください",
