@@ -16,6 +16,7 @@ import {
 import { getTranslations } from "next-intl/server";
 import { getProfile, getUserNameFromEmail, getInitialsFromEmail } from "@/lib/profile";
 import { BuyCreditsButton, LogoutButton, WithdrawButton } from "@/components/profile/ProfileClientActions";
+import { InvoiceHistory } from "@/components/profile/InvoiceHistory";
 
 export default async function ProfilePage() {
   const t = await getTranslations("Profile");
@@ -121,6 +122,9 @@ export default async function ProfilePage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Invoice History */}
+        <InvoiceHistory />
 
         {/* Account Management */}
 {/* Account Management */}
