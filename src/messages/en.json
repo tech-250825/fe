@@ -710,6 +710,17 @@
       "getCredit": "Go Get Credit"
     }
   },
+  "ImageEdit": {
+    "title": "Image Edit",
+    "subtitle": "Edit and modify your images",
+    "loginRequired": "Please log in to edit images.",
+    "placeholder": "Enter the modifications to apply to the image",
+    "instructionBadge": "Click the image icon to add an image to edit",
+    "errors": {
+      "enterPrompt": "Please enter content to modify.",
+      "uploadImageFirst": "Please upload an image to edit first."
+    }
+  },
   "VideoCreation": {
     "title": "Video Creation",
     "subtitle": "Create new videos",

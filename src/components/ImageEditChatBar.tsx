@@ -46,7 +46,7 @@ export function ImageEditChatBar({
   characterModels,
   checkpointModels,
 }: ImageEditChatBarProps) {
-  const t = useTranslations("VideoCreation");
+  const t = useTranslations("ImageEdit");
   const [prompt, setPrompt] = useState("");
   const [uploadedImageFile, setUploadedImageFile] = useState<File | null>(null);
   const [uploadedImagePreview, setUploadedImagePreview] = useState<string | null>(null);
@@ -95,11 +95,11 @@ export function ImageEditChatBar({
   /** ----- Submit ----- */
   const handleSubmit = useCallback(() => {
     if (!prompt.trim()) {
-      toast.error("수정할 내용을 입력해주세요.");
+      toast.error(t("errors.enterPrompt"));
       return;
     }
     if (!uploadedImageFile && !uploadedImagePreview) {
-      toast.error("편집할 이미지를 먼저 업로드해주세요.");
+      toast.error(t("errors.uploadImageFirst"));
       return;
     }
     onGenerate(prompt.trim(), options, uploadedImageFile || undefined, libraryImageUrl || undefined);
@@ -195,7 +195,7 @@ export function ImageEditChatBar({
 
         {/* Badge 영역 */}
         <div className="flex flex-wrap items-center gap-2 mb-2">
-          <Badge variant="default">이미지 아이콘을 클릭하여 편집할 이미지를 넣으세요</Badge>
+          <Badge variant="default">{t("instructionBadge")}</Badge>
           {selectionBadges}
         </div>
 
@@ -232,7 +232,7 @@ export function ImageEditChatBar({
           <Input
             ref={inputRef}
             type="text"
-            placeholder="이미지에 적용할 수정 내용을 입력하세요"
+            placeholder={t("placeholder")}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             onKeyDown={handleKeyPress}

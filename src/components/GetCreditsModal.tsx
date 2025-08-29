@@ -133,6 +133,9 @@ export function GetCreditsModal({
           await fetchProfile();
           
           onClose(); // Close the modal
+
+          // ✅ 결제 성공 시 홈으로 이동
+          // window.location.href = "/home";
         } else {
           alert(`Payment status: ${paymentInfo?.status || 'pending'}`);
         }
