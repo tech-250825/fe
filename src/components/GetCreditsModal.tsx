@@ -11,6 +11,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Coins, CreditCard, Check } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { LoginModal } from "@/components/login-modal";
+import { config } from "@/config";
 
 interface GetCreditsModalProps {
   isOpen: boolean;
@@ -31,13 +32,13 @@ const creditPackages: CreditPackage[] = [
     id: "package_500",
     credits: 500,
     price: 5,
-    currency: "USD"
+    currency: "USDT"
   },
   {
     id: "package_1100", 
     credits: 1100,
     price: 10,
-    currency: "USD",
+    currency: "USDT",
     bonus: 100,
     popular: true
   }
@@ -52,6 +53,8 @@ export function GetCreditsModal({
   const [isProcessing, setIsProcessing] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [paymentTrackId, setPaymentTrackId] = useState<string | null>(null);
+  const [paymentLink, setPaymentLink] = useState<string | null>(null);
 
   // const handleGetCredit = () => {
   //   // Redirect to different Google Forms based on locale (same as CreditInsufficientModal)
@@ -76,28 +79,73 @@ export function GetCreditsModal({
     setIsProcessing(true);
 
     try {
-      const response = await fetch('/api/payment/create-invoice', {
+      // Call backend invoice creation API
+      const response = await fetch(`${config.apiUrl}/api/oxapay/invoice`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({
           amount: creditPackage.price,
-          currency: 'USDT',
-          description: `${creditPackage.credits} credits purchase`
+          currency: creditPackage.currency,
         }),
       });
 
       const data = await response.json();
 
-      if (data.success && data.paymentData?.payLink) {
-        window.open(data.paymentData.payLink, '_blank');
+      if (data.statusCode === 200 && data.data?.success) {
+        // API returns payLink and trackId in data field
+        const { payLink, trackId } = data.data;
+        localStorage.setItem('pendingPaymentTrackId', trackId);
+        localStorage.setItem('pendingPaymentCredits', creditPackage.credits.toString());
+        setPaymentTrackId(trackId);
+        setPaymentLink(payLink);
+        
+        // Open payment link in new window
+        window.open(payLink, '_blank');
+        
+        // Show payment processing state
+        setShowPayment(true);
       } else {
-        throw new Error(data.error || 'Failed to create payment');
+        throw new Error(data.data?.message || data.message || 'Failed to create payment invoice');
       }
     } catch (error) {
       console.error('Payment error:', error);
       alert('Payment initialization failed. Please try again.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleCheckPaymentStatus = async () => {
+    if (!paymentTrackId) return;
+
+    try {
+      setIsProcessing(true);
+      const response = await fetch(`${config.apiUrl}/api/oxapay/status/${paymentTrackId}`, {
+        credentials: 'include',
+      });
+
+      const data = await response.json();
+
+      if (data.statusCode === 200 && data.data?.success) {
+        const paymentInfo = data.data.paymentInfo;
+        if (paymentInfo?.status === 'completed') {
+          alert('Payment completed successfully! Credits have been added to your account.');
+          localStorage.removeItem('pendingPaymentTrackId');
+          localStorage.removeItem('pendingPaymentCredits');
+          setShowPayment(false);
+          onClose(); // Close the modal
+        } else {
+          alert(`Payment status: ${paymentInfo?.status || 'pending'}`);
+        }
+      } else {
+        alert(data.data?.message || 'Failed to check payment status');
+      }
+    } catch (error) {
+      console.error('Error checking payment status:', error);
+      alert('Failed to check payment status. Please try again.');
     } finally {
       setIsProcessing(false);
     }
@@ -201,11 +249,29 @@ export function GetCreditsModal({
                 </div>
                 <h3 className="text-lg font-semibold mb-2">Payment Processing</h3>
                 <p className="text-gray-600 mb-4">
-                  Please complete your payment in the new window that opened.
+                  Please complete your payment in the window that opened. If the window didn't open, click the payment link below.
                 </p>
-                <Button onClick={() => setShowPayment(false)} variant="outline">
-                  Back to Credit Options
-                </Button>
+                <div className="space-y-2">
+                  {paymentLink && (
+                    <Button 
+                      onClick={() => window.open(paymentLink, '_blank')}
+                      variant="outline" 
+                      className="w-full mb-2"
+                    >
+                      Open Payment Link
+                    </Button>
+                  )}
+                  <Button 
+                    onClick={handleCheckPaymentStatus} 
+                    disabled={isProcessing}
+                    className="w-full"
+                  >
+                    {isProcessing ? 'Checking...' : 'Check Payment Status'}
+                  </Button>
+                  <Button onClick={() => setShowPayment(false)} variant="outline" className="w-full">
+                    Back to Credit Options
+                  </Button>
+                </div>
               </div>
             )}
           </div>
