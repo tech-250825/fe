@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -48,7 +48,7 @@ export function GetCreditsModal({
   isOpen,
   onClose,
 }: GetCreditsModalProps) {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, fetchProfile } = useAuth();
   const [selectedPackage, setSelectedPackage] = useState<CreditPackage | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
@@ -97,16 +97,9 @@ export function GetCreditsModal({
       if (data.statusCode === 200 && data.data?.success) {
         // API returns payLink and trackId in data field
         const { payLink, trackId } = data.data;
-        localStorage.setItem('pendingPaymentTrackId', trackId);
-        localStorage.setItem('pendingPaymentCredits', creditPackage.credits.toString());
-        setPaymentTrackId(trackId);
-        setPaymentLink(payLink);
         
-        // Open payment link in new window
-        window.open(payLink, '_blank');
+        window.open(payLink, '_self');
         
-        // Show payment processing state
-        setShowPayment(true);
       } else {
         throw new Error(data.data?.message || data.message || 'Failed to create payment invoice');
       }
@@ -135,7 +128,10 @@ export function GetCreditsModal({
           alert('Payment completed successfully! Credits have been added to your account.');
           localStorage.removeItem('pendingPaymentTrackId');
           localStorage.removeItem('pendingPaymentCredits');
-          setShowPayment(false);
+          
+          // Update user profile to reflect new credit balance
+          await fetchProfile();
+          
           onClose(); // Close the modal
         } else {
           alert(`Payment status: ${paymentInfo?.status || 'pending'}`);
@@ -170,7 +166,6 @@ export function GetCreditsModal({
           </div>
 
           <div className="p-6">
-            {!showPayment ? (
               <>
                 {/* Purchase Credits Section */}
                 <div className="space-y-4">               
@@ -242,38 +237,7 @@ export function GetCreditsModal({
                   </div>
                 </div>
               </>
-            ) : (
-              <div className="text-center py-8">
-                <div className="w-16 h-16 bg-blue-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-                  <CreditCard className="w-8 h-8 text-blue-600" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2">Payment Processing</h3>
-                <p className="text-gray-600 mb-4">
-                  Please complete your payment in the window that opened. If the window didn't open, click the payment link below.
-                </p>
-                <div className="space-y-2">
-                  {paymentLink && (
-                    <Button 
-                      onClick={() => window.open(paymentLink, '_blank')}
-                      variant="outline" 
-                      className="w-full mb-2"
-                    >
-                      Open Payment Link
-                    </Button>
-                  )}
-                  <Button 
-                    onClick={handleCheckPaymentStatus} 
-                    disabled={isProcessing}
-                    className="w-full"
-                  >
-                    {isProcessing ? 'Checking...' : 'Check Payment Status'}
-                  </Button>
-                  <Button onClick={() => setShowPayment(false)} variant="outline" className="w-full">
-                    Back to Credit Options
-                  </Button>
-                </div>
-              </div>
-            )}
+            
           </div>
         </DialogContent>
       </Dialog>
