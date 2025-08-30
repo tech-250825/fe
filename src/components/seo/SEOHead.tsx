@@ -20,7 +20,7 @@ export function generateSEOMetadata({
   image = '/og-image.jpg',
   url,
   type = 'website',
-  locale = 'ko',
+  locale = 'en',
   alternates
 }: SEOProps): Metadata {
   const baseUrl = 'https://katin.org'; // Update with your domain
@@ -63,8 +63,8 @@ export function generateSEOMetadata({
     },
     twitter: {
       card: 'summary_large_image',
-      site: '@hoit_ai', // Update with your Twitter handle
-      creator: '@hoit_ai',
+      site: '@katin_ai', // Update with your Twitter handle
+      creator: '@katin_ai',
       title,
       description,
       images: [fullImageUrl],

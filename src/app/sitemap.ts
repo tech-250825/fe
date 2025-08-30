@@ -5,7 +5,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const currentDate = new Date();
 
   // Define supported locales
-  const locales = ['ko', 'en', 'ja', 'zh'];
+  const locales = ['en', 'ja', 'zh'];
   
   // Define routes with their priorities and change frequencies
   const routes = [

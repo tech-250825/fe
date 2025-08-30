@@ -3,11 +3,6 @@ import { Metadata } from 'next';
 
 export function generateHomePageMetadata(locale: string): Metadata {
   const localizedContent = {
-    ko: {
-      title: 'AI 영상 대시보드 - Katin',
-      description: '최신 AI 생성 영상들을 둘러보고 영감을 얻으세요. 커뮤니티에서 만든 다양한 스타일의 AI 영상을 확인하고 나만의 영상을 만들어보세요.',
-      keywords: ['AI 영상 갤러리', '영상 대시보드', 'AI 영상 예제', '영상 영감', 'AI 작품 모음'],
-    },
     en: {
       title: 'AI Video Dashboard - Katin',
       description: 'Explore the latest AI-generated videos and get inspired. Browse community-created videos in various styles and create your own masterpiece.',
@@ -25,7 +20,7 @@ export function generateHomePageMetadata(locale: string): Metadata {
     },
   };
 
-  const content = localizedContent[locale as keyof typeof localizedContent] || localizedContent.ko;
+  const content = localizedContent[locale as keyof typeof localizedContent] || localizedContent.en;
 
   const alternateLanguages: Record<string, string> = {};
   Object.keys(localizedContent).forEach((lang) => {

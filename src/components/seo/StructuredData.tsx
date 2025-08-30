@@ -45,7 +45,7 @@ export const generateWebSiteSchema = (locale: string) => ({
 
 export const generateWebApplicationSchema = (locale: string) => ({
   name: 'Katin AI Video Generator',
-  url: 'https://hoit.ai.kr',
+  url: 'https://katin.org',
   description: 'Advanced AI video generation platform for creating videos from text descriptions',
   applicationCategory: 'MultimediaApplication',
   operatingSystem: 'Web Browser',
@@ -69,7 +69,7 @@ export const generateWebApplicationSchema = (locale: string) => ({
 });
 
 export const generateOrganizationSchema = () => ({
-  name: 'Hoit',
+  name: 'Katin',
   url: 'https://katin.org',
   logo: 'https://hoit.ai.kr/logo.png',
   description: 'Leading AI video generation platform',
@@ -78,7 +78,7 @@ export const generateOrganizationSchema = () => ({
     '@type': 'ContactPoint',
     email: 'contact@hoit.studio',
     contactType: 'Customer Service',
-    availableLanguage: ['Korean', 'English', 'Japanese', 'Chinese'],
+    availableLanguage: ['English', 'Japanese', 'Chinese'],
   },
   sameAs: [
     'https://t.me/+r0oBvmb0rb43ZTVl',
