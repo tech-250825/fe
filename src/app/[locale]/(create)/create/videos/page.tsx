@@ -697,7 +697,7 @@ export default function CreatePage() {
       if (selectedLoraModel?.id) {
         requestPayload.loraId = selectedLoraModel.id;
       } else {
-        console.log("No lora model selected, enhancing prompt without loraId");
+        // console.log("No lora model selected, enhancing prompt without loraId");
       }
       
       const response = await api.post(`${config.apiUrl}/api/weights`, requestPayload);

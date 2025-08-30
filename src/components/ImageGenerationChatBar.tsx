@@ -75,11 +75,11 @@ export function ImageGenerationChatBar({
 
   // Set first checkpoint model as default when checkpointModels are loaded
   useEffect(() => {
-    console.log("🏗️ Checkpoint useEffect triggered:", {
-      checkpointModelsLength: checkpointModels.length,
-      hasCheckpoint: !!selections.checkpoint,
-      checkpointModels: checkpointModels
-    });
+    // console.log("🏗️ Checkpoint useEffect triggered:", {
+    //   checkpointModelsLength: checkpointModels.length,
+    //   hasCheckpoint: !!selections.checkpoint,
+    //   checkpointModels: checkpointModels
+    // });
     
     if (checkpointModels.length > 0 && !selections.checkpoint) {
       setSelections(prev => ({

@@ -57,7 +57,7 @@ export function ModelSelectionDropdown({
     setTempOptions(options);
     setTempImageFile(uploadedImageFile);
     
-    console.log("🔄 ModelSelectionDropdown options updated:", options);
+    // console.log("🔄 ModelSelectionDropdown options updated:", options);
     
     // Create preview URL for uploaded image
     if (uploadedImageFile) {
@@ -444,7 +444,7 @@ export function ModelSelectionDropdown({
                         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
                           {checkpointModels && checkpointModels.length > 0 ? checkpointModels.map((model) => {
                             const isSelected = tempOptions.checkpoint?.name === model.name;
-                            console.log(`🔥 Combined Model ${model.name} (${model.type}) isSelected:`, isSelected, "tempOptions.checkpoint:", tempOptions.checkpoint);
+                            // console.log(`🔥 Combined Model ${model.name} (${model.type}) isSelected:`, isSelected, "tempOptions.checkpoint:", tempOptions.checkpoint);
                             
                             return (
                               <VisualSelectButton

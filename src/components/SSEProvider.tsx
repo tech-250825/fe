@@ -502,7 +502,6 @@ export const SSEProvider = ({
               }
               break;
             case "upscale":
-              console.log("⬆️ 업스케일 알림 받음:", notification);
               if (notification.status === "SUCCESS") {
                 showNotification("업스케일 완료", notification.message);
                 // 윈도우 이벤트 발생
@@ -552,11 +551,11 @@ export const SSEProvider = ({
   };
 
   const handleOpen = (event: Event) => {
-    console.log("SSE 연결 성공:", event);
+    // console.log("SSE 연결 성공:", event);
   };
 
   const handleClose = (event: Event) => {
-    console.log("SSE 연결 종료:", event);
+    //console.log("SSE 연결 종료:", event);
   };
 
   const { isConnected, connect, disconnect, reconnect } = useSSEManager({

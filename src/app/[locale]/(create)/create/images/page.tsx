@@ -524,9 +524,9 @@ export default function CreateImagesPage() {
 
   // Debug selected task
   useEffect(() => {
-    if (taskList.length > 0) {
-      console.log("🔍 Available task IDs:", taskList.map(item => item.task.id));
-    }
+    // if (taskList.length > 0) {
+    //   console.log("🔍 Available task IDs:", taskList.map(item => item.task.id));
+    // }
   }, [taskId, taskList, selectedTask]);
 
   const handleImageClick = (clickedItem: ImageItem) => {
@@ -659,7 +659,7 @@ export default function CreateImagesPage() {
       if (selectedLoraModel?.id) {
         requestPayload.loraId = selectedLoraModel.id;
       } else {
-        console.log("No lora model selected, enhancing prompt without loraId");
+        // console.log("No lora model selected, enhancing prompt without loraId");
       }
       
       const response = await api.post(`${config.apiUrl}/api/weights`, requestPayload);
