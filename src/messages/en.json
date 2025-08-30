@@ -7,8 +7,8 @@
       "tryForFree": "Try for Free"
     },
     "hero": {
-      "title": "Create Animation with AI",
-      "description": "Imagine it, describe it, create it. Katin generates high-quality video from text prompts, bringing your ideas to life in seconds.",
+      "title": "Create NSFW Video and Images",
+      "description": "Imagine it, describe it, create it. Katin generates high-quality nsfw image, video from text prompts, bringing your ideas to life in seconds.",
       "placeholder": "A cinematic shot of a baby raccoon wearing a tiny cowboy hat...",
       "noCreditCard": "No credit card required. Start creating videos instantly."
     },
@@ -127,7 +127,7 @@
     },
     "tools": {
       "imageEdit": "Image Edit",
-      "videoBoards": "Animation",
+      "videoBoards": "Videos",
       "createImages": "Create Images",
       "createVideos": "Create Videos",
       "trainCharacters": "Train Characters"
@@ -550,24 +550,24 @@
     }
   },
   "Boards": {
-    "title": "My Animation",
-    "subtitle": "Organize your video projects with animation",
-    "loginRequired": "Please log in to view your animation.",
-    "createBoard": "Create Animation",
-    "createFirstBoard": "Create Your First Animation",
-    "noBoards": "No animation yet",
+    "title": "My Videos",
+    "subtitle": "Organize your video projects with videos",
+    "loginRequired": "Please log in to view your videos.",
+    "createBoard": "Create Videos",
+    "createFirstBoard": "Create Your First Video",
+    "noBoards": "No videos yet",
     "noBoardsDescription": "Create your first board to start organizing your video projects. Each board can contain multiple video generations.",
-    "loading": "Loading animations...",
-    "createNewBoard": "Create New Animation",
-    "enterBoardName": "Enter Animation name...",
+    "loading": "Loading videos...",
+    "createNewBoard": "Create New Videos",
+    "enterBoardName": "Enter Video name...",
     "cancel": "Cancel",
     "creating": "Creating...",
     "open": "Open",
-    "board": "Animation",
+    "board": "Videos",
     "messages": {
-      "createSuccess": "Animation board created successfully!",
-      "createFailed": "Failed to create animation board. Please try again.",
-      "loadFailed": "Failed to load animation board. Please try again.",
+      "createSuccess": "Video board created successfully!",
+      "createFailed": "Failed to create video board. Please try again.",
+      "loadFailed": "Failed to load video board. Please try again.",
       "nameRequired": "Please enter a board name"
     }
   },
