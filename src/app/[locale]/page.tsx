@@ -134,7 +134,7 @@ const MinimalistLandingPage: React.FC = () => {
               href="/create/videos"
               className="bg-white/10 backdrop-blur-sm border border-white/20 text-white px-8 py-4 rounded-full hover:bg-white/20 transition-colors flex items-center text-lg font-medium"
             >
-              Create Katin Animation <ArrowRight className="w-5 h-5 ml-2" />
+              Create Katin Videos <ArrowRight className="w-5 h-5 ml-2" />
             </a>
           </div>
         </main>
