@@ -29,7 +29,7 @@ export function generateHomePageMetadata(locale: string): Metadata {
 
   const alternateLanguages: Record<string, string> = {};
   Object.keys(localizedContent).forEach((lang) => {
-    alternateLanguages[lang] = `https://hoit.ai.kr/${lang}/home`;
+    alternateLanguages[lang] = `https://katin.org/${lang}/home`;
   });
 
   return generateSEOMetadata({

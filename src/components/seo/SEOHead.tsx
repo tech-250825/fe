@@ -23,7 +23,7 @@ export function generateSEOMetadata({
   locale = 'ko',
   alternates
 }: SEOProps): Metadata {
-  const baseUrl = 'https://hoit.ai.kr'; // Update with your domain
+  const baseUrl = 'https://katin.org'; // Update with your domain
   const fullUrl = url ? `${baseUrl}${url}` : baseUrl;
   const fullImageUrl = image.startsWith('http') ? image : `${baseUrl}${image}`;
 
@@ -31,9 +31,9 @@ export function generateSEOMetadata({
     title,
     description,
     keywords: keywords.join(', '),
-    authors: [{ name: 'Hoit Team' }],
-    creator: 'Hoit',
-    publisher: 'Hoit',
+    authors: [{ name: 'Katin Team' }],
+    creator: 'Katin',
+    publisher: 'Katin',
     robots: {
       index: true,
       follow: true,
@@ -49,7 +49,7 @@ export function generateSEOMetadata({
       type,
       locale,
       url: fullUrl,
-      siteName: 'Hoit - AI Video Generation Platform',
+      siteName: 'Katin - AI Video Generation Platform',
       title,
       description,
       images: [

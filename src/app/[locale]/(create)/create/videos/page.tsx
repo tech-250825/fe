@@ -534,7 +534,8 @@ export default function CreatePage() {
     }
   }, [isLoggedIn]);
 
-  // Tutorial logic - show only once per user
+  // Tutorial logic - show only once per user (commented out)
+  /*
   useEffect(() => {
     if (isLoggedIn) {
       // Check if user has seen the tutorial before
@@ -548,6 +549,7 @@ export default function CreatePage() {
       }
     }
   }, [isLoggedIn]);
+  */
 
   // Check for recreate data from localStorage
   useEffect(() => {
@@ -742,11 +744,13 @@ export default function CreatePage() {
         recreateData={recreateData}
       />
       
-      {/* Tutorial Modal */}
+      {/* Tutorial Modal (commented out) */}
+      {/*
       <VideoTutorial
         isOpen={showTutorial}
         onClose={() => setShowTutorial(false)}
       />
+      */}
       
       {/* Age Verification Dialog */}
       <AgeVerificationDialog

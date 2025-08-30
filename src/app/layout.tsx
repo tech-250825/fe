@@ -72,9 +72,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    site: '@hoit_ai',
-    creator: '@hoit_ai',
-    title: 'Hoit - Create Stunning AI Videos from Text',
+    site: '@katin_ai',
+    creator: '@katin_ai',
+    title: 'Katin - Create Stunning AI Videos from Text',
     description: 'Create professional AI-powered videos from simple text descriptions. Advanced video generation platform.',
     images: ['/og-image.jpg'],
   },

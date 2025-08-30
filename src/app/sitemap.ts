@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://hoit.ai.kr';
+  const baseUrl = 'https://katin.org';
   const currentDate = new Date();
 
   // Define supported locales

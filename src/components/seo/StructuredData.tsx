@@ -28,9 +28,9 @@ export function StructuredData({ type, data }: StructuredDataProps) {
 
 // Predefined structured data generators
 export const generateWebSiteSchema = (locale: string) => ({
-  name: 'Hoit',
-  alternateName: 'Hoit AI Video Generator',
-  url: 'https://hoit.ai.kr',
+  name: 'Katin',
+  alternateName: 'Katin AI Video Generator',
+  url: 'https://katin.org',
   description: 'Create stunning AI-powered videos from text descriptions. Advanced video generation with multiple styles and formats.',
   inLanguage: locale,
   potentialAction: {
@@ -44,7 +44,7 @@ export const generateWebSiteSchema = (locale: string) => ({
 });
 
 export const generateWebApplicationSchema = (locale: string) => ({
-  name: 'Hoit AI Video Generator',
+  name: 'Katin AI Video Generator',
   url: 'https://hoit.ai.kr',
   description: 'Advanced AI video generation platform for creating videos from text descriptions',
   applicationCategory: 'MultimediaApplication',
@@ -70,7 +70,7 @@ export const generateWebApplicationSchema = (locale: string) => ({
 
 export const generateOrganizationSchema = () => ({
   name: 'Hoit',
-  url: 'https://hoit.ai.kr',
+  url: 'https://katin.org',
   logo: 'https://hoit.ai.kr/logo.png',
   description: 'Leading AI video generation platform',
   foundingDate: '2024',
