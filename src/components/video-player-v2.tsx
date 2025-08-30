@@ -52,7 +52,7 @@ export default function VideoPlayerV2({ src, autoplay = false }: VideoPlayerProp
       // Auto-play when metadata is loaded if autoplay is enabled
       if (autoplay) {
         video.play().catch((error) => {
-          console.log("Autoplay failed:", error);
+          // console.log("Autoplay failed:", error);
         });
       }
     };

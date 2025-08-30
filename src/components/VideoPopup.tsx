@@ -27,7 +27,7 @@ function VideoPopup({ isOpen, onClose, videoSrc }: VideoPopupProps) {
   // Debug: VideoSrc 확인
   useEffect(() => {
     if (isOpen) {
-      console.log("🎬 VideoPopup opened with videoSrc:", videoSrc);
+      // console.log("🎬 VideoPopup opened with videoSrc:", videoSrc);
     }
   }, [isOpen, videoSrc])
 
@@ -42,7 +42,7 @@ function VideoPopup({ isOpen, onClose, videoSrc }: VideoPopupProps) {
         setIsLoading(false)
         // 자동재생 시작
         video.play().catch((error) => {
-          console.log("Autoplay failed:", error);
+          // console.log("Autoplay failed:", error);
         });
       }
 

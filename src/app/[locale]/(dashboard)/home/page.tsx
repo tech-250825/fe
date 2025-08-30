@@ -114,8 +114,8 @@ const HomePage: React.FC = () => {
 const heroSlides = [
   {
     id: "hero1",
-    type: "mp4",
-    src: "/hero/hero_2.mp4",
+    type: "image",
+    src: "/hero/hero_2.png",
     titleKey: "hero.consistentCharacter",
   },
   // {
@@ -309,6 +309,13 @@ const resumeAutoplay = () => {
                           src={slide.src}
                           className="absolute inset-0 w-full h-full object-cover"
                         />
+                      ) : slide.type === "image" ? (
+                        <img
+                          key={slide.id}
+                          src={slide.src}
+                          alt="Hero image"
+                          className="absolute inset-0 w-full h-full object-cover"
+                        />
                       ) : (
                         <video
                           key={slide.id}
@@ -323,6 +330,7 @@ const resumeAutoplay = () => {
                       )}
                       
                       {/* Overlay with announcement and button - positioned left */}
+                      {/*
                       <div className="absolute inset-0 flex items-center justify-start pl-12 z-20">
                         <div className="text-left">
                           <div className="mb-4">
@@ -347,6 +355,7 @@ const resumeAutoplay = () => {
                           </Button>
                         </div>
                       </div>
+                      */}
                     </div>
                   );
                 })()}
@@ -371,7 +380,7 @@ const resumeAutoplay = () => {
                 <p className="text-white text-sm sm:text-lg md:text-xl lg:text-2xl font-extrabold leading-tight mb-1">{t("cta.createVideoTitle")}</p>
                 <p className="text-white/70 text-xs sm:text-sm">{t("cta.createVideoDescription")}</p>
               </div>
-              <a href="/create/videos" className="mt-2 sm:mt-4 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-4 py-2 sm:px-6 sm:py-3 text-xs sm:text-sm transition">
+              <a href="/create/images" className="mt-2 sm:mt-4 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-4 py-2 sm:px-6 sm:py-3 text-xs sm:text-sm transition">
                 {t("cta.createVideoButton")}
               </a>
             </div>
@@ -382,7 +391,7 @@ const resumeAutoplay = () => {
                 <p className="text-white text-sm sm:text-lg md:text-xl lg:text-2xl font-extrabold leading-tight mb-1">{t("cta.createImageTitle")}</p>
                 <p className="text-white/70 text-xs sm:text-sm">{t("cta.createImageDescription")}</p>
               </div>
-              <a href="/create/image-edit" className="mt-2 sm:mt-4 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-4 py-2 sm:px-6 sm:py-3 text-xs sm:text-sm transition">
+              <a href="/create/videos" className="mt-2 sm:mt-4 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-4 py-2 sm:px-6 sm:py-3 text-xs sm:text-sm transition">
                 {t("cta.createImageButton")}
               </a>
             </div>
