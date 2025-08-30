@@ -358,12 +358,12 @@ export function VideoGenerationChatBar({
       );
       // For T2V mode, show duration and quality
       badges.push(
-        <Badge key="duration" variant="outline">
+        <Badge key="duration" variant="outline" className="hidden md:flex">
           {selections.duration}s
         </Badge>
       );
       badges.push(
-        <Badge key="quality" variant="outline">
+        <Badge key="quality" variant="outline" className="hidden md:flex">
           {selections.quality}
         </Badge>
       );
