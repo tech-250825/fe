@@ -100,12 +100,12 @@
     },
     "cta": {
       "quickStart": "Quick Start",
-      "createVideoTitle": "Create Videos",
+      "createVideoTitle": "Create Images",
       "createVideoDescription": "Generate animations with prompts",
-      "createVideoButton": "Create Videos",
-      "createImageTitle": "Edit Images",
-      "createImageDescription": "Edit images with AI",
-      "createImageButton": "Edit Images"
+      "createVideoButton": "Create Images",
+      "createImageTitle": "Create Videos",
+      "createImageDescription": "Create Videos with AI",
+      "createImageButton": "Create Videos"
     },
     "tabs": {
       "all": "All",
