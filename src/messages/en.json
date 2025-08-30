@@ -727,8 +727,8 @@
     "loginRequired": "Please log in to create videos.",
     "list": {
       "empty": {
-        "title": "No videos created yet.",
-        "description": "Enter a prompt below to generate your first video!"
+        "title": "No contents created yet.",
+        "description": "Enter a prompt to generate"
       },
       "loading": "Loading more...",
       "allLoaded": "All content has been loaded."

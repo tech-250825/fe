@@ -31,7 +31,7 @@ export function ImageEditList({
   if (taskList.length === 0 && !loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-        <div className="text-6xl mb-4">🎨</div>
+        {/* <div className="text-6xl mb-4">🎨</div> */}
         <h3 className="text-lg font-medium text-foreground mb-2">
           {t("list.empty.title")}
         </h3>
