@@ -104,9 +104,11 @@ const MinimalistLandingPage: React.FC = () => {
               {t("nav.tryForFree")} <ArrowRight className="w-4 h-4 ml-2" />
             </a>
           </div>
+          {/* Mobile menu hidden
           <div className="md:hidden">
             <Menu className="text-white" />
           </div>
+          */}
         </div>
       </header>
 

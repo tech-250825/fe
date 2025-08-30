@@ -31,7 +31,7 @@ export default function Footer() {
   // const t = useTranslations("Footer");
   
   return (
-    <footer className="bg-gray-900 text-gray-300">
+    <footer className="bg-black text-white">
       
 
       {/* Main Footer Content */}
@@ -40,7 +40,7 @@ export default function Footer() {
           {/* Company Info */}
           <div>
             <div className="text-2xl font-bold text-white mb-4">Katin</div>
-            <p className="text-gray-400 mb-6 leading-relaxed">
+            <p className="text-white mb-6 leading-relaxed">
               Transform your ideas into stunning AI-powered animations. Create professional videos 
               and images with our cutting-edge artificial intelligence platform.
             </p>
@@ -48,7 +48,7 @@ export default function Footer() {
               {/* <a href="https://x.com/han1000llm" className="text-gray-400 hover:text-white transition-colors">
                 <Twitter className="w-5 h-5" />
               </a> */}
-              <a href="https://t.me/+r0oBvmb0rb43ZTVl" className="text-gray-400 hover:text-white transition-colors">
+              <a href="https://t.me/+r0oBvmb0rb43ZTVl" className="text-white hover:text-gray-300 transition-colors">
                 <TelegramIcon className="w-5 h-5" />
               </a>
               {/* <a href="https://www.instagram.com/hoitstudio/" className="text-gray-400 hover:text-white transition-colors">
@@ -91,17 +91,17 @@ export default function Footer() {
       <div className="border-t border-gray-800">
         <div className="container mx-auto px-6 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <div className="text-gray-400 text-sm">
+            <div className="text-white text-sm">
               © {new Date().getFullYear()} Katin, Inc. All rights reserved.
             </div>
             <div className="flex flex-wrap gap-6 text-sm">
-              <a href="/privacy-policy" className="text-gray-400 hover:text-white transition-colors">
+              <a href="/privacy-policy" className="text-white hover:text-gray-300 transition-colors">
                 Privacy Policy
               </a>
-              <a href="/terms-of-service" className="text-gray-400 hover:text-white transition-colors">
+              <a href="/terms-of-service" className="text-white hover:text-gray-300 transition-colors">
                 Service Term
               </a>
-              <a href="/contact" className="text-gray-400 hover:text-white transition-colors">
+              <a href="/contact" className="text-white hover:text-gray-300 transition-colors">
                 Contact Us
               </a>
             </div>
