@@ -187,7 +187,7 @@ export function ImageGenerationChatBar({
     );
     
     badges.push(
-      <Badge key="quality" variant="outline">
+      <Badge key="quality" variant="outline" className="hidden md:flex">
         {selections.quality}
       </Badge>
     );
