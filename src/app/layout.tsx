@@ -21,11 +21,11 @@ export const viewport = {
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Katin - AI Video Generation Platform',
-    default: 'Katin - Create Stunning AI Videos from Text'
+    template: '%s | Katin - NSFW AI Generation Platform',
+    default: 'Katin - Create Stunning AI contents from Text'
   },
-  description: "Create professional AI-powered videos from simple text descriptions. Advanced video generation with multiple styles, HD quality, and real-time preview. Try Katin for free today.",
-  keywords: ["AI video generation", "text to video", "AI video creator", "video generation AI", "automated video creation", "AI animation", "video maker"],
+  description: "Create NSFW AI-powered images and videos from simple text descriptions. Advanced video generation with multiple styles, HD quality, and real-time preview. Try Katin for free today.",
+  keywords: ["NSFW","NSFW AI video generation", "text to video", "AI video creator", "video generation AI", "automated video creation", "AI animation", "video maker"],
   authors: [{ name: "Katin Team" }],
   creator: "Katn",
   publisher: "Katin",
@@ -72,10 +72,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    site: '@hoit_ai',
-    creator: '@hoit_ai',
-    title: 'Hoit - Create Stunning AI Videos from Text',
-    description: 'Create professional AI-powered videos from simple text descriptions. Advanced video generation platform.',
+    site: '@katin_ai',
+    creator: '@katin_ai',
+    title: 'Katin - Create Stunning NSFW AI Videos from Text',
+    description: 'Create NSFW AI-powered videos from simple text descriptions. Advanced video generation platform.',
     images: ['/og-image.jpg'],
   },
   verification: {

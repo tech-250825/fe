@@ -153,9 +153,9 @@ export function GetCreditsModal({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-2xl p-0 overflow-hidden">
+        <DialogContent className="max-w-2xl w-[95vw] max-h-[90vh] p-0 overflow-hidden overflow-y-auto">
           {/* Header */}
-          <div className="relative bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6">
+          <div className="relative bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 sm:p-6">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-white/20 rounded-full">
                 <CreditCard className="w-6 h-6" />
@@ -168,11 +168,11 @@ export function GetCreditsModal({
             </div>
           </div>
 
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
               <>
                 {/* Purchase Credits Section */}
                 <div className="space-y-4">               
-                  <div className="grid gap-4 md:grid-cols-2">
+                  <div className="grid gap-4 sm:grid-cols-2">
                     {creditPackages.map((pkg) => (
                       <Card 
                         key={pkg.id} 
@@ -188,14 +188,14 @@ export function GetCreditsModal({
                             </span>
                           </div>
                         )}
-                        <CardContent className="p-6 text-center">
+                        <CardContent className="p-4 sm:p-6 text-center">
                           <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mx-auto mb-4">
                             <Coins className="w-6 h-6 text-blue-600" />
                           </div>
-                          <h4 className="text-2xl font-bold text-gray-900 mb-2">
+                          <h4 className="text-2xl font-bold text-foreground mb-2">
                             {pkg.credits.toLocaleString()}
                           </h4>
-                          <p className="text-sm text-gray-600 mb-4">
+                          <p className="text-sm text-muted-foreground mb-4">
                             Credits
                             {pkg.bonus && (
                               <span className="text-green-600 font-medium ml-1">

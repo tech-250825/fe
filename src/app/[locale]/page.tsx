@@ -27,6 +27,7 @@ import { StructuredData, generateWebSiteSchema, generateWebApplicationSchema, ge
 import { useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
+import Link from "next/link";
 
 // 추가
 import { motion } from "framer-motion";
@@ -78,14 +79,16 @@ const MinimalistLandingPage: React.FC = () => {
       <header className="absolute top-0 w-full z-30">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <div className="text-2xl font-bold tracking-tighter text-white">
-            Katin
+              <Link href="/" className="hover:text-gray-300 transition-colors">
+                Katin
+              </Link>
           </div>
           <nav className="hidden md:flex items-center space-x-6 text-gray-300">
           </nav>
           <div className="flex items-center space-x-4">
             <LocaleSwitcher />
             {/* Discord Button */}
-            <a
+            {/* <a
               href="https://t.me/+r0oBvmb0rb43ZTVl"
               target="_blank"
               rel="noopener noreferrer"
@@ -93,7 +96,7 @@ const MinimalistLandingPage: React.FC = () => {
               title="Join Discord"
             >
               <DiscordIcon className="w-5 h-5" />
-            </a>
+            </a> */}
             <a
               href="/home"
               className="bg-white text-black px-5 py-2 rounded-full hover:bg-gray-200 transition-colors flex items-center"
@@ -101,9 +104,11 @@ const MinimalistLandingPage: React.FC = () => {
               {t("nav.tryForFree")} <ArrowRight className="w-4 h-4 ml-2" />
             </a>
           </div>
+          {/* Mobile menu hidden
           <div className="md:hidden">
             <Menu className="text-white" />
           </div>
+          */}
         </div>
       </header>
 

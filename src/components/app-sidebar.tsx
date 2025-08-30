@@ -304,10 +304,10 @@ export function AppSidebar() {
                   side="top"
                   className="w-[--radix-popper-anchor-width]"
                 >
-                  <DropdownMenuItem>
+                  {/* <DropdownMenuItem>
                     <Settings className="w-4 h-4 mr-2" />
                     <span>{t("user.settings")}</span>
-                  </DropdownMenuItem>
+                  </DropdownMenuItem> */}
 
                   <DropdownMenuItem
                     onClick={handleLogout}

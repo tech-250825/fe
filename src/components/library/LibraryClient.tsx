@@ -199,6 +199,7 @@ export const LibraryClient: React.FC<LibraryClientProps> = ({
               </Button>
             </div>
             
+            {/* View mode selector commented out - only grid view available
             <div className="flex border rounded-lg">
               <Button
                 variant={viewMode === "grid" ? "default" : "ghost"}
@@ -217,6 +218,7 @@ export const LibraryClient: React.FC<LibraryClientProps> = ({
                 <List className="w-4 h-4" />
               </Button>
             </div>
+            */}
           </div>
         </div>
       </div>
