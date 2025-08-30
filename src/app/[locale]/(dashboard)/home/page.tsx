@@ -339,7 +339,7 @@ const resumeAutoplay = () => {
                           <Button 
                             onClick={(e) => {
                               e.stopPropagation();
-                              router.push('/create/image-edit');
+                              router.push('/create/images');
                             }}
                             className="bg-white text-black hover:bg-white/90 font-semibold px-6 py-2 pointer-events-auto"
                           >
@@ -382,7 +382,7 @@ const resumeAutoplay = () => {
                 <p className="text-white text-sm sm:text-lg md:text-xl lg:text-2xl font-extrabold leading-tight mb-1">{t("cta.createImageTitle")}</p>
                 <p className="text-white/70 text-xs sm:text-sm">{t("cta.createImageDescription")}</p>
               </div>
-              <a href="/create/images" className="mt-2 sm:mt-4 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-4 py-2 sm:px-6 sm:py-3 text-xs sm:text-sm transition">
+              <a href="/create/image-edit" className="mt-2 sm:mt-4 inline-flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-black font-semibold px-4 py-2 sm:px-6 sm:py-3 text-xs sm:text-sm transition">
                 {t("cta.createImageButton")}
               </a>
             </div>

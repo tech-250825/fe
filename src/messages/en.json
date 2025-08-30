@@ -94,18 +94,18 @@
     },
     "announcement": {
       "newFeature": "New Feature Released",
-      "imageEditTitle": "Image Editing Feature Released",
-      "imageEditDescription": "Transform your images with our new editing feature",
-      "goToImageEdit": "Start Image Editing"
+      "imageEditTitle": "Create NSFW images and videos",
+      "imageEditDescription": "Transform your own images and videos",
+      "goToImageEdit": "Start Image Creation"
     },
     "cta": {
       "quickStart": "Quick Start",
       "createVideoTitle": "Create Videos",
       "createVideoDescription": "Generate animations with prompts",
       "createVideoButton": "Create Videos",
-      "createImageTitle": "Create Images",
-      "createImageDescription": "Create images with AI",
-      "createImageButton": "Create Images"
+      "createImageTitle": "Edit Images",
+      "createImageDescription": "Edit images with AI",
+      "createImageButton": "Edit Images"
     },
     "tabs": {
       "all": "All",

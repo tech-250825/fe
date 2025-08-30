@@ -20,7 +20,7 @@ export function generateVideoCreationMetadata(locale: string): Metadata {
     },
   };
 
-  const content = localizedContent[locale as keyof typeof localizedContent] || localizedContent.ko;
+  const content = localizedContent[locale as keyof typeof localizedContent] || localizedContent.en;
 
   const alternateLanguages: Record<string, string> = {};
   Object.keys(localizedContent).forEach((lang) => {

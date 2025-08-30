@@ -3,7 +3,7 @@ import { generateSEOMetadata } from '@/components/seo/SEOHead';
 export function generateLandingPageMetadata(locale: string) {
   const localizedContent = {
     en: {
-      title: 'Katin - Create Stunning AI Videos from Text',
+      title: 'Katin - Create NSFW AI Images and Videos',
       description: 'Create professional AI-powered videos from simple text descriptions. Advanced video generation with multiple styles, HD quality, and real-time preview. Try Katin for free today.',
       keywords: ['AI video generation', 'text to video', 'AI video creator', 'video generation AI', 'automated video creation', 'AI animation', 'video maker'],
     },

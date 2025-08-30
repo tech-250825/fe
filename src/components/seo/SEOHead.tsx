@@ -49,7 +49,7 @@ export function generateSEOMetadata({
       type,
       locale,
       url: fullUrl,
-      siteName: 'Katin - AI Video Generation Platform',
+      siteName: 'Katin - NSFW AI Generation Platform',
       title,
       description,
       images: [
