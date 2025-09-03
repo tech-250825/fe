@@ -25,7 +25,7 @@ import { LoginModal } from "@/components/login-modal";
 import { LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { handleApiResponse, handleNetworkError } from "@/lib/utils/errorHandler";
-import { CreditInsufficientModal } from "@/components/CreditInsufficientModal";
+import { GetCreditsModal } from "@/components/GetCreditsModal";
 import AgeVerificationDialog from "@/components/AgeVerificationDialog";
 import { useAgeVerification } from "@/hooks/useAgeVerification";
 
@@ -739,8 +739,8 @@ export default function CreateImagesPage() {
         onVerified={handleVerificationSuccess}
       />
 
-      {/* Credit Insufficient Modal */}
-      <CreditInsufficientModal
+      {/* Credit Purchase Modal */}
+      <GetCreditsModal
         isOpen={showCreditModal}
         onClose={() => setShowCreditModal(false)}
       />

@@ -12,8 +12,6 @@ import {
   BackendResponse,
   TaskListData,
 } from "@/services/types/video.types";
-import { ChatInput } from "@/components/input/ChatInput";
-import { VideoGenerationParams } from "@/services/types/input.types";
 import type { VideoOptions, GenerationMode } from "@/lib/types";
 import { getResolutionProfile, getI2VResolutionProfile } from "@/lib/types";
 import { VideoGenerationChatBar } from "@/components/VideoGenerationChatBar";
@@ -22,11 +20,7 @@ import type { ImageItem } from "@/services/types/image.types";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { AuthGuard } from "@/components/auth/AuthGuard";
-import { LoginModal } from "@/components/login-modal";
-import { LogIn } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { VideoTutorial } from "@/components/VideoTutorial";
-import { CreditInsufficientModal } from "@/components/CreditInsufficientModal";
+import { GetCreditsModal } from "@/components/GetCreditsModal";
 import AgeVerificationDialog from "@/components/AgeVerificationDialog";
 import { useAgeVerification } from "@/hooks/useAgeVerification";
 
@@ -478,15 +472,29 @@ export default function CreatePage() {
         // T2V case - use resolutionProfile instead of width/height
         const resolutionProfile = getResolutionProfile(options.aspectRatio, options.quality);
         
-        const requestData = {
-          prompt: prompt,
-          loraId: loraId,
-          resolutionProfile: resolutionProfile,
-          numFrames: frames,
-        };
+        // Check if wan2.2 model (ID: 18) is selected to use v2 endpoint
+        const isWan22Model = selectedLoraModel?.id === 18;
         
-        
-        response = await api.post(`${config.apiUrl}${endpoint}`, requestData);
+        if (isWan22Model) {
+          // Use v2 endpoint for wan2.2 model (exclude loraId from payload)
+          const requestData = {
+            prompt: prompt,
+            resolutionProfile: resolutionProfile,
+            numFrames: frames,
+          };
+          
+          response = await api.post(`${config.apiUrl}/create/t2v/v2`, requestData);
+        } else {
+          // Use original endpoint for other models
+          const requestData = {
+            prompt: prompt,
+            loraId: loraId,
+            resolutionProfile: resolutionProfile,
+            numFrames: frames,
+          };
+          
+          response = await api.post(`${config.apiUrl}${endpoint}`, requestData);
+        }
       }
 
       if (response.ok) {
@@ -759,8 +767,8 @@ export default function CreatePage() {
         onVerified={handleVerificationSuccess}
       />
       
-      {/* Credit Insufficient Modal */}
-      <CreditInsufficientModal
+      {/* Credit Purchase Modal */}
+      <GetCreditsModal
         isOpen={showCreditModal}
         onClose={() => setShowCreditModal(false)}
       />

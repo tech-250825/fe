@@ -28,7 +28,7 @@ This is a **Next.js 15** application with **App Router** featuring:
 
 **1. Internationalization Structure:**
 - Localized routes: `/[locale]/(dashboard|create)/...`
-- Default locale: Korean (`ko`), supported: `['ko', 'en']`
+- Default locale: English (`en`), supported: `['en', 'ja', 'zh']`
 - Admin routes (`/admin/*`) bypass internationalization
 - Middleware in `src/middleware.ts` handles locale routing
 
@@ -44,7 +44,7 @@ This is a **Next.js 15** application with **App Router** featuring:
 - Browser notification integration
 
 **4. API Architecture:**
-- External API integration via `config.apiUrl` (localhost:8090 dev, api.hoit.ai.kr prod)
+- External API integration via `config.apiUrl` (localhost:8090 dev, api.katin.org prod)
 - RESTful routes in `src/app/api/` for auth, uploads, and works
 - Video service abstraction in `src/lib/api/videoService.ts`
 
@@ -60,11 +60,22 @@ src/
 │   └── api/                # API routes
 ├── components/
 │   ├── ui/                 # shadcn/ui components
-│   ├── admin/              # Admin-specific components
-│   └── video/              # Video-related components
+│   ├── auth/               # Authentication components
+│   ├── video/              # Video-related components
+│   ├── image/              # Image processing components
+│   ├── home/               # Home page components
+│   ├── profile/            # User profile components
+│   ├── common/             # Shared common components
+│   └── library/            # Library/dashboard components
 ├── hooks/                  # Custom React hooks
 ├── lib/                    # Utilities and services
-└── services/               # Business logic types
+│   ├── auth/               # Authentication utilities
+│   ├── api/                # API service abstractions
+│   └── utils/              # General utilities
+├── services/               # Business logic types
+├── contexts/               # React context providers
+├── types/                  # TypeScript type definitions
+└── messages/               # Internationalization messages
 ```
 
 ### Component Patterns
@@ -80,7 +91,16 @@ src/
 - **JWT** token management for session handling
 
 ### Development Notes
-- ESLint is disabled during build process
+- ESLint is disabled during build process via `DISABLE_ESLINT_PLUGIN=true`
 - Uses **Geist** fonts (Sans + Mono variants)
 - **Prettier** configured for code formatting
 - TypeScript strict mode enabled
+- Image optimization configured for multiple domains (Unsplash, CDN endpoints)
+- Internationalization with `next-intl` plugin integration
+
+### Configuration Files
+- `next.config.mjs` - Next.js configuration with i18n plugin and image domains
+- `src/middleware.ts` - Route handling for admin bypass and locale routing
+- `src/i18n/routing.ts` - Internationalization routing configuration
+- `src/config.ts` - Environment-based API URL configuration
+- `components.json` - shadcn/ui component configuration
