@@ -11,7 +11,7 @@ export interface VideoOptions {
   style: LoraModel | null; // Style 대신 LoraModel
   character: LoraModel | null; // Character 대신 LoraModel
   checkpoint?: LoraModel | null; // Checkpoint model for text-to-image
-  aspectRatio: "1:1" | "16:9" | "9:16";
+  aspectRatio: "1:1" | "16:9" | "9:16" | "4:3";
   duration: number; // in seconds
   quality: "480p" | "720p";
 }
@@ -29,7 +29,7 @@ export type ResolutionProfile =
 
 // Utility function to map aspect ratio and quality to ResolutionProfile (for T2V)
 export function getResolutionProfile(
-  aspectRatio: "1:1" | "16:9" | "9:16", 
+  aspectRatio: "1:1" | "16:9" | "9:16" | "4:3", 
   quality: "480p" | "720p"
 ): ResolutionProfile {
   const isHD = quality === "720p";
@@ -41,6 +41,9 @@ export function getResolutionProfile(
       return isHD ? "RATIO_16_9_HD" : "RATIO_16_9_SD";
     case "9:16":
       return isHD ? "RATIO_9_16_HD" : "RATIO_9_16_SD";
+    case "4:3":
+      // Use 16:9 as fallback for 4:3 since backend might not support it
+      return isHD ? "RATIO_16_9_HD" : "RATIO_16_9_SD";
     default:
       return isHD ? "RATIO_16_9_HD" : "RATIO_16_9_SD";
   }

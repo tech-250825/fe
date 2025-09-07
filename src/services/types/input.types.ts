@@ -1,5 +1,5 @@
 export type Resolution = "720p" | "480p";
-export type AspectRatio = "1:1" | "16:9" | "9:16";
+export type AspectRatio = "1:1" | "16:9" | "9:16" | "4:3";
 export type VideoMode = "t2v" | "i2v";
 
 export interface ModelData {

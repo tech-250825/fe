@@ -51,7 +51,7 @@ export type ImageOptions = {
   style: any | null;
   character: any | null;
   checkpoint: any | null;
-  aspectRatio: "1:1" | "16:9" | "9:16";
+  aspectRatio: "1:1" | "16:9" | "9:16" | "4:3";
   quality: "720p" | "480p";
 };
 

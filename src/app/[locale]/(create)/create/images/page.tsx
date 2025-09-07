@@ -29,6 +29,32 @@ import { GetCreditsModal } from "@/components/GetCreditsModal";
 import AgeVerificationDialog from "@/components/AgeVerificationDialog";
 import { useAgeVerification } from "@/hooks/useAgeVerification";
 
+// Import the new design components
+import { ChevronDown } from "@/components/image-generator/ChevronDown";
+import { Icon } from "@/components/image-generator/Icon";
+import { Menu } from "@/components/image-generator/Menu";
+import { Video } from "@/components/image-generator/Video";
+
+// Placeholder images for the design
+const galleryImages = [
+  { id: 1, src: "/thumbnails/ghibli_thumbnail.png", alt: "LORA Model 1" },
+  { id: 2, src: "/thumbnails/pastel_thumbnail.png", alt: "LORA Model 2" },
+  { id: 3, src: "/thumbnails/ship_thumbnail.png", alt: "LORA Model 3" },
+  { id: 4, src: "/thumbnails/violet_thumbnail.png", alt: "LORA Model 4" },
+];
+
+const bottomGalleryImages = [
+  { id: 5, src: "/thumbnails/ghibli_thumbnail.png", alt: "LORA Model 5" },
+  { id: 6, src: "/thumbnails/pastel_thumbnail.png", alt: "LORA Model 6" },
+  { id: 7, src: "/thumbnails/ship_thumbnail.png", alt: "LORA Model 7" },
+  { id: 8, src: "/thumbnails/violet_thumbnail.png", alt: "LORA Model 8" },
+];
+
+const sidebarItems = [
+  { id: "video", icon: Video, label: "Video", active: false },
+  { id: "image", icon: Icon, label: "Image", active: true },
+];
+
 export default function CreateImagesPage() {
   const t = useTranslations("VideoCreation");
   const router = useRouter();
@@ -59,6 +85,13 @@ export default function CreateImagesPage() {
   const [selectedImageResult, setSelectedImageResult] = useState<any>(null);
   const [showCreditModal, setShowCreditModal] = useState(false);
   const [recreateData, setRecreateData] = useState<any>(null);
+
+  // New design state
+  const [prompt, setPrompt] = useState("");
+  const [quantity, setQuantity] = useState("4");
+  const [aspectRatio, setAspectRatio] = useState("16:9");
+  const [activeTab, setActiveTab] = useState("anime");
+  const [selectedLora, setSelectedLora] = useState<any>(null);
 
   // ref들
   const taskListRef = useRef<ImageItem[]>([]);
@@ -277,6 +310,40 @@ export default function CreateImagesPage() {
     }
   }, []);
 
+  // Handle new design functions
+  const handlePromptChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setPrompt(e.target.value);
+  };
+
+  const handleQuantityChange = (value: string) => {
+    setQuantity(value);
+  };
+
+  const handleAspectRatioChange = (value: string) => {
+    setAspectRatio(value);
+  };
+
+  const handleLoraSelect = (model: any) => {
+    setSelectedLora(model);
+  };
+
+  const handleCreate = async () => {
+    if (!prompt.trim()) {
+      toast.error("Please enter a prompt");
+      return;
+    }
+
+    const options: ImageOptions = {
+      aspectRatio: aspectRatio as "1:1" | "16:9" | "9:16" | "4:3",
+      quality: "720p",
+      style: selectedLora || availableModels[0],
+      character: null,
+      checkpoint: null,
+    };
+
+    await handleImageGeneration(prompt, "t2i", options);
+  };
+
   // 이미지 생성 핸들러
   const handleImageGeneration = async (
     prompt: string,
@@ -300,6 +367,8 @@ export default function CreateImagesPage() {
           return { width: isHD ? 1280 : 854, height: isHD ? 720 : 480 };
         case "9:16":
           return { width: isHD ? 720 : 480, height: isHD ? 1280 : 854 };
+        case "4:3":
+          return { width: isHD ? 960 : 640, height: isHD ? 720 : 480 };
         default:
           return { width: isHD ? 1280 : 854, height: isHD ? 720 : 480 };
       }
@@ -712,25 +781,241 @@ export default function CreateImagesPage() {
   return (
     <AuthGuard>
     <>
-      <ImageList
-        taskList={taskList}
-        loading={loading}
-        hasMore={hasMore}
-        onImageClick={handleImageClick}
-        onCopyPrompt={handleCopyPrompt}
-        onDownload={handleDownload}
-        onDelete={handleDelete}
-      />
-      <ImageGenerationChatBar
-        onSubmit={handleImageGeneration}
-        isGenerating={isGenerating}
-        availableModels={availableModels}
-        styleModels={styleModels}
-        characterModels={characterModels}
-        checkpointModels={checkpointModels}
-        onEnhancePrompt={handleEnhancePrompt}
-        recreateData={recreateData}
-      />
+      {/* New Design Layout */}
+      <div className="fixed inset-0 w-full h-full bg-[#0a0a0a] overflow-hidden">
+        {/* Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a]" />
+
+        {/* Header */}
+        <header className="absolute w-full h-24 top-0 left-0 bg-[#121212] border-b-2 border-[#333333] z-10">
+          <h1 className="absolute top-9 left-40 font-medium text-neutral-50 text-3xl tracking-wide">
+            AI Image Generator
+          </h1>
+          <Menu className="absolute top-6 left-9" />
+        </header>
+
+        {/* Left Sidebar */}
+        <aside className="absolute w-32 h-full top-24 left-0 bg-gradient-to-b from-[#1e1e1e] to-[#141414] border-r-2 border-[#333333]">
+          {sidebarItems.map((item, index) => (
+            <div
+              key={item.id}
+              className={`relative w-24 h-32 mx-auto mt-8 ${
+                item.active ? "bg-[#333333] rounded-2xl opacity-60" : ""
+              }`}
+            >
+              <item.icon
+                className={`absolute top-6 left-1/2 transform -translate-x-1/2 w-12 h-12`}
+                color={item.active ? "#F5F5F5" : "#666666"}
+              />
+              <div
+                className={`absolute bottom-4 left-1/2 transform -translate-x-1/2 font-light text-xl ${
+                  item.active ? "text-white" : "text-gray-500"
+                }`}
+              >
+                {item.label}
+              </div>
+              {item.active && (
+                <div className="absolute w-1.5 h-16 top-6 -left-8 bg-[#fab1ee] rounded-full" />
+              )}
+            </div>
+          ))}
+        </aside>
+
+        {/* Main Content */}
+        <main className="absolute left-32 top-24 right-0 bottom-0 bg-[#1a1a1a] border-r-2 border-[#333333] flex flex-col">
+          {/* Tab Navigation */}
+          <nav className="w-full h-24 bg-[#1a1a1a] border-b-2 border-[#333333] flex items-center">
+            <button
+              onClick={() => setActiveTab("anime")}
+              className={`ml-52 px-4 py-2 text-2xl font-normal ${
+                activeTab === "anime" 
+                  ? "text-neutral-50 border-b-2 border-[#d9d9d9]" 
+                  : "text-gray-400"
+              }`}
+            >
+              Anime Illustration
+            </button>
+
+            <button
+              onClick={() => setActiveTab("realistic")}
+              className={`ml-80 px-4 py-2 text-2xl font-normal ${
+                activeTab === "realistic" 
+                  ? "text-neutral-50 border-b-2 border-[#d9d9d9]" 
+                  : "text-gray-400"
+              }`}
+            >
+              Realistic Photos
+            </button>
+          </nav>
+
+          {/* Content Area - Split Layout */}
+          <div className="flex-1 flex">
+            {/* Left Panel - LORA Selection (Gallery Area) */}
+            <section className="flex-1 p-10 bg-[#1a1a1a] border-2 border-[#333333] rounded-2xl m-10 overflow-y-auto">
+              <h2 className="text-white text-2xl mb-6">Select Style (LORA Models)</h2>
+              
+              {/* LORA Grid */}
+              <div className="grid grid-cols-2 gap-8">
+                {/* Top Row */}
+                {availableModels.slice(0, 4).map((model, index) => (
+                  <div
+                    key={model.id || index}
+                    className={`aspect-square bg-gray-800 rounded-lg cursor-pointer border-2 transition-all hover:scale-105 ${
+                      selectedLora?.id === model.id ? "border-[#fab1ee]" : "border-gray-600"
+                    }`}
+                    onClick={() => handleLoraSelect(model)}
+                  >
+                    <img
+                      src={model.thumbnailUrl || galleryImages[index % galleryImages.length].src}
+                      alt={model.name || `LORA Model ${index + 1}`}
+                      className="w-full h-full object-cover rounded-lg"
+                    />
+                    <div className="p-2 text-white text-sm text-center">
+                      {model.name || `Model ${index + 1}`}
+                    </div>
+                  </div>
+                ))}
+
+                {/* Bottom Row */}
+                {availableModels.slice(4, 8).map((model, index) => (
+                  <div
+                    key={model.id || index + 4}
+                    className={`aspect-[4/3] bg-gray-800 rounded-lg cursor-pointer border-2 transition-all hover:scale-105 ${
+                      selectedLora?.id === model.id ? "border-[#fab1ee]" : "border-gray-600"
+                    }`}
+                    onClick={() => handleLoraSelect(model)}
+                  >
+                    <img
+                      src={model.thumbnailUrl || bottomGalleryImages[index % bottomGalleryImages.length].src}
+                      alt={model.name || `LORA Model ${index + 5}`}
+                      className="w-full h-full object-cover rounded-lg"
+                    />
+                    <div className="p-2 text-white text-sm text-center">
+                      {model.name || `Model ${index + 5}`}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Show placeholder if no models loaded */}
+              {availableModels.length === 0 && (
+                <div className="grid grid-cols-2 gap-8">
+                  {galleryImages.map((image, index) => (
+                    <div
+                      key={image.id}
+                      className="aspect-square bg-gray-800 rounded-lg cursor-pointer border-2 border-gray-600 hover:scale-105 transition-all"
+                      onClick={() => handleLoraSelect({ id: image.id, name: image.alt })}
+                    >
+                      <img
+                        src={image.src}
+                        alt={image.alt}
+                        className="w-full h-full object-cover rounded-lg"
+                      />
+                      <div className="p-2 text-white text-sm text-center">
+                        {image.alt}
+                      </div>
+                    </div>
+                  ))}
+                  {bottomGalleryImages.map((image, index) => (
+                    <div
+                      key={image.id}
+                      className="aspect-[4/3] bg-gray-800 rounded-lg cursor-pointer border-2 border-gray-600 hover:scale-105 transition-all"
+                      onClick={() => handleLoraSelect({ id: image.id, name: image.alt })}
+                    >
+                      <img
+                        src={image.src}
+                        alt={image.alt}
+                        className="w-full h-full object-cover rounded-lg"
+                      />
+                      <div className="p-2 text-white text-sm text-center">
+                        {image.alt}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+
+            {/* Right Panel - Results Display */}
+            <section className="flex-1 p-4 overflow-y-auto">
+              <h2 className="text-white text-2xl mb-6">Generated Images</h2>
+              <ImageList
+                taskList={taskList}
+                loading={loading}
+                hasMore={hasMore}
+                onImageClick={handleImageClick}
+                onCopyPrompt={handleCopyPrompt}
+                onDownload={handleDownload}
+                onDelete={handleDelete}
+              />
+            </section>
+          </div>
+
+          {/* Bottom Controls */}
+          <div className="bg-[#242424] rounded-2xl mx-10 mb-10 p-8">
+            {/* Prompt Input */}
+            <div className="mb-6">
+              <label className="block text-[#b3b3b3] text-2xl mb-4">
+                Enter descriptions to create your image
+              </label>
+              <textarea
+                value={prompt}
+                onChange={handlePromptChange}
+                className="w-full h-40 bg-transparent text-white text-xl resize-none outline-none placeholder-gray-500"
+                placeholder="Describe the image you want to generate..."
+              />
+            </div>
+
+            {/* Controls Row */}
+            <div className="flex items-center gap-8">
+              {/* Quantity Control */}
+              <div className="flex items-center gap-4">
+                <label className="text-[#b3b3b3] text-2xl">Quantity:</label>
+                <div className="relative">
+                  <select
+                    value={quantity}
+                    onChange={(e) => handleQuantityChange(e.target.value)}
+                    className="bg-[#1a1a1a] border-2 border-[#333333] rounded-xl px-6 py-4 text-[#b3b3b3] text-2xl outline-none appearance-none"
+                  >
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                  </select>
+                  <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none" />
+                </div>
+              </div>
+
+              {/* Aspect Ratio Control */}
+              <div className="flex items-center gap-4">
+                <div className="relative">
+                  <select
+                    value={aspectRatio}
+                    onChange={(e) => handleAspectRatioChange(e.target.value)}
+                    className="bg-[#1a1a1a] border-2 border-[#333333] rounded-xl px-6 py-4 text-[#b3b3b3] text-2xl outline-none appearance-none"
+                  >
+                    <option value="1:1">1:1</option>
+                    <option value="4:3">4:3</option>
+                    <option value="16:9">16:9</option>
+                    <option value="9:16">9:16</option>
+                  </select>
+                  <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none" />
+                </div>
+              </div>
+
+              {/* Create Button */}
+              <button
+                onClick={handleCreate}
+                disabled={isGenerating}
+                className="ml-auto bg-[#fab1ee] hover:bg-[#f89de8] disabled:opacity-50 disabled:cursor-not-allowed text-black font-normal text-2xl px-16 py-6 rounded-2xl transition-colors duration-200"
+              >
+                {isGenerating ? "Creating..." : "Create"}
+              </button>
+            </div>
+          </div>
+        </main>
+      </div>
       
       {/* Age Verification Dialog */}
       <AgeVerificationDialog
