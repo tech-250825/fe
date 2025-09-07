@@ -2,19 +2,17 @@
 
 import type React from "react";
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
-import { ModelSelectionDropdown } from "@/components/ModelSelectionDropdown";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import type { VideoOptions, GenerationMode } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { Settings2, Send, X, ImageIcon, Sparkles, Images, Upload } from "lucide-react";
+import { Send, X, ImageIcon, Images, Upload, Settings } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { ImageLibraryModal } from "@/components/ImageLibraryModal";
 import type { ImageItem } from "@/services/types/image.types";
-import { getI2VResolutionProfile } from "@/lib/types";
 
 const defaultOptions: VideoOptions = {
   style: null,
@@ -67,7 +65,6 @@ export function VideoGenerationChatBar({
   const [uploadedImageFile, setUploadedImageFile] = useState<File | null>(null);
   const [selections, setSelections] = useState<VideoOptions>(defaultOptions);
   const [isDragging, setIsDragging] = useState(false);
-  const [isEnhancing, setIsEnhancing] = useState(false);
   const [isLibraryModalOpen, setIsLibraryModalOpen] = useState(false);
   const [selectedImageFromLibrary, setSelectedImageFromLibrary] = useState<{
     imageItem: ImageItem;
@@ -75,18 +72,29 @@ export function VideoGenerationChatBar({
   } | null>(null);
   const [recreateImageUrl, setRecreateImageUrl] = useState<string | null>(null);
   
+  // 설정 패널 표시 상태
+  const [showSettings, setShowSettings] = useState(false);
+  
+  
   const fileInputRef = useRef<HTMLInputElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Set first style model as default when styleModels are loaded (only if no character is selected)
+  // LoRA 모델 기본값 설정
   useEffect(() => {
-    if (styleModels.length > 0 && !selections.style && !selections.character) {
-      setSelections(prev => ({
-        ...prev,
-        style: styleModels[0]
-      }));
+    if (availableModels.length > 0) {
+      // 스타일 모델 중에서 기본값 찾기
+      const defaultStyleModel = availableModels.find(
+        (model) => model.styleType === "STYLE" && model.visible
+      );
+      
+      if (defaultStyleModel && !selections.style) {
+        setSelections((prev) => ({
+          ...prev,
+          style: defaultStyleModel,
+        }));
+      }
     }
-  }, [styleModels, selections.style, selections.character]);
+  }, [availableModels]);
 
   // Handle recreate data - set initial values from recreate data
   useEffect(() => {
@@ -119,16 +127,14 @@ export function VideoGenerationChatBar({
         aspectRatio: recreateData.aspectRatio,
         quality: recreateData.quality,
         duration: recreateData.duration,
-        // Find the lora model by name
-        style: recreateData.lora && styleModels.length > 0 
-          ? styleModels.find(model => model.name === recreateData.lora) || prev.style
-          : prev.style,
-        character: recreateData.lora && characterModels.length > 0
-          ? characterModels.find(model => model.name === recreateData.lora) || prev.character
-          : prev.character
+        // LoRA 모델 찾기
+        style: recreateData.lora
+          ? availableModels.find((model) => model.modelName === recreateData.lora)
+          : null,
+        character: null
       }));
     }
-  }, [recreateData, styleModels, characterModels]);
+  }, [recreateData, availableModels]);
 
   const handleImageUpload = useCallback((file: File) => {
     // Disabled: Computer upload functionality hidden
@@ -293,19 +299,6 @@ export function VideoGenerationChatBar({
     }
   };
 
-  const handleEnhancePrompt = async () => {
-    if (prompt.trim() && onEnhancePrompt && !isEnhancing) {
-      setIsEnhancing(true);
-      try {
-        const enhancedPrompt = await onEnhancePrompt(prompt, selections);
-        setPrompt(enhancedPrompt);
-      } catch (error) {
-        console.error("Failed to enhance prompt:", error);
-      } finally {
-        setIsEnhancing(false);
-      }
-    }
-  };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -374,9 +367,10 @@ export function VideoGenerationChatBar({
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50 p-6 bg-transparent sm:left-64">
+      
       {/* 채팅바 영역 */}
       <div 
-        className="p-4 w-full max-w-3xl mx-auto relative"
+        className="w-full max-w-3xl mx-auto relative"
         onDragEnter={(e) => handleDragEvents(e, true)}
       >
         {/* 드래그 오버레이 - 채팅바 영역에만 표시 */}
@@ -397,7 +391,7 @@ export function VideoGenerationChatBar({
             </p>
           </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2 mb-2">
+        <div className="p-4">\n        <div className="flex flex-wrap items-center gap-2 mb-2">
           <Badge variant={mode === "t2v" ? "default" : "destructive"}>
             {mode === "t2v" ? t("badges.textToVideo") : t("badges.imageToVideo")}
           </Badge>
@@ -422,26 +416,6 @@ export function VideoGenerationChatBar({
             )}
             <Tooltip>
               <TooltipTrigger asChild>
-                <div>
-                  <ModelSelectionDropdown
-                    mode={mode}
-                    options={selections}
-                    onSave={setSelections}
-                    onImageUpload={handleImageUpload}
-                    onModeChange={handleModeChange}
-                    uploadedImageFile={uploadedImageFile}
-                    styleModels={styleModels}
-                    characterModels={characterModels}
-                    mediaType="video"
-                  />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p className="max-w-xs text-center">{t("chatBar.settingsTooltip")}</p>
-              </TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -453,7 +427,26 @@ export function VideoGenerationChatBar({
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p className="max-w-xs text-center">{t("settings.tooltips.imageUploadTooltip")}</p>
+                <p className="max-w-xs text-center">라이브러리에서 이미지 선택</p>
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={cn(
+                    "hover:bg-purple-500/10 hover:text-purple-600",
+                    showSettings && "bg-purple-500/20 text-purple-600"
+                  )}
+                  onClick={() => setShowSettings(!showSettings)}
+                >
+                  <Settings className="h-4 w-4" />
+                  <span className="sr-only">설정</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="max-w-xs text-center">비디오 설정</p>
               </TooltipContent>
             </Tooltip>
           </div>
@@ -474,7 +467,7 @@ export function VideoGenerationChatBar({
             className={cn(
               "w-full h-14 pr-14 bg-card border-border text-foreground",
               uploadedImage 
-                ? "pl-36"  // Image preview + 2 buttons (settings, image)
+                ? "pl-28"  // Image preview + 2 buttons (image, settings)
                 : "pl-24"  // No image preview + 2 buttons
             )}
             disabled={isGenerating}
@@ -489,6 +482,79 @@ export function VideoGenerationChatBar({
             <Send className="h-5 w-5" />
             <span className="sr-only">{isGenerating ? t("chatBar.generating") : t("chatBar.generate")}</span>
           </Button>
+        </div>
+        
+        {/* 설정 패널 - 채팅창 아래에 */}
+        {showSettings && (
+          <div className="mt-2 bg-card/95 backdrop-blur-sm rounded-lg p-3 border border-border/50">
+            <div className="flex items-center justify-between gap-4">
+              {/* T2V일 때만 비율 선택 표시 */}
+              {mode === "t2v" && (
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-medium text-muted-foreground">비율</span>
+                  <div className="flex gap-1">
+                    {[
+                      { ratio: "1:1", icon: <div className="w-3 h-3 bg-current rounded-sm"></div> },
+                      { ratio: "16:9", icon: <div className="w-4 h-2.5 bg-current rounded-sm"></div> },
+                      { ratio: "9:16", icon: <div className="w-2.5 h-4 bg-current rounded-sm"></div> }
+                    ].map(({ ratio, icon }) => (
+                      <Button
+                        key={ratio}
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setSelections(prev => ({ ...prev, aspectRatio: ratio as "1:1" | "16:9" | "9:16" }))}
+                        className={cn(
+                          "h-7 w-7 p-0",
+                          selections.aspectRatio === ratio 
+                            ? "bg-primary/20 text-primary" 
+                            : "text-muted-foreground hover:text-foreground"
+                        )}
+                      >
+                        {icon}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* 프레임 수 (영상 길이) */}
+              <div className="flex items-center gap-3">
+                <span className="text-xs font-medium text-muted-foreground">길이</span>
+                <div className="flex gap-1">
+                  {[
+                    { duration: 4, label: "4s" },
+                    { duration: 6, label: "6s" },
+                    { duration: 8, label: "8s" }
+                  ].map(({ duration, label }) => (
+                    <Button
+                      key={duration}
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setSelections(prev => ({ ...prev, duration }))}
+                      className={cn(
+                        "h-7 px-2 text-xs",
+                        selections.duration === duration 
+                          ? "bg-primary/20 text-primary" 
+                          : "text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      {label}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowSettings(false)}
+                className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            </div>
+          </div>
+        )}
         </div>
       </div>
 

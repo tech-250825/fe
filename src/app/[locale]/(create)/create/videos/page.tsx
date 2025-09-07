@@ -52,14 +52,6 @@ export default function CreatePage() {
   const [nextCursor, setNextCursor] = useState<string | null>(null);
 
   // 기존 상태들 아래에 추가
-  const [selectedResolution, setSelectedResolution] = useState<"720p" | "480p">(
-    "720p"
-  );
-  const [selectedAspectRatio, setSelectedAspectRatio] = useState<
-    "1:1" | "16:9" | "9:16"
-  >("16:9");
-  const [selectedFrames, setSelectedFrames] = useState(81);
-  const [showTutorial, setShowTutorial] = useState(false);
   const [showCreditModal, setShowCreditModal] = useState(false);
   const [recreateData, setRecreateData] = useState<any>(null);
 
@@ -81,7 +73,6 @@ export default function CreatePage() {
         const allStyleModels = styleData.data || styleData; // 백엔드 응답 구조에 따라 처리
         const styleModels = allStyleModels.filter((model: any) => model.visible === true);
         setStyleModels(styleModels);
-   
         
       }
 
@@ -95,7 +86,6 @@ export default function CreatePage() {
         const allCharacterModels = characterData.data || characterData;
         const characterModels = allCharacterModels.filter((model: any) => model.visible === true);
         setCharacterModels(characterModels);
-        
         
       }
 
