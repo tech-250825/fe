@@ -1,8 +1,5 @@
 "use client";
 
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
-import { MobileIconSidebar } from "@/components/MobileIconSidebar";
 import dynamic from "next/dynamic";
 
 // SSEProvider를 동적 임포트로 변경
@@ -42,21 +39,7 @@ export default function CreateLayout({
       onImageComplete={handleImageComplete}
       onUpscaleComplete={handleUpscaleComplete}
     >
-      <div className="min-h-screen w-full flex bg-background">
-        {/* Desktop sidebar - only show on desktop */}
-        <div className="hidden md:block">
-          <SidebarProvider>
-            <AppSidebar />
-          </SidebarProvider>
-        </div>
-        
-        {/* Mobile icon sidebar - only show on mobile */}
-        <MobileIconSidebar />
-        
-        <main className="flex-1 flex flex-col h-screen md:ml-0 px-4">
-          {children}
-        </main>
-      </div>
+      {children}
     </SSEProvider>
   );
 }

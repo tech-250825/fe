@@ -6,7 +6,6 @@ import { useSSE } from "@/components/SSEProvider";
 import { config } from "@/config";
 import VideoResultModal from "@/components/video-result-modal";
 import { useRouter, useSearchParams } from "next/navigation";
-import { VideoList } from "@/components/video/VideoList";
 import {
   TaskItem,
   BackendResponse,
@@ -14,7 +13,6 @@ import {
 } from "@/services/types/video.types";
 import type { VideoOptions, GenerationMode } from "@/lib/types";
 import { getResolutionProfile, getI2VResolutionProfile } from "@/lib/types";
-import { VideoGenerationChatBar } from "@/components/VideoGenerationChatBar";
 import { api } from "@/lib/auth/apiClient";
 import type { ImageItem } from "@/services/types/image.types";
 import { toast } from "sonner";
@@ -23,6 +21,9 @@ import { AuthGuard } from "@/components/auth/AuthGuard";
 import { GetCreditsModal } from "@/components/GetCreditsModal";
 import AgeVerificationDialog from "@/components/AgeVerificationDialog";
 import { useAgeVerification } from "@/hooks/useAgeVerification";
+import { VideoSidebar } from "@/components/video/VideoSidebar";
+import { VideoCreationUI } from "@/components/video/VideoCreationUI";
+import { VideoResultsPanel } from "@/components/video/VideoResultsPanel";
 
 export default function CreatePage() {
   const t = useTranslations("VideoCreation");
@@ -39,74 +40,18 @@ export default function CreatePage() {
   const [taskList, setTaskList] = useState<TaskItem[]>([]);
   const [lastFetchTime, setLastFetchTime] = useState("");
 
-  // 모델 관련 상태
-  const [availableModels, setAvailableModels] = useState<any[]>([]);
-
-  const [selectedTab, setSelectedTab] = useState("STYLE"); // 또는 "CHARACTER"
-  const [styleModels, setStyleModels] = useState<any[]>([]);
-  const [characterModels, setCharacterModels] = useState<any[]>([]);
 
   // 무한 스크롤 관련 상태 추가
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
 
-  // 기존 상태들 아래에 추가
-  const [selectedResolution, setSelectedResolution] = useState<"720p" | "480p">(
-    "720p"
-  );
-  const [selectedAspectRatio, setSelectedAspectRatio] = useState<
-    "1:1" | "16:9" | "9:16"
-  >("16:9");
-  const [selectedFrames, setSelectedFrames] = useState(81);
-  const [showTutorial, setShowTutorial] = useState(false);
   const [showCreditModal, setShowCreditModal] = useState(false);
-  const [recreateData, setRecreateData] = useState<any>(null);
 
   // taskId가 있으면 해당 영상 찾기
   const selectedTask = taskId
     ? taskList.find((item) => item.task.id.toString() === taskId.toString())
     : null;
-
-  // 모델 목록 불러오기 - 백엔드 응답 구조에 맞게 수정
-  const fetchAvailableModels = async () => {
-    try {
-      // STYLE 모델 조회
-      const styleResponse = await api.get(
-        `${config.apiUrl}/api/weights?mediaType=VIDEO&styleType=STYLE&modelType=LORA`
-      );
-
-      if (styleResponse.ok) {
-        const styleData = await styleResponse.json();
-        const allStyleModels = styleData.data || styleData; // 백엔드 응답 구조에 따라 처리
-        const styleModels = allStyleModels.filter((model: any) => model.visible === true);
-        setStyleModels(styleModels);
-   
-        
-      }
-
-      // CHARACTER 모델 조회
-      const characterResponse = await api.get(
-        `${config.apiUrl}/api/weights?mediaType=VIDEO&styleType=CHARACTER&modelType=LORA`
-      );
-
-      if (characterResponse.ok) {
-        const characterData = await characterResponse.json();
-        const allCharacterModels = characterData.data || characterData;
-        const characterModels = allCharacterModels.filter((model: any) => model.visible === true);
-        setCharacterModels(characterModels);
-        
-        
-      }
-
-      // 전체 모델 목록 설정 (현재 탭에 따라)
-      const currentModels =
-        selectedTab === "STYLE" ? styleModels : characterModels;
-      setAvailableModels(currentModels);
-    } catch (error) {
-      console.error("❌ 모델 목록 로드 실패:", error);
-    }
-  };
 
   // ref들
   const taskListRef = useRef<TaskItem[]>([]);
@@ -538,7 +483,6 @@ export default function CreatePage() {
   useEffect(() => {
     if (isLoggedIn) {
       fetchTaskList(true);
-      fetchAvailableModels();
     }
   }, [isLoggedIn]);
 
@@ -559,34 +503,7 @@ export default function CreatePage() {
   }, [isLoggedIn]);
   */
 
-  // Check for recreate data from localStorage
-  useEffect(() => {
-    const recreateDataStr = localStorage.getItem('recreateData');
-    if (recreateDataStr) {
-      try {
-        const parsedData = JSON.parse(recreateDataStr);
-        // Only use data if it's for video and not too old (within 5 minutes)
-        if (parsedData.type === 'video' && Date.now() - parsedData.timestamp < 300000) {
-          setRecreateData(parsedData);
-          // Clear the data after using it
-          localStorage.removeItem('recreateData');
-        } else {
-          // Clean up old or irrelevant data
-          localStorage.removeItem('recreateData');
-        }
-      } catch (error) {
-        console.error('Failed to parse recreate data:', error);
-        localStorage.removeItem('recreateData');
-      }
-    }
-  }, []);
 
-  // 탭 변경 시 모델 목록 업데이트
-  useEffect(() => {
-    const currentModels =
-      selectedTab === "STYLE" ? styleModels : characterModels;
-    setAvailableModels(currentModels);
-  }, [selectedTab, styleModels, characterModels]);
 
   // SSE 알림을 받았을 때 새로고침 처리를 위한 이벤트 리스너
   useEffect(() => {
@@ -622,40 +539,6 @@ export default function CreatePage() {
     router.push(`/create/videos?taskId=${clickedItem.task.id}`);
   };
 
-  const handleCopyPrompt = async (item: TaskItem) => {
-    try {
-      await navigator.clipboard.writeText(item.task.prompt);
-      toast.success(t("toast.promptCopied"));
-    } catch (error) {
-      console.error("Failed to copy:", error);
-      toast.error(t("toast.copyFailed"));
-    }
-  };
-
-  const handleDownload = async (item: TaskItem) => {
-    if (!item.image?.url) return;
-
-    try {
-      // Use the download API route with the video URL
-      const filename = `video-${item.task.id}.mp4`;
-      const downloadApiUrl = `/api/download?url=${encodeURIComponent(item.image.url)}&filename=${encodeURIComponent(filename)}`;
-      
-      const link = document.createElement('a');
-      link.href = downloadApiUrl;
-      link.download = filename;
-      link.style.display = 'none';
-      
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      toast.success(t("toast.downloadStarted"));
-      
-    } catch (error) {
-      console.error("❌ Download failed:", error);
-      toast.error(t("toast.downloadFailed"));
-    }
-  };
-
   const handleDelete = async (item: TaskItem) => {
     // Confirmation dialog
     const shortPrompt = item.task.prompt.length > 50 ? item.task.prompt.substring(0, 50) + '...' : item.task.prompt;
@@ -664,7 +547,6 @@ export default function CreatePage() {
     }
 
     try {
-
       const response = await api.delete(`${config.apiUrl}/api/videos/${item.task.id}`);
       
       if (response.ok) {
@@ -691,117 +573,99 @@ export default function CreatePage() {
     }
   };
 
-  const handleEnhancePrompt = async (prompt: string, selections: VideoOptions): Promise<string> => {
-
-    try {
-      // Get the selected lora model
-      const selectedLoraModel = selections.style || selections.character;
-      
-      // Build request payload - only include loraId if a lora model is selected
-      const requestPayload: any = {
-        prompt: prompt
-      };
-      
-      if (selectedLoraModel?.id) {
-        requestPayload.loraId = selectedLoraModel.id;
-      } else {
-        // console.log("No lora model selected, enhancing prompt without loraId");
-      }
-      
-      const response = await api.post(`${config.apiUrl}/api/weights`, requestPayload);
-      
-      if (response.ok) {
-        const backendResponse: BackendResponse<string> = await response.json();
-
-        // Return the enhanced prompt from the response
-        return backendResponse.data || prompt; // Fallback to original prompt if data is null
-      } else {
-        console.error("❌ API request failed:", response.statusText);
-        throw new Error(`Failed to enhance prompt: ${response.statusText}`);
-      }
-    } catch (error) {
-      console.error("❌ Network error:", error);
-      throw new Error("Failed to enhance prompt");
-    }
-  };
 
   const handleCloseModal = () => {
     // URL에서 taskId 제거
     router.push("/create/videos");
   };
 
+  // Handle video creation from new UI
+  const handleVideoCreate = async (data: {
+    activeTab: "text-to-video" | "image-to-video"
+    prompt: string
+    videoLength: string
+    videoRatio: string
+  }) => {
+    // Convert UI data to existing API format
+    const mode: GenerationMode = data.activeTab === "text-to-video" ? "t2v" : "i2v"
+    const duration = parseInt(data.videoLength.replace('s', '')) // Convert "5s" to 5
+    const aspectRatio = data.videoRatio as "1:1" | "16:9" | "9:16"
+    
+    const options: VideoOptions = {
+      aspectRatio,
+      quality: "720p", // Default quality
+      duration,
+      style: null,
+      character: null,
+    }
+    
+    await handleVideoGeneration(data.prompt, mode, options)
+  }
+
   return (
     <AuthGuard>
-    <>
-      <VideoList
-        taskList={taskList}
-        loading={loading}
-        hasMore={hasMore}
-        onVideoClick={handleMediaClick}
-        onCopyPrompt={handleCopyPrompt}
-        onDownload={handleDownload}
-        onDelete={handleDelete}
-      />
-      <VideoGenerationChatBar
-        onSubmit={handleVideoGeneration}
-        isGenerating={isGenerating}
-        availableModels={availableModels}
-        styleModels={styleModels}
-        characterModels={characterModels}
-        onEnhancePrompt={handleEnhancePrompt}
-        recreateData={recreateData}
-      />
-      
-      {/* Tutorial Modal (commented out) */}
-      {/*
-      <VideoTutorial
-        isOpen={showTutorial}
-        onClose={() => setShowTutorial(false)}
-      />
-      */}
-      
-      {/* Age Verification Dialog */}
-      <AgeVerificationDialog
-        isOpen={showVerificationDialog}
-        onClose={closeVerificationDialog}
-        onVerified={handleVerificationSuccess}
-      />
-      
-      {/* Credit Purchase Modal */}
-      <GetCreditsModal
-        isOpen={showCreditModal}
-        onClose={() => setShowCreditModal(false)}
-      />
-      {/* ✅ URL 기반 모달 */}
-      {selectedTask && (() => {
-        
-        const aspectRatio = calculateAspectRatio(selectedTask.task.width, selectedTask.task.height);
-        const duration = calculateDuration(selectedTask.task.numFrames);
-        const resolution = getResolutionLabel(selectedTask.task.width, selectedTask.task.height);
-        
-        return (
-          <VideoResultModal
-            isOpen={true}
-            onClose={handleCloseModal}
-            videoResult={{
-              src: selectedTask.image?.url || "",
-              prompt: selectedTask.task.prompt,
-              inputImageUrl: selectedTask.task.imageUrl || undefined,
-              parameters: {
-                "Aspect Ratio": aspectRatio,
-                Duration: duration,
-                Style: selectedTask.task.lora || "Default",
-                Resolution: resolution,
-                "Task ID": selectedTask.task.id.toString(),
-                "Created At": new Date(
-                  selectedTask.task.createdAt
-                ).toLocaleDateString(),
-              },
-            }}
+      <div className="min-h-screen bg-[#121212] text-white flex flex-col lg:flex-row">
+        {/* Left Sidebar */}
+        <VideoSidebar />
+
+        <div className="flex flex-col lg:flex-row flex-1">
+          {/* Video Creation UI */}
+          <VideoCreationUI 
+            onSubmit={handleVideoCreate}
+            isGenerating={isGenerating}
           />
-        );
-      })()}
-    </>
+
+          {/* Video Results Panel */}
+          <VideoResultsPanel 
+            taskList={taskList}
+            loading={loading}
+            onVideoClick={handleMediaClick}
+            onDelete={handleDelete}
+          />
+        </div>
+        
+        {/* Age Verification Dialog */}
+        <AgeVerificationDialog
+          isOpen={showVerificationDialog}
+          onClose={closeVerificationDialog}
+          onVerified={handleVerificationSuccess}
+        />
+        
+        {/* Credit Purchase Modal */}
+        <GetCreditsModal
+          isOpen={showCreditModal}
+          onClose={() => setShowCreditModal(false)}
+        />
+        
+        {/* Video Result Modal */}
+        {selectedTask && (() => {
+          const aspectRatio = calculateAspectRatio(selectedTask.task.width, selectedTask.task.height);
+          const duration = calculateDuration(selectedTask.task.numFrames);
+          const resolution = getResolutionLabel(selectedTask.task.width, selectedTask.task.height);
+          
+          return (
+            <VideoResultModal
+              isOpen={true}
+              onClose={handleCloseModal}
+              videoResult={{
+                src: selectedTask.image?.url || "",
+                prompt: selectedTask.task.prompt,
+                inputImageUrl: selectedTask.task.imageUrl || undefined,
+                parameters: {
+                  "Aspect Ratio": aspectRatio,
+                  Duration: duration,
+                  Style: selectedTask.task.lora || "Default",
+                  Resolution: resolution,
+                  "Task ID": selectedTask.task.id.toString(),
+                  "Created At": new Date(
+                    selectedTask.task.createdAt
+                  ).toLocaleDateString(),
+                },
+              }}
+            />
+          );
+        })()}
+      </div>
     </AuthGuard>
   );
 }
